@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+	<head>
+		<title>
+			Waerl
+		</title>
+		
+		<script src="js/plugin/jquery-2.1.3.min.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+				$.ajax({
+					type: 'POST',
+					url: "http://www.forever21.com/webapp/wcs/stores/servlet/GetInventoryStatusByIDView",
+					data: {
+						storeId:"10701",
+						catalogId:"10601",
+						langId:"-1001",
+						productId:"864665",
+						itemId_1:"864676",
+						itemId_2:"864677",
+						itemId_3:"864678",
+						itemId_4:"864679",
+						itemId_5:"864680",
+						requesttype:"ajax"
+					},
+					timeout: 10 * 1000,
+					beforeSend: function( xhr ) {
+	
+					},
+					success: function(jsonData,status,xhr) {
+						$("body").html(jsonData);
+					},
+					error: function(data,status,xhr) {
+						alert(xhr);
+					}
+				});
+			});
+		</script>
+	</head>
+	<body>
+
+
+
+	</body>
+</html>

@@ -1,0 +1,128 @@
+www.forever21.com/webapp/wcs/stores/servlet/GetCatalogEntryDetailsByIDView?storeId=10701&catalogId=10601&langId=-1001&catalogEntryId=864670&prodCounter=1
+
+storeId=10701
+catalogId=10601
+langId=-1001
+catalogEntryId=864670
+prodCounter=1
+
+{
+    "catalogEntry": {
+        "catalogEntryIdentifier": {
+            "uniqueID": "864670",
+            "externalIdentifier": {
+                "partNumber": "2000098005045",
+                "ownerID": "7000000000000000652"
+            }
+        },
+        "description": [
+            {
+                "name": "Contrast-Trimmed Tank",
+                "thumbnail": "http://www.forever21.com/images/f21/http://www.forever21.com/images/f21/productdetailpage/thumbnail/front/00098005-04.jpg",
+                "fullImage": "http://www.forever21.com/images/f21/http://www.forever21.com/images/f21/productdetailpage/large/front/00098005-04.jpg",
+                "shortDescription": "Contrast-Trimmed Tank",
+                "longDescription": "<p>Don't just think tank. Think a cool heathered knit and even cooler details (contrast trim and a rounded hem) for one that's a better basic. </p><ul><li>Lightweight</i><li>60% cotton, 40% polyester</i><li>30&quot; full length, 40&quot; chest, 40&quot; waist</i><li>Measured from Medium</i><li>Machine wash cold</i><li>Made in Bangladesh</i></ul>",
+                "keyword": "",
+                "language": "-1001"
+            }
+        ],
+        "offerPrice": "CAD $6.00",
+        "listPrice": "CAD $11.90",
+        "listPriced": "true",
+        "priceRange": []
+    }
+}
+
+www.forever21.com/webapp/wcs/stores/servlet/GetCatalogEntryDetailsByIDView?storeId=10701&catalogId=10601&langId=-1001&catalogEntryId=864676&prodCounter=1
+
+
+{
+    "catalogEntry": {
+        "catalogEntryIdentifier": {
+            "uniqueID": "864665",
+            "externalIdentifier": {
+                "partNumber": "2000098005",
+                "ownerID": "7000000000000000652"
+            }
+        },
+        "description": [
+            {
+                "name": "Contrast-Trimmed Tank",
+                "thumbnail": "http://www.forever21.com/images/f21/http://www.forever21.com/images/f21/productdetailpage/thumbnail/front/00098005-04.jpg",
+                "fullImage": "http://www.forever21.com/images/f21/http://www.forever21.com/images/f21/productdetailpage/large/front/00098005-04.jpg",
+                "shortDescription": "Contrast-Trimmed Tank",
+                "longDescription": "<p>Don't just think tank. Think a cool heathered knit and even cooler details (contrast trim and a rounded hem) for one that's a better basic. </p><ul><li>Lightweight</i><li>60% cotton, 40% polyester</i><li>30&quot; full length, 40&quot; chest, 40&quot; waist</i><li>Measured from Medium</i><li>Machine wash cold</i><li>Made in Bangladesh</i></ul>",
+                "keyword": "",
+                "language": "-1001"
+            }
+        ],
+        "offerPrice": "CAD $6.00",
+        "listPrice": "CAD $11.90",
+        "listPriced": "true",
+        "priceRange": []
+    }
+}
+
+
+
+
+----------------------------------------
+
+http://www.forever21.com/webapp/wcs/stores/servlet/GetInventoryStatusByIDView?storeId=10701&catalogId=10601&langId=-1001&productId=864665&itemId_1=864676&itemId_2=864677&itemId_3=864678&itemId_4=864679&itemId_5=864680&requesttype=ajax
+
+storeId=10701
+catalogId=10601
+langId=-1001
+productId=864665
+itemId_1=864676
+itemId_2=864677
+itemId_3=864678
+itemId_4=864679
+itemId_5=864680
+requesttype=ajax
+
+
+
+
+http://www.forever21.com/webapp/wcs/stores/servlet/GetInventoryStatusByIDView?storeId=10701&itemId_1=864676&itemId_2=864677&itemId_3=864678&itemId_4=864679&itemId_5=864680
+
+
+{
+    "results": [
+        {
+            id: 864676,
+            status: "In-Stock",
+            ffmtCenterId: '10601',
+            altText: "In-Stock",
+            qty: 2
+        },
+        {
+            id: 864677,
+            status: "In-Stock",
+            ffmtCenterId: '10601',
+            altText: "In-Stock",
+            qty: 4
+        },
+        {
+            id: 864678,
+            status: "In-Stock",
+            ffmtCenterId: '10601',
+            altText: "In-Stock",
+            qty: 6
+        },
+        {
+            id: 864679,
+            status: "In-Stock",
+            ffmtCenterId: '10601',
+            altText: "In-Stock",
+            qty: 4
+        },
+        {
+            id: 864680,
+            status: "In-Stock",
+            ffmtCenterId: '10601',
+            altText: "In-Stock",
+            qty: 2
+        }
+    ]
+}
