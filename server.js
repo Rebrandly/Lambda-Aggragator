@@ -25,128 +25,83 @@ if(hasMethods(obj, 'quak', 'flapWings','waggle')) {
 }
 */
 
-  
-var siteCallback;
-var downloadCount;
-var maxDownloadCount;
-var curSiteStack;
 
-function RoundRobin(root) {
 
-	// get sites and the number of them
-	var sites = root.getSites();
+
+var LambdaCrawl = new function() {
 	
-	// set it's children, but don't make children remember the parent
-	root.setChildren(sites);
+	var queue = [];
+	var root = null;
+	var startTime = null;
+	var runningAjaxCount = 0;
+	
+	this.scan = function(r) {
+		queue.length = 0;
+		root = r;
+		runningAjaxCount = 0;
+		startTime = new Date();
 
-	// if there are any sites
-	if (sites.length > 0) {
-		// initiate round robin on site at index 0
-		RoundRobinCallLoop(sites, 0);
-	}
-}
-function RoundRobinCallLoop(sites, i) {
+		console.log("STARTED SEARCHING");
+		queue.push(r);
+		BFSScan();
+	};
 
-	// get current site
-	var site = sites[i];
-
-	// check if finished
-	if (site.isFinished()) {
-		// remove site from list
-		sites.splice(i, 1);
-
-		// continue if any sites left
-		if (sites.length > 0) {
-			RoundRobinCallLoop(sites, i % sites.length);
+	this.getObj = function() {
+		return root ? {
+			duration : (new Date()) - startTime,
+			downloadCount : runningAjaxCount,
+			data : JSONconvert(root)
+		} : {};
+	};
+	
+	var JSONconvert = function (node) {
+		var children = node.getChildren(), i, l = children.length, s = [];
+		for(i=0;i<l;i+=1) {
+			s.push(JSONconvert(children[i]));
 		}
-	} else {
-		// set the callback function to search the next site
-		siteCallback = function() {
-			RoundRobinCallLoop(sites, (i + 1) % sites.length);
+		return {
+			name : node.getName(),
+			children : s,
+			finished : node.isFinished(),
+			failed : node.isFailed()
 		};
+	};
 
-		// reset the download count
-		downloadCount = 0;
-		// set the max donwload count
-		maxDownloadCount = site.getMaxRequests();
-		// get the current stack of callbacks
-		curSiteStack = site.getStack();
-		// search the site
-		SearchSite(site);
-	}
-}
-function SearchSite(node) {
+	var BFSScan = function () {
+		if (queue.length > 0) {
+			var loopTimes = Math.min(queue.length, 5), s, i, v;
+			
+			s = queue.splice(-loopTimes, loopTimes);
+			
+			for(i=0; i<loopTimes; i+=1) {
+				v = s.pop();
+				
+				runningAjaxCount += 1;
+				
+				v.downloadData({
+					arrive: function() {
 
-	// check if you can make any more requests for the site
-	if (downloadCount < maxDownloadCount) {
-
-		// increment the count by one
-		downloadCount += 1;
-
-		// download the data
-		node.downloadData(function(children) {
-
-			// print something
-			node.print();
-
-			// set children
-			node.setChildren(children);
-
-			// check if there are any child nodes
-			if (children.length > 0) {
-
-				// get the first child
-				var child = children[0];
-
-				// set parent of the child
-				child.setParent(node);
-
-				// if not a site
-				if (node.hasParent()) {
-
-					// get parent of node
-					var parent = node.getParent();
-					// get node's sibling list including itself
-					var mysiblings = parent.getChildren();
-					// find index of itself in that list
-					var myIndex = mysiblings.indexOf(node);
-					// get index of sibline to the right
-					var siblingIndex = myIndex + 1;
-					
-					// check if next child node exists
-					if (siblingIndex < mysiblings.length) {
-						// get sibling
-						var sibling = mysiblings[siblingIndex];
-
-						// stack the function to call when all children of node finish, to continue to sibling of node
-						curSiteStack.push(function() {    
-							SearchSite(sibling);
-						});	
+					},
+					success : function(children) {
+						v.setChildren(children);
+						v.setFinished();
+						Array.prototype.push.apply(queue, children);
+						BFSScan();
+					},
+					httperror : function() {
+						v.setFailed();
+					},
+					parseerror: function() {
+						v.setFailed();
 					}
-				}
-
-				// search the child
-				SearchSite(child);
-
-			} else if (curSiteStack.length > 0) {
-				// move up to parent sibling
-				(curSiteStack.pop())();
-			} else {
-				// change site because this whole site is done
-				siteCallback();
+				});
 			}
-		}, function() {             
-			// mark as http error
-			node.reportHTTPError();
-		}, function() {      
-		    // mark as parse error
-			node.reportParseError();
-		});
-	} else {
-		// reached limit so change site
-		siteCallback();
-	}
+		}
+	};
 }
+
+
+
 
 
 
@@ -155,87 +110,61 @@ function SearchSite(node) {
 var node = function(n) {
 
 	var name = n;
-	var parent = null;
-	var children = null;
+	var children = [];
 	var finished = false;
-	
-	var stack = [];
-	var maxRequests = 10;
+	var failed = false;
 
-	this.downloadData = function(func) {
-		var children = [];
-		func(children);
+	this.getName = function() {
+		return name
 	};
-	this.getMaxRequests = function() {
-		return maxRequests;
+	this.downloadData = function(obj) {
+		
+		var children = n=="root" ? [new node("A"), new node("B"), new node("C")] : [];
+		
+		obj.arrive();
+		obj.success(children);
+		//obj.httperror();
+		//obj.parseerror();
 	};
-	this.getStack = function() {
-		return stack;
+
+	this.getChildren = function() {
+		return children;
+	};
+	this.setChildren = function(c) {
+		Array.prototype.push.apply(children, c);
 	};
 	this.isFinished = function() {
-		return children != null;
+		return finished;
 	};
-	this.hasParent = function() {
-		return parent != null;
-	};
-	this.getParent = function() {
-		return parent;
-	};
-	this.setParent = function(p) {
-		parent = p;
-	};
-	this.getChildren = function() {
-		return children;
-	};
-	this.setChildren = function(c) {
-		children = c;
-	};
-	this.print = function() {
-		var div = $("div.test");
-		div.append(name);
-	};
-};
-
-
-var siteA = new node("A");
-var siteB = new node("B");
-var siteC = new node("C");
-
-
-var root = new function() {
-	var children = null;
-	this.getSites = function() {
-		return [siteA, siteB, siteC];
-	};
-	this.getChildren = function() {
-		return children;
-	};
-	this.setChildren = function(c) {
-		children = c;
-	};
-};
-
-RoundRobin(root);
-
-
-
-function dfs(res, v, tab) {
-	res.write(tab + v["val"] + "<br/>");
-	var l = v.getChildren().length;
-	for(var i=0; i<l; i+=1) {
-		dfs(res, (v.getChildren())[i], tab + "----");
+	this.setFinished = function() {
+		finished = true;
 	}
-}
+	this.isFailed = function() {
+		return failed;
+	}
+	this.setFailed = function() {
+		failed = true;
+	}
+};
+
+var root = new node("root");
+LambdaCrawl.scan(root);
+
+
 
 
 
 // Configure our HTTP server to respond to all requests.
 var server = http.createServer(function (req, res) {
-	
-	// respond type, for now it only gives back plain text
-	res.writeHead(200, {"Content-Type": "text/html"});
 
-	dfs(res, root, "");
+	// respond type, for now it only gives back plain text
+	res.writeHead(200, {
+		"Access-Control-Allow-Origin": "*",
+		"Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
+		"Content-Type": "application/json; charset=UTF-8"
+	});
+
+	res.write(JSON.stringify(LambdaCrawl.getObj()));
 	
 	res.end();
 });
