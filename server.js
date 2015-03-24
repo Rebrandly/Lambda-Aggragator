@@ -83,6 +83,7 @@ var node = function(n) {
 		return name
 	};
 	this.downloadData = function(obj) {
+		// arrive
 		obj.arrive();
 		
 		// worked
