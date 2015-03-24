@@ -10,11 +10,11 @@
 				line-height:30px;
 				padding:4px;
 			}
-			.finished {
-				background-color:#A6FF71;
-			}
 			.failed {
 				background-color:#FF7373;
+			}
+			.finished {
+				background-color:#A6FF71;
 			}
 			.other {
 				background-color:#FFEE71;
@@ -28,17 +28,17 @@
 				tab = tab || "";
 			
 				if (v.failed) {
-					var name = "<span class='node failed'>" + v.name + "</span>";
+					var cls = "failed";
 				} else if (v.finished) {
-					var name = "<span class='node finished'>" + v.name + "</span>";
+					var cls = "finished";
 				} else {
-					var name = "<span class='node other'>" + v.name + "</span>";
+					var cls = "other";
 				}
 				
+				var name = "<span class='node " + cls + "'>" + v.name + "</span>";
 				$("#data").append(tab + name + "<br/>");
 				
 				var children = v.children, l = children.length, i;
-				
 				for (i=0; i<l; i+=1) {
 					DFS(children[i], tab + "----");
 				}

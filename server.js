@@ -32,8 +32,8 @@ var LambdaCrawl = new function() {
 	
 	var queue = [];
 	var root = null;
-	var startTime = null;
 	var runningAjaxCount = 0;
+	var startTime = null;
 	
 	this.scan = function(r) {
 		queue.length = 0;
@@ -119,7 +119,7 @@ var node = function(n) {
 	};
 	this.downloadData = function(obj) {
 		
-		var children = n=="root" ? [new node("A"), new node("B"), new node("C")] : [];
+		var children = n=="Root" ? [new node("Site 1"), new node("Site 2"), new node("Site 3")] : [];
 		
 		obj.arrive();
 		obj.success(children);
@@ -147,7 +147,7 @@ var node = function(n) {
 	}
 };
 
-var root = new node("root");
+var root = new node("Root");
 LambdaCrawl.scan(root);
 
 
