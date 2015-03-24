@@ -12,6 +12,7 @@ var LambdaCrawl = new function() {
 	var root = null;
 	var runningAjaxCount = 0;
 	var startTime = null;
+	var concurrentAJAX = 5;
 	
 	this.scan = function(r) {
 		queue.length = 0;
@@ -34,7 +35,7 @@ var LambdaCrawl = new function() {
 
 	var BFSScan = function () {
 		if (queue.length > 0) {
-			var loopTimes = Math.min(queue.length, 5), s, i, v;
+			var loopTimes = Math.min(queue.length, concurrentAJAX), s, i, v;
 			
 			s = queue.splice(-loopTimes, loopTimes);
 			
