@@ -57,8 +57,9 @@
 	
 					},
 					success: function(jsonData,status,xhr) {
-						$("#downloadcount").text("Download Count: " + jsonData.downloadCount);
-						$("#duration").text("Milliseconds: " + jsonData.duration);
+						$("#data").html("");
+						$("#downloadcount").html("Download Count: " + jsonData.downloadCount);
+						$("#duration").html("Milliseconds: " + jsonData.duration);
 						
 						DFS(jsonData.data);
 					},

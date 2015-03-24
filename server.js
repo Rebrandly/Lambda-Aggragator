@@ -4,28 +4,6 @@ var $ = require('cheerio');
 var http = require('http');
 // Load the request module to make requests.
 var request = require("request");
-  
-  
-
-/*  
-// example duck typing method
-var hasMethods = function(obj){ // method list as strings [, ..., ..., ...]
-    var i = 1, methodName;
-    while((methodName = arguments[i++])){
-        if(typeof obj[methodName] != 'function') {
-            return false;
-        }
-    }
-    return true;
-}
-
-// in your code
-if(hasMethods(obj, 'quak', 'flapWings','waggle')) {
-    //  IT'S A DUCK, do your duck thang
-}
-*/
-
-
 
 
 var LambdaCrawl = new function() {
@@ -50,21 +28,8 @@ var LambdaCrawl = new function() {
 		return root ? {
 			duration : (new Date()) - startTime,
 			downloadCount : runningAjaxCount,
-			data : JSONconvert(root)
+			data : root
 		} : {};
-	};
-	
-	var JSONconvert = function (node) {
-		var children = node.getChildren(), i, l = children.length, s = [];
-		for(i=0;i<l;i+=1) {
-			s.push(JSONconvert(children[i]));
-		}
-		return {
-			name : node.getName(),
-			children : s,
-			finished : node.isFinished(),
-			failed : node.isFailed()
-		};
 	};
 
 	var BFSScan = function () {
@@ -83,16 +48,16 @@ var LambdaCrawl = new function() {
 
 					},
 					success : function(children) {
-						v.setChildren(children);
-						v.setFinished();
 						Array.prototype.push.apply(queue, children);
+					},
+					httperror : function(data,status,xhr) {
+
+					},
+					parseerror: function(obj) {
+
+					},
+					complete : function() {
 						BFSScan();
-					},
-					httperror : function() {
-						v.setFailed();
-					},
-					parseerror: function() {
-						v.setFailed();
 					}
 				});
 			}
@@ -118,33 +83,53 @@ var node = function(n) {
 		return name
 	};
 	this.downloadData = function(obj) {
-		
-		var children = n=="Root" ? [new node("Site 1"), new node("Site 2"), new node("Site 3")] : [];
-		
 		obj.arrive();
-		obj.success(children);
-		//obj.httperror();
-		//obj.parseerror();
+		
+		// worked
+		var c = n=="Root" ? [new node("Site 1"), new node("Site 2"), new node("Site 3")] : [];
+		Array.prototype.push.apply(children, c);
+		obj.success(c);
+		finished = true;
+		
+		// http error
+		//obj.httperror(data,status,xhr);
+		//failed = true;
+		//handleHttpError(data,status,xhr);
+		
+		// parse error
+		//obj.parseerror(obj);
+		//failed = true;
+		//parseerror(obj);
+		
+		// complete
+		obj.complete();
 	};
 
 	this.getChildren = function() {
 		return children;
 	};
-	this.setChildren = function(c) {
-		Array.prototype.push.apply(children, c);
-	};
 	this.isFinished = function() {
 		return finished;
 	};
-	this.setFinished = function() {
-		finished = true;
-	}
 	this.isFailed = function() {
 		return failed;
-	}
-	this.setFailed = function() {
-		failed = true;
-	}
+	};
+	
+	var handleHttpError = function(data,status,xhr) {
+		
+	};
+	var parseerror = function(obj) {
+		
+	};
+	
+	this.toJSON = function() {
+		return {
+			name : name,
+			children : children,
+			finished : finished,
+			failed : failed
+		};
+	};
 };
 
 var root = new node("Root");
