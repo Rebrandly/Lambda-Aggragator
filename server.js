@@ -26,11 +26,11 @@ var LambdaCrawl = new function() {
 	};
 
 	this.getObj = function() {
-		return root ? {
+		return {
 			duration : (new Date()) - startTime,
 			downloadCount : runningAjaxCount,
 			data : root
-		} : {};
+		};
 	};
 
 	var BFSScan = function () {
@@ -48,13 +48,13 @@ var LambdaCrawl = new function() {
 					arrive: function() {
 
 					},
-					success : function(children) {
+					finished : function(children) {
 						Array.prototype.push.apply(queue, children);
 					},
-					httperror : function(data,status,xhr) {
+					httpError : function(data,status,xhr) {
 
 					},
-					parseerror: function(obj) {
+					parseError: function(data) {
 
 					},
 					complete : function() {
@@ -73,55 +73,38 @@ var LambdaCrawl = new function() {
 
 
 
-var node = function(n) {
+var node = function(n, i, c) {
 
 	var name = n;
+	var input = i;
+	var core = c;
+	
 	var children = [];
 	var finished = false;
 	var failed = false;
 
-	this.getName = function() {
-		return name
-	};
 	this.downloadData = function(obj) {
-		// arrive
-		obj.arrive();
-		
-		// worked
-		var c = n=="Root" ? [new node("Site 1"), new node("Site 2"), new node("Site 3")] : [];
-		Array.prototype.push.apply(children, c);
-		obj.success(c);
-		finished = true;
-		
-		// http error
-		//obj.httperror(data,status,xhr);
-		//failed = true;
-		//handleHttpError(data,status,xhr);
-		
-		// parse error
-		//obj.parseerror(obj);
-		//failed = true;
-		//parseerror(obj);
-		
-		// complete
-		obj.complete();
-	};
-
-	this.getChildren = function() {
-		return children;
-	};
-	this.isFinished = function() {
-		return finished;
-	};
-	this.isFailed = function() {
-		return failed;
+		core(arrive, input, body, finished, httpError, parseError, complete, obj);
 	};
 	
-	var handleHttpError = function(data,status,xhr) {
-		
+	var arrive = function(obj) {
+		obj.arrive();
 	};
-	var parseerror = function(obj) {
-		
+	var finished = function(obj, childList) {
+		finished = true;
+		Array.prototype.push.apply(children, childList);
+		obj.finished(childList);
+	};
+	var httpError = function(obj, data, status, xhr) {
+		failed = true;
+		obj.httpError(data,status,xhr);
+	};
+	var parseError = function(obj, data) {
+		failed = true;
+		obj.parseError(data);
+	};
+	var complete = function(obj) {
+		obj.complete();
 	};
 	
 	this.toJSON = function() {
@@ -134,10 +117,55 @@ var node = function(n) {
 	};
 };
 
-var root = new node("Root");
+
+
+var root = new node("Root", {
+	data : ["http://www.forever21.com"]
+},function(arrive, input, body, finished, httpError, parseError, complete, obj) {
+	arrive(obj);
+	
+	
+	var i, l = input.data.length, childList = [];
+	for(i=0; i<l; i+=1) {
+		var url = input.data[i];
+		
+		
+		var newChild = new node("something", {
+			data : url
+		},function(arrive, input, body, finished, httpError, parseError, complete, obj) {
+			
+			request({
+				uri: input.data
+			}, function(error, response, body) {
+				arrive(obj);
+				
+				if (error) {
+					httpError(obj, error);
+				} else {
+					try {
+						var childList = core(arrive, input, body, finished, httpError, parseError, complete, obj);
+						finished(obj, childList);
+					} catch (err) {
+						parseError(obj, {
+							message : err.message
+						});
+					}
+				}
+			
+				complete(obj);
+			});	
+
+		});
+		
+		
+		childList.push(newChild);
+	}
+	
+	finished(obj, childList);
+	complete(obj);
+});
+
 LambdaCrawl.scan(root);
-
-
 
 
 
