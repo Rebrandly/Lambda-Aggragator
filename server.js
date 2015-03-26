@@ -4,7 +4,8 @@ var $ = require('cheerio');
 var http = require('http');
 // Load the request module to make requests.
 var request = require("request");
-
+// Load my custom node object
+var LambdaNode = require('./js/module/LamdaNode.js');
 
 var LambdaCrawl = new function() {
 	
@@ -68,49 +69,11 @@ var LambdaCrawl = new function() {
 
 
 
-var LambdaNode = function(n, i, di, pi) {
-
-	var name = n;               // name of node
-	var input = i;              // input object
-	var generateRawFunc = di;   // function to handle getting data from input
-	var processRawFunc = pi;    // function to handle processing data from input
-	
-	var children = [];
-	var finished = false;
-	var failed = false;
-	var node = this;
-	
-	this.downloadData = function(scanEvents) {
-		var raw_data = generateRawFunc(input, processRawFunc, scanEvents, node);
-	};
-	this.finished = function(scanEvents, childList) {
-		finished = true;
-		Array.prototype.push.apply(children, childList);
-		scanEvents.finished(childList);
-	};
-	this.httpError = function(scanEvents, data) {
-		failed = true;
-		scanEvents.httpError(data);
-	};
-	this.parseError = function(scanEvents, data) {
-		failed = true;
-		scanEvents.parseError(data);
-	};
-	
-	this.toJSON = function() {
-		return {
-			name : name,
-			children : children,
-			finished : finished,
-			failed : failed
-		};
-	};
-};
 
 
 
 
-var root = new LambdaNode("Root", {
+var root = new LambdaNode.LambdaNode("Root", {
 	data : ["http://www.forever21.com"]
 }, function(input, processFunc, scanEvents, node) {
 	processFunc(input, scanEvents, node);
@@ -121,7 +84,7 @@ var root = new LambdaNode("Root", {
 	for(i=0; i<l; i+=1) {
 		var url = rawData.data[i];
 		
-		var newChild = new LambdaNode("something", {
+		var newChild = new LambdaNode.LambdaNode("something", {
 			data : url
 		}, function(input, processFunc, scanEvents, node) {
 			request({
