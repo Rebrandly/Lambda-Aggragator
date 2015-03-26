@@ -69,12 +69,12 @@ var LambdaCrawl = new function() {
 
 
 
-
+var forever21 = require('./js/sites/forever21.js');
 
 
 
 var root = new LambdaNode.LambdaNode("Root", {
-	data : ["http://www.forever21.com"]
+	data : [forever21]
 }, function(input, processFunc, scanEvents, node) {
 	processFunc(input, scanEvents, node);
 }, function(rawData, scanEvents, node) {
@@ -84,31 +84,7 @@ var root = new LambdaNode.LambdaNode("Root", {
 	for(i=0; i<l; i+=1) {
 		var url = rawData.data[i];
 		
-		var newChild = new LambdaNode.LambdaNode("something", {
-			data : url
-		}, function(input, processFunc, scanEvents, node) {
-			request({
-				uri: input.data
-			}, function(error, response, body) {
-
-				if (error) {
-					node.httpError(scanEvents, {
-						message : error
-					});
-				} else {
-					try {
-						processFunc(body, scanEvents, node);
-					} catch (err) {
-						node.parseError(scanEvents, {
-							message : err.message
-						});
-					}
-				}
-			});	
-		}, function(rawData, scanEvents, node) {
-			var childList = [];
-			node.finished(scanEvents, childList);
-		});
+		//var newChild = 
 		
 		childList.push(newChild);
 	}
