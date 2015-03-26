@@ -45,19 +45,14 @@ var LambdaCrawl = new function() {
 				runningAjaxCount += 1;
 				
 				v.downloadData({
-					arrive: function() {
-
-					},
 					finished : function(children) {
 						Array.prototype.push.apply(queue, children);
+						BFSScan();
 					},
-					httpError : function(data,status,xhr) {
-
+					httpError : function(data) {
+						BFSScan();
 					},
 					parseError: function(data) {
-
-					},
-					complete : function() {
 						BFSScan();
 					}
 				});
@@ -73,38 +68,33 @@ var LambdaCrawl = new function() {
 
 
 
-var node = function(n, i, c) {
+var LambdaNode = function(n, i, di, pi) {
 
-	var name = n;
-	var input = i;
-	var core = c;
+	var name = n;               // name of node
+	var input = i;              // input object
+	var generateRawFunc = di;   // function to handle getting data from input
+	var processRawFunc = pi;    // function to handle processing data from input
 	
 	var children = [];
 	var finished = false;
 	var failed = false;
-
-	this.downloadData = function(obj) {
-		core(arrive, input, body, finished, httpError, parseError, complete, obj);
-	};
+	var node = this;
 	
-	var arrive = function(obj) {
-		obj.arrive();
+	this.downloadData = function(scanEvents) {
+		var raw_data = generateRawFunc(input, processRawFunc, scanEvents, node);
 	};
-	var finished = function(obj, childList) {
+	this.finished = function(scanEvents, childList) {
 		finished = true;
 		Array.prototype.push.apply(children, childList);
-		obj.finished(childList);
+		scanEvents.finished(childList);
 	};
-	var httpError = function(obj, data, status, xhr) {
+	this.httpError = function(scanEvents, data) {
 		failed = true;
-		obj.httpError(data,status,xhr);
+		scanEvents.httpError(data);
 	};
-	var parseError = function(obj, data) {
+	this.parseError = function(scanEvents, data) {
 		failed = true;
-		obj.parseError(data);
-	};
-	var complete = function(obj) {
-		obj.complete();
+		scanEvents.parseError(data);
 	};
 	
 	this.toJSON = function() {
@@ -119,50 +109,49 @@ var node = function(n, i, c) {
 
 
 
-var root = new node("Root", {
+
+var root = new LambdaNode("Root", {
 	data : ["http://www.forever21.com"]
-},function(arrive, input, body, finished, httpError, parseError, complete, obj) {
-	arrive(obj);
-	
-	
-	var i, l = input.data.length, childList = [];
+}, function(input, processFunc, scanEvents, node) {
+	processFunc(input, scanEvents, node);
+}, function(rawData, scanEvents, node) {
+
+
+	var i, l = rawData.data.length, childList = [];
 	for(i=0; i<l; i+=1) {
-		var url = input.data[i];
+		var url = rawData.data[i];
 		
-		
-		var newChild = new node("something", {
+		var newChild = new LambdaNode("something", {
 			data : url
-		},function(arrive, input, body, finished, httpError, parseError, complete, obj) {
-			
+		}, function(input, processFunc, scanEvents, node) {
 			request({
 				uri: input.data
 			}, function(error, response, body) {
-				arrive(obj);
-				
+
 				if (error) {
-					httpError(obj, error);
+					node.httpError(scanEvents, {
+						message : error
+					});
 				} else {
 					try {
-						var childList = core(arrive, input, body, finished, httpError, parseError, complete, obj);
-						finished(obj, childList);
+						processFunc(body, scanEvents, node);
 					} catch (err) {
-						parseError(obj, {
+						node.parseError(scanEvents, {
 							message : err.message
 						});
 					}
 				}
-			
-				complete(obj);
 			});	
-
+		}, function(rawData, scanEvents, node) {
+			var childList = [];
+			node.finished(scanEvents, childList);
 		});
-		
 		
 		childList.push(newChild);
 	}
 	
-	finished(obj, childList);
-	complete(obj);
+
+	node.finished(scanEvents, childList);
 });
 
 LambdaCrawl.scan(root);
