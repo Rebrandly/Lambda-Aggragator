@@ -1,12 +1,12 @@
 // Load my custom node object
-var LambdaNode = require('../module/LamdaNode.js');
+var LambdaNode = require('../module/LambdaNode.js');
 
 module.exports = {
 	
 	base : "http://www.forever21.com",
 	
 
-	
+	/*
 	nodes : [
 	
 		new LambdaNode.LambdaNode("something", {
@@ -36,7 +36,7 @@ module.exports = {
 		})
 
 	],
-	
+	*/
 	getRoot : function() {
 		
 	}

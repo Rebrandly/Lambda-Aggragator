@@ -5,21 +5,25 @@ var http = require('http');
 // Load the request module to make requests.
 var request = require("request");
 // Load my custom node object
-var LambdaNode = require('./js/module/LamdaNode.js');
+var LambdaNode = require('./js/module/LambdaNode.js');
+// Load my custom crawl object
+var LambdaCrawl = require('./js/module/LambdaCrawl.js');
+
 
 
 // list of LambdaCrawl instances
 var crawlLooper = [];
 
 // list of site modules
-var sitesList = [require('./js/sites/forever21.js')]; // load all sites here
+var sitesList = [
+	require('./js/sites/forever21.js')
+];
 
 // create the list of crawl instances
 var i; l=sitesList.length;
 for(i=0; i<l; i+=1) {
 	var site = sitesList[i];
-	var siteRoot = site.getRoot();
-	var crawler = new LambdaCrawl(siteRoot);
+	var crawler = new LambdaCrawl(site);
 	crawlLooper.push(crawler);
 }
 
@@ -29,150 +33,27 @@ if (l > 0) {
 }
 
 // every interval, check if current site is maxed out in ajax requests, and if
-// so, then rotate it and start crawling new site.
+// so, then rotate it and starts crawling the new site.
 if (crawlLooper.length > 0) {
 	setInterval(function(){ 
 		var crawler = crawlLooper[0];
 		if (!crawler.active()) {
 			crawlLooper.push(crawlLooper.shift());
 			console.log("Rotated sites!");
+			crawlLooper[0].scan();
 		}
 	}, 3000);
 }
 
 
-// lambda crawl instance per site
-var LambdaCrawl = function(r) {
-	
-	var stack = [];
-	var root = r;
-	var runningAjaxCount = 0;
-	var totalAjaxCount = 0;
-	var startTime = new Date();
-	var maxvisitAJAX = 10;    
-	var active = false;
-
-	this.scan = function() {
-		DFSScan();
-		active = true;
-		console.log("Started crawling: " + root.getName());
-	};
-
-	this.active = function() {
-		return active;
-	};
-	
-	this.getObj = function() {
-		return {
-			startTime : startTime,
-			duration : (new Date()) - startTime,
-			runningAjaxCount : runningAjaxCount,
-			totalAjaxCount : totalAjaxCount,
-			stackCount : stack.length,
-			maxvisitAJAX : maxvisitAJAX,
-			data : root
-		};
-	};
-
-	this.DFSScan = function() {
-		
-		// only process if something in stack
-		if (stack.length == 0) {
-			return;
-		}
-		// don't go past time allocated
-		if (runningAjaxCount >= maxvisitAJAX) {
-			runningAjaxCount = 0;
-			active = false;
-			// TODO: switch to next site
-			return;
-		}
-		
-		// get last item in stack
-		v = stack[stack.length - 1];
-		
-		// if not started processing
-		if (v.getloopChild() == -1) { 
-			// mark as started processing
-			v.setloopChild(0);   
-			
-			// increment counters
-			runningAjaxCount += 1;
-			totalAjaxCount += 1;
-			
-			// start downloading the data
-			v.downloadData({
-				finished : function(children) {
-					Array.prototype.push.apply(queue, children);
-					
-					// continue crawling
-					DFSScan();
-				},
-				httpError : function(data) {
-					
-					// continue crawling
-					DFSScan();
-				},
-				parseError: function(data) {
-					
-					// continue crawling
-					DFSScan();
-				}
-			});
-			
-		// if finished processing
-		} else if (v.finished()) {
-		
-			var children = v.getChildren();
-			var targetIndex = v.getloopChild();
-			
-			// if child index pointing to a valid child
-			if (targetIndex < children.length) {
-				
-				stack.push(children[targetIndex]);
-				v.setloopChild(targetIndex + 1);
-				
-			// no more children, so remove from stack
-			} else {
-				stack.splice(stack.length - 1, 1);
-			}
-			
-			// continue crawling
-			DFSScan();
-			
-		// if failed
-		} else if (v.failed()) {
-			
-			// node failed to remove from stack
-			stack.splice(stack.length - 1, 1);
-			
-			// continue crawling
-			DFSScan();
-			
-		// currently still processing?
-		} else {
-			console.log("Node still processing?");
-		}			
-	}
-}
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-var root = new LambdaNode.LambdaNode("Root", {
+/*
+var root = new LambdaNode("Root", {
 	data : [forever21]
 }, function(input, processFunc, scanEvents, node) {
 	processFunc(input, scanEvents, node);
@@ -193,6 +74,11 @@ var root = new LambdaNode.LambdaNode("Root", {
 });
 
 LambdaCrawl.scan(root);
+*/
+
+
+
+
 
 
 
