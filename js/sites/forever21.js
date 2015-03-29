@@ -5,6 +5,8 @@ module.exports = {
 	
 	base : "http://www.forever21.com",
 	
+
+	
 	nodes : [
 	
 		new LambdaNode.LambdaNode("something", {
@@ -33,6 +35,9 @@ module.exports = {
 			node.finished(scanEvents, childList);
 		})
 
-	]
+	],
 	
+	getRoot : function() {
+		
+	}
 };

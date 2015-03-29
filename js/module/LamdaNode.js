@@ -7,11 +7,31 @@ module.exports = {
 		var generateRawFunc = di;   // function to handle getting data from input
 		var processRawFunc = pi;    // function to handle processing data from input
 		
+		var loopChild = -1;
 		var children = [];
-		var finished = false;
-		var failed = false;
 		var node = this;
 		
+		var finished = false;
+		var failed = false;
+		
+		this.getName = function() {
+			return name;
+		};
+		this.getloopChild = function() {
+			return loopChild;
+		};
+		this.setloopChild = function(q) {
+			loopChild = q;
+		};
+		this.finished = function() {
+			return finished;
+		};
+		this.failed = function() {
+			return failed;
+		};
+		this.getChildren = function() {
+			return children;
+		};
 		this.downloadData = function(scanEvents) {
 			var raw_data = generateRawFunc(input, processRawFunc, scanEvents, node);
 		};
