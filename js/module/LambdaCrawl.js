@@ -32,7 +32,7 @@ module.exports = function(s) {
 		};
 	};
 
-	this.DFSScan = function() {
+	var DFSScan = function() {
 		
 		// only process if something in stack
 		if (stack.length == 0) {

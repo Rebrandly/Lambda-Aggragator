@@ -1,3 +1,7 @@
+// Load the cheerio module to parse html responses.
+var $ = require('cheerio');
+// Load the request module to make requests.
+var request = require("request");
 // Load my custom node object
 var LambdaNode = require('../module/LambdaNode.js');
 

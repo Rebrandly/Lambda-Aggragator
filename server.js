@@ -1,11 +1,5 @@
-// Load the cheerio module to parse html responses.
-var $ = require('cheerio');
 // Load the http module to create an http server. 
 var http = require('http');
-// Load the request module to make requests.
-var request = require("request");
-// Load my custom node object
-var LambdaNode = require('./js/module/LambdaNode.js');
 // Load my custom crawl object
 var LambdaCrawl = require('./js/module/LambdaCrawl.js');
 
