@@ -7,43 +7,48 @@ var LambdaNode = require('../module/LambdaNode.js');
 
 module.exports = new function() {
 	
-	var base = "http://www.forever21.com";
+	var url = "http://www.forever21.com";
 	
 	var nodes = [
 		{
-			name : "something",
-			getRaw : new LambdaNode.LambdaNode("something", {
+			name : "Forever21 site",
+			
+			input : {
 				data : url
-			}, function(input, processFunc, scanEvents, node) {
+			},
+			
+			getRaw : function(input, processFunc, scanEvents, node) {
 				request({
 					uri: input.data
 				}, function(error, response, body) {
-
 					if (error) {
 						node.httpError(scanEvents, {
 							message : error
 						});
 					} else {
-						try {
-							processFunc(body, scanEvents, node);
-						} catch (err) {
-							node.parseError(scanEvents, {
-								message : err.message
-							});
-						}
+						processFunc(body, scanEvents, node);
 					}
 				});	
-			}, function(rawData, scanEvents, node) {
-				var childList = [];
+			},
+			
+			getChildren : function(rawData, scanEvents, node) {
+				try {
+					var childList = [];
+				} catch (err) {
+					node.parseError(scanEvents, {
+						message : err.message
+					});
+				}
+				
 				node.finished(scanEvents, childList);
-			}),
-			getChildren : 
+			}
 		}
 	];
 
 	this.getNode = function(depth) {
+		
 		if (depth >= nodes.length) {
-			console.log("Site '" + base + "' does not support depth level '" + depth + "'!");
+			console.log("Site '" + url + "' does not support depth level '" + depth + "'!");
 			return null;
 		}
 		

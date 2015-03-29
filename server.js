@@ -41,41 +41,6 @@ if (crawlLooper.length > 0) {
 
 
 
-
-
-
-
-
-/*
-var root = new LambdaNode("Root", {
-	data : [forever21]
-}, function(input, processFunc, scanEvents, node) {
-	processFunc(input, scanEvents, node);
-}, function(rawData, scanEvents, node) {
-
-
-	var i, l = rawData.data.length, childList = [];
-	for(i=0; i<l; i+=1) {
-		var url = rawData.data[i];
-		
-		//var newChild = 
-		
-		childList.push(newChild);
-	}
-	
-
-	node.finished(scanEvents, childList);
-});
-
-LambdaCrawl.scan(root);
-*/
-
-
-
-
-
-
-
 // Configure our HTTP server to respond to all requests.
 var server = http.createServer(function (req, res) {
 
