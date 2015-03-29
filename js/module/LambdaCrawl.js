@@ -2,7 +2,7 @@ module.exports = function(s) {
 
 	var stack = [];                 // stack used for dfs search
 	var site = s;                   // the site object
-	var root = s.getRoot();         // the root node of the site
+	var root = s.getNode(0);        // the root node of the site
 	var runningAjaxCount = 0;       // the current ajax count
 	var totalAjaxCount = 0;         // the total current ajax count
 	var startTime = new Date();     // time the scan began
