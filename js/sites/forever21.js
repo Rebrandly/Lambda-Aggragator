@@ -11,6 +11,12 @@ module.exports = new function() {
 	var url = "http://www.forever21.com";
 	
 	var nodes = [
+	
+	
+	
+	
+	
+	
 		{
 			name : "Forever21 site root",
 			
@@ -52,7 +58,59 @@ module.exports = new function() {
 					node.finished(scanEvents, childList);
 				});	
 			}
+		},
+		{
+			name : "Forever21 site country",
+			
+			getChildren : function(input, scanEvents, node) {
+
+				// obtain raw data
+				request({
+					uri: input.data
+				}, function(error, response, body) {
+					if (error) {
+						node.httpError(scanEvents, {
+							message : error
+						});
+						return console.log(error);
+					}
+					
+					try {
+						// obtain child node data
+						//var parsedHTML = $.load(body);
+						//var links = parsedHTML("head > link[rel=canonical],[rel=alternate]");
+
+						var childList = [];
+						/*
+						for(var i=0;i<links.length; i+=1) {
+							var newnode = thisOBJ.getNode(1, {
+								data : $(links[i]).attr("href")
+							});
+							if (newnode) {
+								childList.push(newnode);
+							}
+						}
+						*/
+					} catch (err) {
+						node.parseError(scanEvents, {
+							message : err.message
+						});
+						return console.log(err.message);
+					}
+						
+					// submit data
+					node.finished(scanEvents, childList);
+				});	
+			}
 		}
+		
+		
+		
+		
+		
+		
+		
+		
 	];
 	
 	this.getNode = function(depth, input) {
