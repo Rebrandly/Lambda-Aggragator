@@ -7,6 +7,7 @@ var common = require('../common/common.js');
 
 module.exports = new function() {
 	
+	var thisOBJ = this;
 	var url = "http://www.forever21.com";
 	
 	var nodes = [
@@ -33,7 +34,7 @@ module.exports = new function() {
 
 						var childList = [];
 						for(var i=0;i<links.length; i+=1) {
-							var newnode = getNode(1, {
+							var newnode = thisOBJ.getNode(1, {
 								data : $(links[i]).attr("href")
 							});
 							childList.push(newnode);
@@ -51,12 +52,8 @@ module.exports = new function() {
 			}
 		}
 	];
-
-	var getNode = function(depth, input) {
-		return common.getNode(nodes, depth, input, url);
-	}
 	
 	this.getNode = function(depth, input) {
-		return getNode(depth, input)
+		return common.getNode(nodes, depth, input, url);
 	}
 };
