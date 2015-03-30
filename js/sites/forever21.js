@@ -11,7 +11,7 @@ module.exports = new function() {
 	
 	var nodes = [
 		{
-			name : "Forever21 site",
+			name : "Forever21 site root",
 			
 			getChildren : function(input, scanEvents, node) {
 
@@ -23,42 +23,40 @@ module.exports = new function() {
 						node.httpError(scanEvents, {
 							message : error
 						});
-						return;
+						return console.log(error);
 					}
 					
 					try {
 						// obtain child node data
-						
-						
-						var fs = require('fs');
-						fs.writeFile("test.html", body, function(err) {
-							if(err) {
-								return console.log(err);
-							}
-							console.log("The file was saved!");
-						}); 
+						var parsedHTML = $.load(body);
+						var links = parsedHTML("head > link[rel=canonical],[rel=alternate]");
 
-						
-						
-						
-						
-						
-						
-						var childList = [];	
+						var childList = [];
+						for(var i=0;i<links.length; i+=1) {
+							var newnode = getNode(1, {
+								data : $(links[i]).attr("href")
+							});
+							childList.push(newnode);
+						}
 					} catch (err) {
 						node.parseError(scanEvents, {
 							message : err.message
 						});
-						return;
+						return console.log(err.message);
 					}
 						
+					// submit data
 					node.finished(scanEvents, childList);
 				});	
 			}
 		}
 	];
 
-	this.getNode = function(depth, input) {
+	var getNode = function(depth, input) {
 		return common.getNode(nodes, depth, input, url);
+	}
+	
+	this.getNode = function(depth, input) {
+		return getNode(depth, input)
 	}
 };
