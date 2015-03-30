@@ -1,9 +1,8 @@
-module.exports = function(n, i, di, pi) {
+module.exports = function(n, i, di) {
 
 	var name = n;               // name of node
 	var input = i;              // input object
 	var generateRawFunc = di;   // function to handle getting data from input
-	var processRawFunc = pi;    // function to handle processing data from input
 	var loopChild = -1;         // the index of the child node that needs to be searched
 	var children = [];          // the children array
 	var node = this;            // reference to itself
@@ -22,7 +21,7 @@ module.exports = function(n, i, di, pi) {
 		loopChild = q;
 	};
 	
-	this.finished = function() {
+	this.done = function() {
 		return finished;
 	};
 	
@@ -35,7 +34,7 @@ module.exports = function(n, i, di, pi) {
 	};
 	
 	this.downloadData = function(scanEvents) {
-		var raw_data = generateRawFunc(input, processRawFunc, scanEvents, node);
+		var raw_data = generateRawFunc(input, scanEvents, node);
 	};
 	
 	this.finished = function(scanEvents, childList) {

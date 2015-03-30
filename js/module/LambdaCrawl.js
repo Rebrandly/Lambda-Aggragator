@@ -1,13 +1,13 @@
 module.exports = function(s) {
 
-	var stack = [];                 // stack used for dfs search
-	var site = s;                   // the site object
-	var root = s.getNode(0);        // the root node of the site
-	var runningAjaxCount = 0;       // the current ajax count
-	var totalAjaxCount = 0;         // the total current ajax count
-	var startTime = new Date();     // time the scan began
-	var maxvisitAJAX = 10;          // the max ajax request in a row
-	var active = false;             // if the crawler is currently crawling
+	var site = s;                      // the site object
+	var root = s.getNode(0, null);     // the root node of the site
+	var stack = [root];                // stack used for dfs search
+	var runningAjaxCount = 0;          // the current ajax count
+	var totalAjaxCount = 0;            // the total current ajax count
+	var startTime = new Date();        // time the scan began
+	var maxvisitAJAX = 10;             // the max ajax request in a row
+	var active = false;                // if the crawler is currently crawling
 
 	this.scan = function() {
 		DFSScan();
@@ -42,12 +42,11 @@ module.exports = function(s) {
 		if (runningAjaxCount >= maxvisitAJAX) {
 			runningAjaxCount = 0;
 			active = false;
-			// TODO: switch to next site
 			return;
 		}
 		
 		// get last item in stack
-		v = stack[stack.length - 1];
+		var v = stack[stack.length - 1];
 		
 		// if not started processing
 		if (v.getloopChild() == -1) { 
@@ -61,7 +60,7 @@ module.exports = function(s) {
 			// start downloading the data
 			v.downloadData({
 				finished : function(children) {
-					Array.prototype.push.apply(queue, children);
+					Array.prototype.push.apply(stack, children);
 					
 					// continue crawling
 					DFSScan();
@@ -79,7 +78,7 @@ module.exports = function(s) {
 			});
 			
 		// if finished processing
-		} else if (v.finished()) {
+		} else if (v.done()) {
 		
 			var children = v.getChildren();
 			var targetIndex = v.getloopChild();

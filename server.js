@@ -4,7 +4,6 @@ var http = require('http');
 var LambdaCrawl = require('./js/module/LambdaCrawl.js');
 
 
-
 // list of LambdaCrawl instances
 var crawlLooper = [];
 
@@ -19,11 +18,6 @@ for(i=0; i<l; i+=1) {
 	var site = sitesList[i];
 	var crawler = new LambdaCrawl(site);
 	crawlLooper.push(crawler);
-}
-
-// start crawling the first one
-if (l > 0) {
-	crawlLooper[0].scan();
 }
 
 // every interval, check if current site is maxed out in ajax requests, and if
@@ -41,6 +35,8 @@ if (crawlLooper.length > 0) {
 
 
 
+
+
 // Configure our HTTP server to respond to all requests.
 var server = http.createServer(function (req, res) {
 
@@ -51,7 +47,9 @@ var server = http.createServer(function (req, res) {
 		"Content-Type": "application/json; charset=UTF-8"
 	});
 
-	res.write(JSON.stringify(LambdaCrawl.getObj()));
+	console.log("hello");
+	
+	//res.write(JSON.stringify(LambdaCrawl.getObj()));
 	
 	res.end();
 });
