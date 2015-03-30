@@ -46,8 +46,6 @@ var server = http.createServer(function (req, res) {
 		"Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
 		"Content-Type": "application/json; charset=UTF-8"
 	});
-
-	console.log("hello");
 	
 	//res.write(JSON.stringify(LambdaCrawl.getObj()));
 	

@@ -37,7 +37,9 @@ module.exports = new function() {
 							var newnode = thisOBJ.getNode(1, {
 								data : $(links[i]).attr("href")
 							});
-							childList.push(newnode);
+							if (newnode) {
+								childList.push(newnode);
+							}
 						}
 					} catch (err) {
 						node.parseError(scanEvents, {
