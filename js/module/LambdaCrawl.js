@@ -1,3 +1,15 @@
+/*!
+ * Lambda Aggregator v0.0.2
+ * http://lambdaaggregation.com/
+ *
+ * Developers: Ryan Steve D'Souza
+ * http://www.linkedin.com/profile/view?id=282676120
+ *
+ * Copyright 2015
+ *
+ * Date: 2015
+ */
+
 module.exports = function(s) {
 
 	var site = s;                      // the site object

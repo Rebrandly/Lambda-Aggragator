@@ -1,11 +1,25 @@
+/*!
+ * Lambda Node
+ * http://lambdaaggregation.com/
+ *
+ * Developers: Ryan Steve D'Souza
+ * http://www.linkedin.com/profile/view?id=282676120
+ *
+ * Copyright 2015
+ *
+ * Date: 2015
+ */
+
 // Load the request module to make requests.
 var request = require("request");
 
-module.exports = function(n, di) {
+module.exports = function(n, i, di) {
 
 	var name = n;               // name of node
+	var input = i;              // input
 	var generateRawFunc = di;   // function to handle getting data from input
 	var loopChild = -1;         // the index of the child node that needs to be searched
+	var parent = null;          // parent of the node
 	var children = [];          // the children array
 	var node = this;            // reference to itself
 	var finished = false;       // state of finished
@@ -31,17 +45,30 @@ module.exports = function(n, di) {
 		return failed;
 	};
 	
+	this.setParent = function(p) {
+		parent = p;
+	};
+	
 	this.getChildren = function() {
 		return children;
 	};
 	
 	this.downloadData = function(scanEvents) {
-		var raw_data = generateRawFunc(scanEvents, node);
+		generateRawFunc(input, scanEvents, node);
 	};
 	
 	this.finished = function(scanEvents, childList) {
 		finished = true;
+		
+		// set child data
 		Array.prototype.push.apply(children, childList);
+		
+		// set parent data
+		var i, l=childList.length;
+		for(i=0; i<l; i+=1) {
+			(childList[i]).setParent(node);
+		}
+		
 		scanEvents.finished(childList);
 	};
 	
