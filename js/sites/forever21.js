@@ -39,6 +39,10 @@ module.exports = new function() {
 								data : $(x).attr("href")
 							}); 
 						});
+						
+						if (childList.length == 0) {
+							// TODO: raise error
+						}
 					} catch (err) {
 						node.parseError(scanEvents, {
 							message : err.message
@@ -75,6 +79,10 @@ module.exports = new function() {
 						});
 						*/
 						var childList = [];
+						
+						if (childList.length == 0) {
+							// TODO: raise error
+						}
 					} catch (err) {
 						node.parseError(scanEvents, {
 							message : err.message
