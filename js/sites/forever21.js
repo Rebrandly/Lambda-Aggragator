@@ -20,6 +20,10 @@ module.exports = new function() {
 	
 	var url = "http://www.forever21.com";
 	
+	this.getURL = function() {
+		return url;
+	};
+	
 	this.getRootNode = function() {
 		return (nodes[0])({
 			data : url
@@ -43,14 +47,33 @@ module.exports = new function() {
 		function(input) {
 			return new LambdaNode("Forever21 site country", input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
-					//var parsedHTML = $.load(body);
-					//var childList = parsedHTML("head > link[rel=canonical],[rel=alternate]").map(function(i, x) { 
-					//	return (nodes[2])({
-					//		data : $(x).attr("href")
-					//	}); 
-					//});	
+					var parsedHTML = $.load(body);
+					var childList = parsedHTML("#divNav .columns a").map(function(i, x) { 
+						return (nodes[2])({
+							data : $(x).attr("href")
+						}); 
+					});
+					return childList;
+				});
+			});
+		},
+		function(input) {
+			return new LambdaNode("Forever21 site upper category", input, function(input, scanEvents, node) {
+				node.downloadTemplate(input, scanEvents, function(body) {
+					var parsedHTML = $.load(body);
+					var childList = parsedHTML("#divNav .columns a").map(function(i, x) { 
+						return (nodes[3])({
+							data : $(x).attr("href")
+						}); 
+					});
 					
-					var childList = [];
+					//var childList = parsedHTML("#divNav .columns a").each(function(i, x) { 
+					//	console.log($(x).attr("href"));
+					//});
+					
+					//common.writeData("test/code", input.data + "\n\n\n\n" + body);
+					
+					//var childList = [];
 					
 					return childList;
 				});

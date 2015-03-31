@@ -30,24 +30,12 @@ module.exports = function(s) {
 	this.active = function() {
 		return active;
 	};
-	
-	this.getObj = function() {
-		return {
-			data : root,
-			stackCount : stack.length,
-			runningAjaxCount : runningAjaxCount,
-			totalAjaxCount : totalAjaxCount,
-			startTime : startTime,
-			duration : (new Date()) - startTime,
-			maxvisitAJAX : maxvisitAJAX,
-			active : active
-		};
-	};
 
 	var DFSScan = function() {
 		
 		// only process if something in stack
 		if (stack.length == 0) {
+			active = false;
 			return;
 		}
 		// don't go past time allocated
@@ -72,7 +60,6 @@ module.exports = function(s) {
 			// start downloading the data
 			v.downloadData({
 				finished : function(children) {
-					Array.prototype.push.apply(stack, children);
 					
 					// continue crawling
 					DFSScan();
@@ -122,5 +109,19 @@ module.exports = function(s) {
 		} else {
 			console.log("Node still processing?");
 		}			
-	}
+	};
+	
+	this.toJSON = function() {
+		return {
+			url : site.getURL(),
+			root : root,
+			stackCount : stack.length,
+			runningAjaxCount : runningAjaxCount,
+			totalAjaxCount : totalAjaxCount,
+			startTime : startTime,
+			duration : (new Date()) - startTime,
+			maxvisitAJAX : maxvisitAJAX,
+			active : active
+		};
+	};
 };

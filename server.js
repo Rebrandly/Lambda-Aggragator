@@ -42,7 +42,7 @@ if (crawlLooper.length > 0) {
 
 
 
-
+var common = require('./js/common/common.js');
 
 // Configure our HTTP server to respond to all requests.
 var server = http.createServer(function (req, res) {
@@ -54,8 +54,10 @@ var server = http.createServer(function (req, res) {
 		"Content-Type": "application/json; charset=UTF-8"
 	});
 	
-	//res.write(JSON.stringify(LambdaCrawl.getObj()));
-	
+	res.write(JSON.stringify({
+		response : crawlLooper
+	}));
+
 	res.end();
 });
 
