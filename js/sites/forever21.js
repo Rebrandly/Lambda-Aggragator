@@ -3,25 +3,23 @@ var $ = require('cheerio');
 // Load the request module to make requests.
 var request = require("request");
 // Load my custom node object
+var LambdaNode = require('../module/LambdaNode.js');
+// Load my custom node object
 var common = require('../common/common.js');
 
 module.exports = new function() {
 	
-	var thisOBJ = this;
 	var url = "http://www.forever21.com";
 	
+	this.getRootNode = function() {
+		return (nodes[0])({
+			data : url
+		});
+	};
+	
 	var nodes = [
-	
-	
-	
-	
-	
-	
-		{
-			name : "Forever21 site root",
-			
-			getChildren : function(input, scanEvents, node) {
-
+		function(input) {
+			return new LambdaNode("Forever21 site root", function(scanEvents, node) {
 				// obtain raw data
 				request({
 					uri: input.data
@@ -36,17 +34,11 @@ module.exports = new function() {
 					try {
 						// obtain child node data
 						var parsedHTML = $.load(body);
-						var links = parsedHTML("head > link[rel=canonical],[rel=alternate]");
-
-						var childList = [];
-						for(var i=0;i<links.length; i+=1) {
-							var newnode = thisOBJ.getNode(1, {
-								data : $(links[i]).attr("href")
-							});
-							if (newnode) {
-								childList.push(newnode);
-							}
-						}
+						var childList = parsedHTML("head > link[rel=canonical],[rel=alternate]").map(function(i, x) { 
+							return (nodes[1])({
+								data : $(x).attr("href")
+							}); 
+						});
 					} catch (err) {
 						node.parseError(scanEvents, {
 							message : err.message
@@ -57,13 +49,10 @@ module.exports = new function() {
 					// submit data
 					node.finished(scanEvents, childList);
 				});	
-			}
+			});
 		},
-		{
-			name : "Forever21 site country",
-			
-			getChildren : function(input, scanEvents, node) {
-
+		function(input) {
+			return new LambdaNode("Forever21 site country", function(scanEvents, node) {
 				// obtain raw data
 				request({
 					uri: input.data
@@ -77,20 +66,15 @@ module.exports = new function() {
 					
 					try {
 						// obtain child node data
-						//var parsedHTML = $.load(body);
-						//var links = parsedHTML("head > link[rel=canonical],[rel=alternate]");
-
-						var childList = [];
 						/*
-						for(var i=0;i<links.length; i+=1) {
-							var newnode = thisOBJ.getNode(1, {
-								data : $(links[i]).attr("href")
-							});
-							if (newnode) {
-								childList.push(newnode);
-							}
-						}
+						var parsedHTML = $.load(body);
+						var childList = parsedHTML("head > link[rel=canonical],[rel=alternate]").map(function(i, x) { 
+							return (nodes[2])({
+								data : $(x).attr("href")
+							}); 
+						});
 						*/
+						var childList = [];
 					} catch (err) {
 						node.parseError(scanEvents, {
 							message : err.message
@@ -101,19 +85,7 @@ module.exports = new function() {
 					// submit data
 					node.finished(scanEvents, childList);
 				});	
-			}
+			});
 		}
-		
-		
-		
-		
-		
-		
-		
-		
 	];
-	
-	this.getNode = function(depth, input) {
-		return common.getNode(nodes, depth, input, url);
-	}
 };

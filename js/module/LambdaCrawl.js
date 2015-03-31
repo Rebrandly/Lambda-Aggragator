@@ -1,7 +1,7 @@
 module.exports = function(s) {
 
 	var site = s;                      // the site object
-	var root = s.getNode(0, null);     // the root node of the site
+	var root = s.getRootNode();        // the root node of the site
 	var stack = [root];                // stack used for dfs search
 	var runningAjaxCount = 0;          // the current ajax count
 	var totalAjaxCount = 0;            // the total current ajax count
@@ -21,14 +21,14 @@ module.exports = function(s) {
 	
 	this.getObj = function() {
 		return {
-			startTime : startTime,
-			duration : (new Date()) - startTime,
+			data : root,
+			stackCount : stack.length,
 			runningAjaxCount : runningAjaxCount,
 			totalAjaxCount : totalAjaxCount,
-			stackCount : stack.length,
+			startTime : startTime,
+			duration : (new Date()) - startTime,
 			maxvisitAJAX : maxvisitAJAX,
-			active : active,
-			data : root
+			active : active
 		};
 	};
 
