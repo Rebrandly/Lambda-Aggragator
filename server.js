@@ -2,23 +2,18 @@
 var http = require('http');
 // Load my custom crawl object
 var LambdaCrawl = require('./js/module/LambdaCrawl.js');
+// Load file writer
+var fs = require('fs');
 
 
-// list of LambdaCrawl instances
-var crawlLooper = [];
 
-// list of site modules
-var sitesList = [
-	require('./js/sites/forever21.js')
-];
-
-// create the list of crawl instances
-var i; l=sitesList.length;
-for(i=0; i<l; i+=1) {
-	var site = sitesList[i];
+// dynamically load all modules from directory and create the list of crawl instances
+var siteDir = './js/sites/', crawlLooper = [];
+fs.readdirSync(siteDir).forEach(function(file) {
+    var site = require(siteDir + file);
 	var crawler = new LambdaCrawl(site);
 	crawlLooper.push(crawler);
-}
+});
 
 // every interval, check if current site is maxed out in ajax requests, and if
 // so, then rotate it and starts crawling the new site.
