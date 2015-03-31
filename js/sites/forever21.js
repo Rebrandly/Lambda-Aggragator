@@ -1,7 +1,5 @@
 // Load the cheerio module to parse html responses.
 var $ = require('cheerio');
-// Load the request module to make requests.
-var request = require("request");
 // Load my custom node object
 var LambdaNode = require('../module/LambdaNode.js');
 // Load my custom node object
@@ -20,79 +18,31 @@ module.exports = new function() {
 	var nodes = [
 		function(input) {
 			return new LambdaNode("Forever21 site root", function(scanEvents, node) {
-				// obtain raw data
-				request({
-					uri: input.data
-				}, function(error, response, body) {
-					if (error) {
-						node.httpError(scanEvents, {
-							message : error
-						});
-						return console.log(error);
-					}
-					
-					try {
-						// obtain child node data
-						var parsedHTML = $.load(body);
-						var childList = parsedHTML("head > link[rel=canonical],[rel=alternate]").map(function(i, x) { 
-							return (nodes[1])({
-								data : $(x).attr("href")
-							}); 
-						});
-						
-						if (childList.length == 0) {
-							// TODO: raise error
-						}
-					} catch (err) {
-						node.parseError(scanEvents, {
-							message : err.message
-						});
-						return console.log(err.message);
-					}
-						
-					// submit data
-					node.finished(scanEvents, childList);
-				});	
+				node.downloadTemplate(input, scanEvents, function(body) {
+					var parsedHTML = $.load(body);
+					var childList = parsedHTML("head > link[rel=canonical],[rel=alternate]").map(function(i, x) { 
+						return (nodes[1])({
+							data : $(x).attr("href")
+						}); 
+					});	
+					return childList;
+				});
 			});
 		},
 		function(input) {
 			return new LambdaNode("Forever21 site country", function(scanEvents, node) {
-				// obtain raw data
-				request({
-					uri: input.data
-				}, function(error, response, body) {
-					if (error) {
-						node.httpError(scanEvents, {
-							message : error
-						});
-						return console.log(error);
-					}
+				node.downloadTemplate(input, scanEvents, function(body) {
+					//var parsedHTML = $.load(body);
+					//var childList = parsedHTML("head > link[rel=canonical],[rel=alternate]").map(function(i, x) { 
+					//	return (nodes[2])({
+					//		data : $(x).attr("href")
+					//	}); 
+					//});	
 					
-					try {
-						// obtain child node data
-						/*
-						var parsedHTML = $.load(body);
-						var childList = parsedHTML("head > link[rel=canonical],[rel=alternate]").map(function(i, x) { 
-							return (nodes[2])({
-								data : $(x).attr("href")
-							}); 
-						});
-						*/
-						var childList = [];
-						
-						if (childList.length == 0) {
-							// TODO: raise error
-						}
-					} catch (err) {
-						node.parseError(scanEvents, {
-							message : err.message
-						});
-						return console.log(err.message);
-					}
-						
-					// submit data
-					node.finished(scanEvents, childList);
-				});	
+					var childList = [];
+					
+					return childList;
+				});
 			});
 		}
 	];

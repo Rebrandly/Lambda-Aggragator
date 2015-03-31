@@ -1,3 +1,6 @@
+// Load the request module to make requests.
+var request = require("request");
+
 module.exports = function(n, di) {
 
 	var name = n;               // name of node
@@ -50,6 +53,41 @@ module.exports = function(n, di) {
 	this.parseError = function(scanEvents, data) {
 		failed = true;
 		scanEvents.parseError(data);
+	};
+	
+	this.downloadTemplate = function(input, scanEvents, func) {
+		// obtain raw data
+		request({
+			uri: input.data
+		}, function(error, response, body) {
+			if (error) {
+				node.httpError(scanEvents, {
+					message : error
+				});
+				return console.log(error);
+			}
+			
+			try {
+				// obtain child node data
+				var childList = func(body);
+			} catch (err) {
+				node.parseError(scanEvents, {
+					message : err.message
+				});
+				return console.log(err.message);
+			}
+			
+			if (childList.length == 0) {
+				var msg = "Empty children list";
+				node.parseError(scanEvents, {
+					message : msg
+				});
+				return console.log(msg);
+			}
+
+			// submit data
+			node.finished(scanEvents, childList);
+		});	
 	};
 	
 	this.toJSON = function() {
