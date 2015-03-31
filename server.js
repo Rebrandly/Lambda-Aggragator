@@ -1,3 +1,15 @@
+/*!
+ * Lambda Aggregator v0.0.2
+ * http://lambdaaggregation.com/
+ *
+ * Developers: Ryan Steve D'Souza
+ * http://www.linkedin.com/profile/view?id=282676120
+ *
+ * Copyright 2015
+ *
+ * Date: 2015
+ */
+
 // Load the http module to create an http server. 
 var http = require('http');
 // Load my custom crawl object
@@ -16,7 +28,7 @@ fs.readdirSync(siteDir).forEach(function(file) {
 });
 
 // every interval, check if current site is maxed out in ajax requests, and if
-// so, then rotate it and starts crawling the new site.
+// so, then rotate it and start crawling the new site.
 if (crawlLooper.length > 0) {
 	setInterval(function(){ 
 		var crawler = crawlLooper[0];
