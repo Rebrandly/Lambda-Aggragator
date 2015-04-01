@@ -35,7 +35,8 @@ module.exports = new function() {
 			return new LambdaNode("Forever21 site root", input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
 					var parsedHTML = $.load(body);
-					var childList = parsedHTML("head > link[rel=canonical],[rel=alternate]").map(function(i, x) { 
+					// "head > link[rel=canonical],[rel=alternate]"
+					var childList = parsedHTML("head > link[rel=canonical]").eq(0).map(function(i, x) { 
 						return (nodes[1])({
 							data : $(x).attr("href")
 						}); 

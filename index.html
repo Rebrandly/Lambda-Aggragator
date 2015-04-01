@@ -83,10 +83,11 @@
 							str += "<div>Running AJAX Count: " + site.runningAjaxCount + "</div>";
 							str += "<div>Total AJAX Count: " + site.totalAjaxCount + "</div>";
 							str += "<div>Start Time: " + site.startTime + "</div>";
-							str += "<div>Duration: " + site.duration + " milliseconds</div>";
+							str += "<div>Duration: " + (site.duration/1000.0)/60.0 + " minutes</div>";
 							str += "<div>Max AJAX Visits: " + site.maxvisitAJAX + "</div>";
 							str += "<div>Under Crawl Limit: " + site.active + "</div>";
 							str += "<div>Concurrent AJAX Calls: " + site.concurrentAjaxCalls + "</div>";
+							str += "<div>Finished: " + site.complete + "</div>";
 							str += "<br/>";
 							
 							var rcontext = $("<div>");

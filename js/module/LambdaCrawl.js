@@ -150,6 +150,7 @@ module.exports = function(s) {
 			totalAjaxCount : totalAjaxCount,
 			startTime : startTime,
 			duration : endTime==null ? (new Date()) - startTime : endTime - startTime,
+			complete : endTime!=null,
 			maxvisitAJAX : maxvisitAJAX,
 			active : active,
 			concurrentAjaxCalls : concurrentAjaxCalls
