@@ -34,15 +34,18 @@ if (crawlLooper.length > 0) {
 		console.log("Rotating sites...");
 		crawlLooper.push(crawlLooper.shift());
 		var crawler = crawlLooper[0];
-		if (crawler.getStackSize() == 0) {
-			if (crawler.getcheckTimes() < 10) {
-				crawler.incrementcheckTimes();
-			} else {
-				return;
+		if (crawler.getEndTime() == null) {
+			if (crawler.getStackSize() == 0) {
+				if (crawler.getcheckTimes() < 10) {
+					crawler.incrementcheckTimes();
+				} else {
+					crawler.setEndTime();
+					return;
+				}
 			}
-		}
-		if (!crawler.active()) {
-			crawler.scan();
+			if (!crawler.active()) {
+				crawler.scan();
+			}
 		}
 	}, 5 * 1000);
 }

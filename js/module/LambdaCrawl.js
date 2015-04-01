@@ -18,6 +18,7 @@ module.exports = function(s) {
 	var runningAjaxCount = 0;          // the current ajax count
 	var totalAjaxCount = 0;            // the total current ajax count
 	var startTime = new Date();        // time the scan began
+	var endTime = null;                // time of supposed complete
 	var maxvisitAJAX = 10;             // the max ajax request in a row
 	var active = false;                // if the crawler is currently crawling
 	var checkTimes = 0;                // number of times it was checked
@@ -43,6 +44,14 @@ module.exports = function(s) {
 	
 	this.getStackSize = function() {
 		return stack.length;
+	};
+	
+	this.getEndTime = function() {
+		return endTime;
+	};
+	
+	this.setEndTime = function() {
+		endTime = new Date();
 	};
 	
 	var DFSScan = function() {
@@ -140,7 +149,7 @@ module.exports = function(s) {
 			runningAjaxCount : runningAjaxCount,
 			totalAjaxCount : totalAjaxCount,
 			startTime : startTime,
-			duration : (new Date()) - startTime,
+			duration : endTime==null ? (new Date()) - startTime : endTime - startTime,
 			maxvisitAJAX : maxvisitAJAX,
 			active : active,
 			concurrentAjaxCalls : concurrentAjaxCalls
