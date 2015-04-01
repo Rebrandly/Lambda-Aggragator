@@ -124,6 +124,7 @@ module.exports = function(s) {
 					// continue crawling
 					DFSScan();
 					
+					// break to avoid conflicts with the for loop indexing
 					break;
 				}
 
@@ -136,6 +137,7 @@ module.exports = function(s) {
 				// continue crawling
 				DFSScan();
 				
+				// break to avoid conflicts with the for loop indexing
 				break;
 			}
 		}

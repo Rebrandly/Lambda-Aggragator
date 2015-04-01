@@ -35,8 +35,7 @@ module.exports = new function() {
 			return new LambdaNode("Forever21 site root", input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
 					var parsedHTML = $.load(body);
-					// "head > link[rel=canonical],[rel=alternate]"
-					var childList = parsedHTML("head > link[rel=canonical]").eq(0).map(function(i, x) { 
+					var childList = parsedHTML("head > link[rel=canonical],[rel=alternate]").eq(0).map(function(i, x) { 
 						return (nodes[1])({
 							data : $(x).attr("href")
 						}); 
@@ -62,20 +61,25 @@ module.exports = new function() {
 			return new LambdaNode("Forever21 site upper category", input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
 					var parsedHTML = $.load(body);
-					var childList = parsedHTML("#divNav .columns a").map(function(i, x) { 
+					var childList = parsedHTML("div.mdrop_column.columns.department_2 > ul > li > a:not([onclick])").map(function(i, x) { 
 						return (nodes[3])({
 							data : $(x).attr("href")
 						}); 
 					});
-					
-					//var childList = parsedHTML("#divNav .columns a").each(function(i, x) { 
-					//	console.log($(x).attr("href"));
+					return childList;
+				});
+			});
+		},
+		function(input) {
+			return new LambdaNode("Forever21 site inner category", input, function(input, scanEvents, node) {
+				node.downloadTemplate(input, scanEvents, function(body) {
+					//var parsedHTML = $.load(body);
+					//var childList = parsedHTML("#divNav .columns a").map(function(i, x) { 
+					//	return (nodes[3])({
+					//		data : $(x).attr("href")
+					//	}); 
 					//});
-					
-					//common.writeData("test/code", input.data + "\n\n\n\n" + body);
-					
-					//var childList = [];
-					
+					var childList = [];
 					return childList;
 				});
 			});
