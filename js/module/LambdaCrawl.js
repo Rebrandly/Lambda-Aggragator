@@ -20,6 +20,8 @@ module.exports = function(s) {
 	var startTime = new Date();        // time the scan began
 	var maxvisitAJAX = 10;             // the max ajax request in a row
 	var active = false;                // if the crawler is currently crawling
+	var checkTimes = 0;                // number of times it was checked
+	var concurrentAjaxCalls = 4;       // number of ajax calls at same time
 
 	this.scan = function() {
 		DFSScan();
@@ -31,11 +33,22 @@ module.exports = function(s) {
 		return active;
 	};
 
+	this.getcheckTimes = function() {
+		return checkTimes;
+	};
+	
+	this.incrementcheckTimes = function() {
+		checkTimes += 1;
+	};
+	
+	this.getStackSize = function() {
+		return stack.length;
+	};
+	
 	var DFSScan = function() {
 		
 		// only process if something in stack
 		if (stack.length == 0) {
-			active = false;
 			return;
 		}
 		// don't go past time allocated
@@ -45,70 +58,78 @@ module.exports = function(s) {
 			return;
 		}
 		
-		// get last item in stack
-		var v = stack[stack.length - 1];
-		
-		// if not started processing
-		if (v.getloopChild() == -1) { 
-			// mark as started processing
-			v.setloopChild(0);   
+		// loop two times
+		for(var i=stack.length - 1; i>=Math.max(0, stack.length - concurrentAjaxCalls); i-=1) {
 			
-			// increment counters
-			runningAjaxCount += 1;
-			totalAjaxCount += 1;
+			// get last item in stack
+			var v = stack[i];
 			
-			// start downloading the data
-			v.downloadData({
-				finished : function(children) {
+			// if not started processing
+			if (v.getloopChild() == -1) { 
+			
+				// mark as started processing
+				v.setloopChild(0);   
+				
+				// increment counters
+				runningAjaxCount += 1;
+				totalAjaxCount += 1;
+				
+				// start downloading the data
+				v.downloadData({
+					finished : function(children) {
+						
+						// continue crawling
+						DFSScan();
+					},
+					httpError : function(data) {
+						
+						// continue crawling
+						DFSScan();
+					},
+					parseError: function(data) {
+						
+						// continue crawling
+						DFSScan();
+					}
+				});
+				
+			// if finished processing
+			} else if (v.done()) {
+			
+				var children = v.getChildren();
+				var targetIndex = v.getloopChild();
+				
+				// if child index pointing to a valid child
+				if (targetIndex < children.length) {
+					
+					stack.push(children[targetIndex]);
+					v.setloopChild(targetIndex + 1);
 					
 					// continue crawling
 					DFSScan();
-				},
-				httpError : function(data) {
+					
+				// no more children, so remove from stack
+				} else {
+					stack.splice(i, 1);
 					
 					// continue crawling
 					DFSScan();
-				},
-				parseError: function(data) {
 					
-					// continue crawling
-					DFSScan();
+					break;
 				}
-			});
-			
-		// if finished processing
-		} else if (v.done()) {
-		
-			var children = v.getChildren();
-			var targetIndex = v.getloopChild();
-			
-			// if child index pointing to a valid child
-			if (targetIndex < children.length) {
+
+			// if failed
+			} else if (v.failed()) {
 				
-				stack.push(children[targetIndex]);
-				v.setloopChild(targetIndex + 1);
+				// node failed to remove from stack
+				stack.splice(i, 1);
 				
-			// no more children, so remove from stack
-			} else {
-				stack.splice(stack.length - 1, 1);
+				// continue crawling
+				DFSScan();
+				
+				break;
 			}
-			
-			// continue crawling
-			DFSScan();
-			
-		// if failed
-		} else if (v.failed()) {
-			
-			// node failed to remove from stack
-			stack.splice(stack.length - 1, 1);
-			
-			// continue crawling
-			DFSScan();
-			
-		// currently still processing?
-		} else {
-			console.log("Node still processing?");
-		}			
+		}
 	};
 	
 	this.toJSON = function() {
@@ -121,7 +142,8 @@ module.exports = function(s) {
 			startTime : startTime,
 			duration : (new Date()) - startTime,
 			maxvisitAJAX : maxvisitAJAX,
-			active : active
+			active : active,
+			concurrentAjaxCalls : concurrentAjaxCalls
 		};
 	};
 };
