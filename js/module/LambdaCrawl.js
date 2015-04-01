@@ -155,6 +155,7 @@ module.exports = function(s) {
 			complete : endTime!=null,
 			maxvisitAJAX : maxvisitAJAX,
 			active : active,
+			checkTimes : checkTimes,
 			concurrentAjaxCalls : concurrentAjaxCalls
 		};
 	};
