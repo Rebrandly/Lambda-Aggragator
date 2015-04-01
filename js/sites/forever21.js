@@ -91,7 +91,7 @@ module.exports = new function() {
 					var maxItems = maxpageNumber * pageSize;
 					
 					// create child node for each page
-					var i, childList=[], perPage = 120;
+					var i, childList=[], perPage = 300;
 					for(i=0; i<maxItems; i+=perPage) {
 						var link = "http://www.forever21.com/shop/CategoryNavigationResultsView?langId="+langId+"&catalogId="+catalogId+"&categoryId="+categoryId+"&storeId="+storeId+"&beginIndex="+i+"&pageSize="+perPage;
 						childList.push((nodes[4])({
