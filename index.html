@@ -40,6 +40,8 @@
 		<script>
 			var dfsStr;
 			
+			var globdata = {};
+			
 			function DFS(v, tab) {
 				tab = tab || "";
 			
@@ -51,7 +53,15 @@
 					var cls = "other";
 				}
 				
-				var name = "<span class='node " + cls + "'>" + v.name + "</span>";
+				var metadata = v.metadata;
+				var specialid = null;
+				if (metadata.hasOwnProperty("data")) {
+					var data = metadata["data"];
+					specialid = data["specialid"];
+					globdata[specialid] = JSON.stringify(data);
+				}
+				
+				var name = "<span class='node " + cls + "'" + (specialid==null ? "" : " data-special-id=" + specialid) + ">" + v.name + "</span>";
 				dfsStr += tab + name + "<br/>";
 				
 				var children = v.children, l = children.length, i;
@@ -101,6 +111,13 @@
 								$("body").append("<hr/>");
 							}
 						}
+						
+						$("body").on("click", "span.node", function() {
+							if (this.hasAttribute("data-special-id")) {
+								var data = globdata[$(this).attr("data-special-id")];
+								alert(data);
+							}
+						});
 					},
 					error: function(data,status,xhr) {
 						alert(xhr);

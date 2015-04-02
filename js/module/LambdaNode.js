@@ -22,6 +22,7 @@ module.exports = function(n, i, di) {
 	var parent = null;          // parent of the node
 	var children = [];          // the children array
 	var node = this;            // reference to itself
+	var metadata = {};          // extra metadata
 	var finished = false;       // state of finished
 	var failed = false;         // state of error
 	
@@ -52,6 +53,10 @@ module.exports = function(n, i, di) {
 	this.getChildren = function() {
 		return children;
 	};
+	
+	this.addmetadata = function(key, val) {
+		metadata[key] = val;
+	}
 	
 	this.downloadData = function(scanEvents) {
 		generateRawFunc(input, scanEvents, node);
@@ -122,7 +127,8 @@ module.exports = function(n, i, di) {
 			name : name,
 			children : children,
 			finished : finished,
-			failed : failed
+			failed : failed,
+			metadata : metadata
 		};
 	};
 };

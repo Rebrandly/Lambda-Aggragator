@@ -91,7 +91,10 @@ module.exports = new function() {
 					var i, childList=[], perPage = 300;
 					for(i=0; i<maxItems; i+=perPage) {
 						childList.push((nodes[4])({
-							data : "http://www.forever21.com/shop/CategoryNavigationResultsView?langId="+langId+"&catalogId="+catalogId+"&categoryId="+categoryId+"&storeId="+storeId+"&beginIndex="+i+"&pageSize="+perPage
+							data : "http://www.forever21.com/shop/CategoryNavigationResultsView?langId="+langId+"&catalogId="+catalogId+"&categoryId="+categoryId+"&storeId="+storeId+"&beginIndex="+i+"&pageSize="+perPage,
+							storeId : storeId,
+							catalogId : catalogId,
+							langId : langId
 						}));
 					}
 
@@ -102,15 +105,113 @@ module.exports = new function() {
 		function(input) {
 			return new LambdaNode("Forever21 site page", input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
-					/*
+					
 					var parsedHTML = $.load(body);
-					var childList = parsedHTML("div.mdrop_column.columns.department_2 > ul > li > a:not([onclick])").map(function(i, x) { 
-						return (nodes[3])({
-							data : $(x).attr("href")
-						}); 
-					});
+					var items = parsedHTML("div[class=product] > div[class=product_image][id]");
+
+					// create child node for each product
+					var i, l=items.length, childList=[];
+					for(var i=0; i<l; i+=1) {
+						var item = $(items[i]);
+						
+						// get product id
+						var id = $(item).attr("id").match(/\d+/)[0];
+
+						// get product page link
+						var link = $(item).find('a').eq(0).attr("onclick").match(/'([^,]+)'/)[1];
+
+						childList.push((nodes[5])({
+							data : link,
+							id : id,
+							storeId : input.storeId,
+							catalogId : input.catalogId,
+							langId : input.langId
+						}));
+					}
+
 					return childList;
-					*/
+				});
+			});
+		},
+		function(input) {
+			return new LambdaNode("Forever21 product page", input, function(input, scanEvents, node) {
+				node.downloadTemplate(input, scanEvents, function(body) {
+					var parsedHTML = $.load(body);
+
+					// find the snippet which gives info on other products
+					var container = parsedHTML("#entitledItem_" + input.id);
+					var encodedjson = container.html();
+					// decode the text fixing html entities
+					var json = $('<div/>').html(encodedjson).text();
+					// convert it into object
+					var obj = JSON.parse(json);
+					
+					// create child node for each product variation
+					var i, l=obj.length, childList=[];
+					for(var i=0; i<l; i+=1) {
+						// get special ID
+						var specialID = (obj[i])["catentry_id"];
+						
+						childList.push((nodes[6])({
+							data : "http://www.forever21.com/webapp/wcs/stores/servlet/GetCatalogEntryDetailsByIDView?storeId="+input.storeId+"&catalogId="+input.catalogId+"&langId="+input.langId+"&catalogEntryId="+specialID+"&prodCounter=1",
+							id : input.id,
+							specialID : specialID,
+							storeId : input.storeId,
+							size : JSON.stringify(obj[i]).match(/Size_([A-Z]+)/)[1]
+						}));
+					}
+
+					return childList;
+				});
+			});
+		},
+		function(input) {
+			return new LambdaNode("Forever21 product variation/size page", input, function(input, scanEvents, node) {
+				node.downloadTemplate(input, scanEvents, function(body) {
+
+					// result is json object but with some weird wrapping text, this removes that stuff
+					var encodedjson = body.match(/({(.|\s)*})/)[0];
+					// decode the text fixing html entities
+					var json = $('<div/>').html(encodedjson).text();
+					// convert it into object
+					var obj = JSON.parse(encodedjson);
+					
+					var childList = [];
+					childList.push((nodes[7])({
+						data : "http://www.forever21.com/webapp/wcs/stores/servlet/GetInventoryStatusByIDView?storeId="+input.storeId+"&itemId_1="+input.specialID,
+						obj : obj,
+						size : input.size,
+						id : input.id,
+						specialID : input.specialID
+					}));
+
+					return childList;
+				});
+			});
+		},
+		function(input) {
+			return new LambdaNode("Forever21 product stock page", input, function(input, scanEvents, node) {
+				node.downloadTemplate(input, scanEvents, function(body) {
+					
+					// result is json object but with some weird wrapping text, this removes that stuff
+					var encodedjson = body.match(/({(.|\s)*})/)[0];
+					// decode the text fixing html entities
+					var json = $('<div/>').html(encodedjson).text().replace(/'/g, "\"");;
+					// repair json string
+					var n = json.replace(/([a-zA-Z]+)(:)/g,'"$1"$2');
+					// parse it to an object
+					var obj = JSON.parse(n);
+					// add the size info
+					input.obj["size"] = input.size;
+					// add the id info
+					input.obj["id"] = input.id;
+					// add the special id info
+					input.obj["specialid"] = input.specialID;
+					// add the inventory info
+					input.obj["inventory"] = obj;
+					
+					node.addmetadata("data", input.obj);
+					
 					return [];
 				});
 			});
