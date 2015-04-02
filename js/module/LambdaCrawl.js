@@ -18,9 +18,8 @@ module.exports = function(s) {
 	var runningAjaxCount = 0;          // the current ajax count
 	var totalAjaxCount = 0;            // the total current ajax count
 	var startTime = new Date();        // time the scan began
-	var endTime = null;                // time of supposed complete
+	var endTime = startTime;           // time of supposed complete
 	var maxvisitAJAX = 10;             // the max ajax request in a row
-	var checkTimes = 0;                // number of times it was checked
 	var concurrentAjaxCalls = 4;       // number of ajax calls at same time
 
 	this.scan = function() {
@@ -29,31 +28,14 @@ module.exports = function(s) {
 		console.log("Started crawling: " + root.getName());
 	};
 	
-	this.getcheckTimes = function() {
-		return checkTimes;
-	};
-	
-	this.incrementcheckTimes = function() {
-		checkTimes += 1;
-	};
-	
-	this.getStackSize = function() {
-		return stack.length;
-	};
-	
-	this.getEndTime = function() {
-		return endTime;
-	};
-	
-	this.setEndTime = function() {
-		endTime = new Date();
-	};
-	
 	this.hitLimit = function() {
 		return runningAjaxCount >= maxvisitAJAX;
 	};
 	
 	var DFSScan = function() {
+		
+		// set end time
+		endTime = new Date();
 		
 		// don't go past time allocated
 		if (runningAjaxCount >= maxvisitAJAX) {
@@ -136,10 +118,8 @@ module.exports = function(s) {
 			runningAjaxCount : runningAjaxCount,
 			totalAjaxCount : totalAjaxCount,
 			startTime : startTime,
-			duration : endTime==null ? (new Date()) - startTime : endTime - startTime,
-			complete : endTime!=null,
+			duration : endTime - startTime,
 			maxvisitAJAX : maxvisitAJAX,
-			checkTimes : checkTimes,
 			concurrentAjaxCalls : concurrentAjaxCalls
 		};
 	};
