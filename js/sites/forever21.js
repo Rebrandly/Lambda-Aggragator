@@ -139,51 +139,63 @@ module.exports = new function() {
 					var parsedHTML = $.load(body);
 
 					// find the snippet which gives info on other products
-					var container = parsedHTML("#entitledItem_" + input.id);
-					var encodedjson = container.html();
+					var encodedjson = parsedHTML("#entitledItem_" + input.id).html();
 					// decode the text fixing html entities
 					var json = $('<div/>').html(encodedjson).text();
 					// convert it into object
 					var obj = JSON.parse(json);
 					
-					// create child node for each product variation
-					var i, l=obj.length, childList=[];
+					// get special id and size
+					var i, l=obj.length, childList=[], itemList = "", sizeList=[], specialID = null;
 					for(var i=0; i<l; i+=1) {
-						// get special ID
-						var specialID = (obj[i])["catentry_id"];
-						
+						specialID = (obj[i])["catentry_id"];
+						itemList += "&itemId_"+(i+1)+"=" + specialID;
+						sizeList.push(JSON.stringify(obj[i]).match(/Size_([A-Z]+)/)[1]);
+					}
+					
+					// create child node for each product variation
+					if (specialID != null) {
 						childList.push((nodes[6])({
-							data : "http://www.forever21.com/webapp/wcs/stores/servlet/GetCatalogEntryDetailsByIDView?storeId="+input.storeId+"&catalogId="+input.catalogId+"&langId="+input.langId+"&catalogEntryId="+specialID+"&prodCounter=1",
+							data : "http://www.forever21.com/webapp/wcs/stores/servlet/GetInventoryStatusByIDView?storeId="+input.storeId+itemList,
 							id : input.id,
 							specialID : specialID,
 							url : input.data,
 							storeId : input.storeId,
-							size : JSON.stringify(obj[i]).match(/Size_([A-Z]+)/)[1]
+							catalogId : input.catalogId,
+							langId : input.langId,
+							sizeList : sizeList
 						}));
 					}
-
+					
 					return childList;
 				});
 			});
 		},
 		function(input) {
-			return new LambdaNode("Forever21 product variation/size page", input, function(input, scanEvents, node) {
+			return new LambdaNode("Forever21 product stock page", input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
 
 					// result is json object but with some weird wrapping text, this removes that stuff
 					var encodedjson = body.match(/({(.|\s)*})/)[0];
-					// fix the stupid links
-					var encodedjson = encodedjson.replace(/http:\/\/www\.forever21\..*\/(http)/g,'$1');
-					// convert it into object
-					var obj = JSON.parse(encodedjson);
+					// decode the text fixing html entities
+					var json = $('<div/>').html(encodedjson).text().replace(/'/g, "\"");
+					// repair json string
+					var n = json.replace(/([a-zA-Z]+)(:)/g,'"$1"$2');
+					// parse it to an object
+					var obj = JSON.parse(n);
 					
-					var childList = [];
+					// add the sizes
+					var stockList = obj["results"], i, l=stockList.length;
+					for(i=0; i<l; i+=1) {
+						(stockList[i])["size"] = input.sizeList[i];
+					}
+					
+					// create child node for each product variation
+					var childList=[];
 					childList.push((nodes[7])({
-						data : "http://www.forever21.com/webapp/wcs/stores/servlet/GetInventoryStatusByIDView?storeId="+input.storeId+"&itemId_1="+input.specialID,
+						data : "http://www.forever21.com/webapp/wcs/stores/servlet/GetCatalogEntryDetailsByIDView?storeId="+input.storeId+"&catalogId="+input.catalogId+"&langId="+input.langId+"&catalogEntryId="+input.specialID+"&prodCounter=1",
 						obj : obj,
-						size : input.size,
 						id : input.id,
-						specialID : input.specialID,
 						url : input.url
 					}));
 
@@ -192,25 +204,24 @@ module.exports = new function() {
 			});
 		},
 		function(input) {
-			return new LambdaNode("Forever21 product stock page", input, function(input, scanEvents, node) {
+			return new LambdaNode("Forever21 product variation/size page", input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
 					
 					// result is json object but with some weird wrapping text, this removes that stuff
 					var encodedjson = body.match(/({(.|\s)*})/)[0];
-					// decode the text fixing html entities
-					var json = $('<div/>').html(encodedjson).text().replace(/'/g, "\"");;
-					// repair json string
-					var n = json.replace(/([a-zA-Z]+)(:)/g,'"$1"$2');
-					// parse it to an object
-					var obj = JSON.parse(n);
-
-					input.obj["size"] = input.size;
-					input.obj["id"] = input.id;
-					input.obj["specialid"] = input.specialID;
-					input.obj["url"] = input.url;
-					input.obj["inventory"] = obj;
+					// fix the stupid links
+					var encodedjson = encodedjson.replace(/http:\/\/www\.forever21\..*\/(http)/g,'$1');
+					// convert it into object
+					var obj = JSON.parse(encodedjson);
+					// remove useless info
+					delete (obj["catalogEntry"])["catalogEntryIdentifier"];
+					// add important info
+					obj["id"] = input.id;
+					obj["url"] = input.url;
+					obj["inventory"] = input.obj;
 					
-					node.addmetadata("data", input.obj);
+					// add data to node metadata
+					node.addmetadata("data", obj);
 					
 					return [];
 				});
