@@ -35,12 +35,11 @@ module.exports = new function() {
 			return new LambdaNode("Forever21 site root", input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
 					var parsedHTML = $.load(body);
-					var childList = parsedHTML("head > link[rel=canonical],[rel=alternate]").eq(0).map(function(i, x) { 
+					return parsedHTML("head > link[rel=canonical],[rel=alternate]").eq(0).map(function(i, x) { 
 						return (nodes[1])({
 							data : $(x).attr("href")
 						}); 
 					});	
-					return childList;
 				});
 			});
 		},
@@ -48,12 +47,11 @@ module.exports = new function() {
 			return new LambdaNode("Forever21 site country", input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
 					var parsedHTML = $.load(body);
-					var childList = parsedHTML("#divNav .columns a").map(function(i, x) { 
+					return parsedHTML("#divNav .columns a").map(function(i, x) { 
 						return (nodes[2])({
 							data : $(x).attr("href")
 						}); 
 					});
-					return childList;
 				});
 			});
 		},
@@ -61,12 +59,11 @@ module.exports = new function() {
 			return new LambdaNode("Forever21 site upper category", input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
 					var parsedHTML = $.load(body);
-					var childList = parsedHTML("div.mdrop_column.columns.department_2 > ul > li > a:not([onclick])").map(function(i, x) { 
+					return parsedHTML("div.mdrop_column.columns.department_2 > ul > li > a:not([onclick])").map(function(i, x) { 
 						return (nodes[3])({
 							data : $(x).attr("href")
 						}); 
 					});
-					return childList;
 				});
 			});
 		},
@@ -93,9 +90,8 @@ module.exports = new function() {
 					// create child node for each page
 					var i, childList=[], perPage = 300;
 					for(i=0; i<maxItems; i+=perPage) {
-						var link = "http://www.forever21.com/shop/CategoryNavigationResultsView?langId="+langId+"&catalogId="+catalogId+"&categoryId="+categoryId+"&storeId="+storeId+"&beginIndex="+i+"&pageSize="+perPage;
 						childList.push((nodes[4])({
-							data : link
+							data : "http://www.forever21.com/shop/CategoryNavigationResultsView?langId="+langId+"&catalogId="+catalogId+"&categoryId="+categoryId+"&storeId="+storeId+"&beginIndex="+i+"&pageSize="+perPage;
 						}));
 					}
 

@@ -56,8 +56,8 @@ module.exports = function(s) {
 	
 	var DFSScan = function() {
 		
-		// only process if something in stack
-		if (stack.length == 0) {
+		// only process if something in stack and is active
+		if (stack.length == 0 || !active) {
 			return;
 		}
 		// don't go past time allocated

@@ -15,7 +15,7 @@
 		-->
 		
 		<title>
-			Waerl
+			Brandley
 		</title>
 		
 		<style>
@@ -76,17 +76,17 @@
 						
 						for(var i=0; i<sites.length; i+=1) {
 							var site = sites[i];
-												
+
 							var context = $("<div>");
 							var str = "<div>URL: <a href='" + site.url + "' target='_blank'>" + site.url + "</a></div>";
 							str += "<div>Stack Size: " + site.stackCount + "</div>";
 							str += "<div>Running AJAX Count: " + site.runningAjaxCount + "</div>";
+							str += "<div>Max Running AJAX Visits: " + site.maxvisitAJAX + "</div>";
+							str += "<div>Under Crawl Limit: " + site.active + "</div>";
 							str += "<div>Total AJAX Count: " + site.totalAjaxCount + "</div>";
+							str += "<div>Concurrent AJAX Calls: " + site.concurrentAjaxCalls + "</div>";
 							str += "<div>Start Time: " + site.startTime + "</div>";
 							str += "<div>Duration: " + (site.duration/1000.0)/60.0 + " minutes</div>";
-							str += "<div>Max AJAX Visits: " + site.maxvisitAJAX + "</div>";
-							str += "<div>Under Crawl Limit: " + site.active + "</div>";
-							str += "<div>Concurrent AJAX Calls: " + site.concurrentAjaxCalls + "</div>";
 							str += "<div>Finished: " + site.complete + "</div>";
 							str += "<div>Check Times: " + site.checkTimes + "</div>";
 							str += "<br/>";
