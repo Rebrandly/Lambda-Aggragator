@@ -42,7 +42,7 @@ if (crawlLooper.length > 0) {
 		if (crawler.hitLimit()) {
 			crawler.scan();
 		}
-	}, 5 * 1000);
+	}, 10 * 1000);
 }
 
 

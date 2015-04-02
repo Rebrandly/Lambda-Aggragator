@@ -34,7 +34,6 @@ module.exports = new function() {
 		function(input) {
 			return new LambdaNode("Forever21 site root", input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
-					node.addmetadata("nodeURL", input.data);
 					var parsedHTML = $.load(body);
 					return parsedHTML("head > link[rel=canonical],[rel=alternate]").eq(0).map(function(i, x) { 
 						return (nodes[1])({
@@ -47,7 +46,6 @@ module.exports = new function() {
 		function(input) {
 			return new LambdaNode("Forever21 site country", input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
-					node.addmetadata("nodeURL", input.data);
 					var parsedHTML = $.load(body);
 					return parsedHTML("#divNav .columns a").map(function(i, x) { 
 						return (nodes[2])({
@@ -60,7 +58,6 @@ module.exports = new function() {
 		function(input) {
 			return new LambdaNode("Forever21 site upper category", input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
-					node.addmetadata("nodeURL", input.data);
 					var parsedHTML = $.load(body);
 					return parsedHTML("div.mdrop_column.columns.department_2 > ul > li > a:not([onclick])").map(function(i, x) { 
 						return (nodes[3])({
@@ -73,7 +70,6 @@ module.exports = new function() {
 		function(input) {
 			return new LambdaNode("Forever21 site inner category", input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
-					node.addmetadata("nodeURL", input.data);
 					var parsedHTML = $.load(body);
 					
 					// get id
@@ -109,7 +105,6 @@ module.exports = new function() {
 		function(input) {
 			return new LambdaNode("Forever21 site page", input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
-					node.addmetadata("nodeURL", input.data);
 					var parsedHTML = $.load(body);
 					
 					var items = parsedHTML("div[class=product] > div[class=product_image][id]");
@@ -141,7 +136,6 @@ module.exports = new function() {
 		function(input) {
 			return new LambdaNode("Forever21 product page", input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
-					node.addmetadata("nodeURL", input.data);
 					var parsedHTML = $.load(body);
 
 					// find the snippet which gives info on other products
@@ -180,7 +174,6 @@ module.exports = new function() {
 		function(input) {
 			return new LambdaNode("Forever21 product stock page", input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
-					node.addmetadata("nodeURL", input.data);
 					
 					// result is json object but with some weird wrapping text, this removes that stuff
 					var encodedjson = body.match(/({(.|\s)*})/)[0];
@@ -213,7 +206,6 @@ module.exports = new function() {
 		function(input) {
 			return new LambdaNode("Forever21 product variation/size page", input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
-					node.addmetadata("nodeURL", input.data);
 					
 					// result is json object but with some weird wrapping text, this removes that stuff
 					var encodedjson = body.match(/({(.|\s)*})/)[0];

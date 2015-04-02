@@ -97,6 +97,8 @@ module.exports = function(n, i, di) {
 	};
 	
 	this.downloadTemplate = function(input, scanEvents, func) {
+		node.addmetadata("nodeURL", input.data);
+		
 		// obtain raw data
 		request({
 			uri: input.data
