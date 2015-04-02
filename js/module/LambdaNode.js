@@ -54,6 +54,10 @@ module.exports = function(n, i, di) {
 		return children;
 	};
 	
+	this.gettmetadata = function() {
+		return metadata;
+	}
+	
 	this.addmetadata = function(key, val) {
 		metadata[key] = val;
 	}
@@ -87,12 +91,18 @@ module.exports = function(n, i, di) {
 		scanEvents.parseError(data);
 	};
 	
+	this.emptyError = function(scanEvents, data) {
+		failed = true;
+		scanEvents.emptyError(data);
+	};
+	
 	this.downloadTemplate = function(input, scanEvents, func) {
 		// obtain raw data
 		request({
 			uri: input.data
 		}, function(error, response, body) {
 			if (error) {
+				node.addmetadata("error", error);
 				node.httpError(scanEvents, {
 					message : error
 				});
@@ -103,18 +113,20 @@ module.exports = function(n, i, di) {
 				// obtain child node data
 				var childList = func(body);
 			} catch (err) {
+				node.addmetadata("error", err.message);
 				node.parseError(scanEvents, {
 					message : err.message
 				});
 				return console.log(err.message);
 			}
 			
-			if (childList.length == 0) {
+			if (childList.length == 0 && !node.gettmetadata().hasOwnProperty("leaf")) {
 				var msg = "Empty children list";
-				node.parseError(scanEvents, {
+				node.addmetadata("error", msg);
+				node.emptyError(scanEvents, {
 					message : msg
 				});
-				return console.log(msg);
+				return;
 			}
 
 			// submit data

@@ -32,7 +32,7 @@
 			.finished {
 				background-color:#A6FF71;
 			}
-			.other {
+			.unexplored {
 				background-color:#FFEE71;
 			}
 		</style>
@@ -51,7 +51,7 @@
 				} else if (v.finished) {
 					var cls = "finished";
 				} else {
-					var cls = "other";
+					var cls = "unexplored";
 				}
 
 				var name = "<span class='node " + cls + "' data-id='" + node_id + "'>" + v.name + "</span>";

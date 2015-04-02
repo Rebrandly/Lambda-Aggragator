@@ -75,6 +75,11 @@ module.exports = function(s) {
 						
 						// continue crawling
 						DFSScan();
+					},
+					emptyError : function(data) {
+						
+						// continue crawling
+						DFSScan();	
 					}
 				});
 				

@@ -222,6 +222,8 @@ module.exports = new function() {
 					
 					// add data to node metadata
 					node.addmetadata("data", obj);
+					// mark as leaf node
+					node.addmetadata("leaf", true);
 					
 					return [];
 				});
