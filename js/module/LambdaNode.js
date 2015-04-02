@@ -126,7 +126,7 @@ module.exports = function(n, i, di) {
 				node.emptyError(scanEvents, {
 					message : msg
 				});
-				return;
+				return console.log(msg);
 			}
 
 			// submit data
