@@ -20,20 +20,15 @@ module.exports = function(s) {
 	var startTime = new Date();        // time the scan began
 	var endTime = null;                // time of supposed complete
 	var maxvisitAJAX = 10;             // the max ajax request in a row
-	var active = false;                // if the crawler is currently crawling
 	var checkTimes = 0;                // number of times it was checked
 	var concurrentAjaxCalls = 4;       // number of ajax calls at same time
 
 	this.scan = function() {
+		runningAjaxCount = 0;
 		DFSScan();
-		active = true;
 		console.log("Started crawling: " + root.getName());
 	};
-
-	this.active = function() {
-		return active;
-	};
-
+	
 	this.getcheckTimes = function() {
 		return checkTimes;
 	};
@@ -54,22 +49,21 @@ module.exports = function(s) {
 		endTime = new Date();
 	};
 	
+	this.hitLimit = function() {
+		return runningAjaxCount >= maxvisitAJAX;
+	};
+	
 	var DFSScan = function() {
 		
-		// only process if something in stack and is active
-		if (stack.length == 0 || !active) {
-			return;
-		}
 		// don't go past time allocated
 		if (runningAjaxCount >= maxvisitAJAX) {
-			runningAjaxCount = 0;
-			active = false;
 			return;
 		}
 		
-		// loop two times
-		for(var i=stack.length - 1; i>=Math.max(0, stack.length - concurrentAjaxCalls); i-=1) {
-			
+		// loop for every concurrent ajax call
+		var l = stack.length, fromIndex = l - 1, toIndex = Math.max(0, l - concurrentAjaxCalls);
+		for(i = fromIndex; i >= toIndex; i -= 1) {
+
 			// get last item in stack
 			var v = stack[i];
 			
@@ -114,19 +108,13 @@ module.exports = function(s) {
 					stack.push(children[targetIndex]);
 					v.setloopChild(targetIndex + 1);
 					
-					// continue crawling
-					DFSScan();
-					
 				// no more children, so remove from stack
 				} else {
 					stack.splice(i, 1);
-					
-					// continue crawling
-					DFSScan();
-					
-					// break to avoid conflicts with the for loop indexing
-					break;
 				}
+				
+				// continue crawling
+				DFSScan();
 
 			// if failed
 			} else if (v.failed()) {
@@ -136,9 +124,6 @@ module.exports = function(s) {
 				
 				// continue crawling
 				DFSScan();
-				
-				// break to avoid conflicts with the for loop indexing
-				break;
 			}
 		}
 	};
@@ -154,7 +139,6 @@ module.exports = function(s) {
 			duration : endTime==null ? (new Date()) - startTime : endTime - startTime,
 			complete : endTime!=null,
 			maxvisitAJAX : maxvisitAJAX,
-			active : active,
 			checkTimes : checkTimes,
 			concurrentAjaxCalls : concurrentAjaxCalls
 		};

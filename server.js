@@ -30,20 +30,25 @@ fs.readdirSync(siteDir).forEach(function(file) {
 // rotate the site in each interval. Has tolerance for checking it should be done.
 // past tolerance and it assumes the site is fully crawled
 if (crawlLooper.length > 0) {
+	crawlLooper[0].scan();
+	
 	setInterval(function(){ 
-		console.log("Rotating sites...");
+		//console.log("Rotating sites...");
 		crawlLooper.push(crawlLooper.shift());
+		
 		var crawler = crawlLooper[0];
 		if (crawler.getEndTime() == null) {
+			
 			if (crawler.getStackSize() == 0) {
-				if (crawler.getcheckTimes() < 10) {
+				if (crawler.getcheckTimes() < 5) {
 					crawler.incrementcheckTimes();
 				} else {
 					crawler.setEndTime();
 					return;
 				}
 			}
-			if (!crawler.active()) {
+			
+			if (crawler.hitLimit()) {
 				crawler.scan();
 			}
 		}
