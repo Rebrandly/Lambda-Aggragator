@@ -23,7 +23,7 @@ module.exports = function(n, i, di) {
 	var children = [];          // the children array
 	var node = this;            // reference to itself
 	var metadata = {            // extra metadata
-		nodeURL : input.data
+		nodeURL : input
 	};          
 	var finished = false;       // state of finished
 	var failed = false;         // state of error

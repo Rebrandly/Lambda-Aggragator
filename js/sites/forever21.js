@@ -18,10 +18,20 @@ var common = require('../common/common.js');
 
 module.exports = new function() {
 	
+	var maxvisitAJAX = 10;
+	var concurrentAjaxCalls = 4;
 	var url = "http://www.forever21.com";
 	
 	this.getURL = function() {
 		return url;
+	};
+	
+	this.getmaxvisitAJAX = function() {
+		return maxvisitAJAX;
+	};
+	
+	this.getconcurrentAjaxCalls = function() {
+		return concurrentAjaxCalls;
 	};
 	
 	this.getRootNode = function() {
@@ -32,43 +42,45 @@ module.exports = new function() {
 	
 	var nodes = [
 		function(input) {
-			return new LambdaNode("Forever21 site root", input, function(input, scanEvents, node) {
+			return new LambdaNode(input.data, input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
 					var parsedHTML = $.load(body);
 					return parsedHTML("head > link[rel=canonical],[rel=alternate]").eq(0).map(function(i, x) { 
 						return (nodes[1])({
-							data : $(x).attr("href")
+							data : $(x).attr("href"),
 						}); 
 					});	
 				});
 			});
 		},
 		function(input) {
-			return new LambdaNode("Forever21 site country", input, function(input, scanEvents, node) {
+			return new LambdaNode(input.data, input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
 					var parsedHTML = $.load(body);
 					return parsedHTML("#divNav .columns a").map(function(i, x) { 
 						return (nodes[2])({
-							data : $(x).attr("href")
+							data : $(x).attr("href"),
+							name : $(x).text()
 						}); 
 					});
 				});
 			});
 		},
 		function(input) {
-			return new LambdaNode("Forever21 site upper category", input, function(input, scanEvents, node) {
+			return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
 					var parsedHTML = $.load(body);
 					return parsedHTML("div.mdrop_column.columns.department_2 > ul > li > a:not([onclick])").map(function(i, x) { 
 						return (nodes[3])({
-							data : $(x).attr("href")
+							data : $(x).attr("href"),
+							name : $(x).text()
 						}); 
 					});
 				});
 			});
 		},
 		function(input) {
-			return new LambdaNode("Forever21 site inner category", input, function(input, scanEvents, node) {
+			return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
 					var parsedHTML = $.load(body);
 					
@@ -94,7 +106,8 @@ module.exports = new function() {
 							data : "http://www.forever21.com/shop/CategoryNavigationResultsView?langId="+langId+"&catalogId="+catalogId+"&categoryId="+categoryId+"&storeId="+storeId+"&beginIndex="+i+"&pageSize="+perPage,
 							storeId : storeId,
 							catalogId : catalogId,
-							langId : langId
+							langId : langId,
+							name : "Page with items " + (i+1) + "-" + (i+perPage)
 						}));
 					}
 
@@ -103,7 +116,7 @@ module.exports = new function() {
 			});
 		},
 		function(input) {
-			return new LambdaNode("Forever21 site page", input, function(input, scanEvents, node) {
+			return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
 					var parsedHTML = $.load(body);
 					
@@ -116,7 +129,8 @@ module.exports = new function() {
 						
 						// get product id
 						var id = $(item).attr("id").match(/\d+/)[0];
-
+						// get product name
+						var name = $(item).parent().find("> div.product_name").text().trim();
 						// get product page link
 						var link = $(item).find('a').eq(0).attr("onclick").match(/'([^,]+)'/)[1];
 
@@ -125,7 +139,8 @@ module.exports = new function() {
 							id : id,
 							storeId : input.storeId,
 							catalogId : input.catalogId,
-							langId : input.langId
+							langId : input.langId,
+							name : name + " (" + id + ")"
 						}));
 					}
 
@@ -134,7 +149,7 @@ module.exports = new function() {
 			});
 		},
 		function(input) {
-			return new LambdaNode("Forever21 product page", input, function(input, scanEvents, node) {
+			return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
 					var parsedHTML = $.load(body);
 
@@ -163,7 +178,8 @@ module.exports = new function() {
 							storeId : input.storeId,
 							catalogId : input.catalogId,
 							langId : input.langId,
-							sizeList : sizeList
+							sizeList : sizeList,
+							name : "Stock info for item " + input.id
 						}));
 					}
 					
@@ -172,7 +188,7 @@ module.exports = new function() {
 			});
 		},
 		function(input) {
-			return new LambdaNode("Forever21 product stock page", input, function(input, scanEvents, node) {
+			return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
 					
 					// result is json object but with some weird wrapping text, this removes that stuff
@@ -196,7 +212,8 @@ module.exports = new function() {
 						data : "http://www.forever21.com/webapp/wcs/stores/servlet/GetCatalogEntryDetailsByIDView?storeId="+input.storeId+"&catalogId="+input.catalogId+"&langId="+input.langId+"&catalogEntryId="+input.specialID+"&prodCounter=1",
 						obj : obj,
 						id : input.id,
-						url : input.url
+						url : input.url,
+						name : "Product info for item " + input.id
 					}));
 
 					return childList;
@@ -204,7 +221,7 @@ module.exports = new function() {
 			});
 		},
 		function(input) {
-			return new LambdaNode("Forever21 product variation/size page", input, function(input, scanEvents, node) {
+			return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
 					
 					// result is json object but with some weird wrapping text, this removes that stuff

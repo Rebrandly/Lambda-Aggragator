@@ -12,15 +12,16 @@
 
 module.exports = function(s) {
 
-	var site = s;                      // the site object
-	var root = s.getRootNode();        // the root node of the site
-	var stack = [root];                // stack used for dfs search
-	var runningAjaxCount = 0;          // the current ajax count
-	var totalAjaxCount = 0;            // the total current ajax count
-	var startTime = new Date();        // time the scan began
-	var endTime = startTime;           // time of supposed complete
-	var maxvisitAJAX = 10;             // the max ajax request in a row
-	var concurrentAjaxCalls = 8;       // number of ajax calls at same time
+	var site = s;                                              // the site object
+	var root = s.getRootNode();                                // the root node of the site
+	var stack = [root];                                        // stack used for dfs search
+	var runningAjaxCount = 0;                                  // the current ajax count
+	var totalAjaxCount = 0;                                    // the total current ajax count
+	var startTime = new Date();                                // time the scan began
+	var endTime = startTime;                                   // time of supposed complete
+	var maxvisitAJAX = s.getmaxvisitAJAX();                    // the max ajax request in a row
+	var concurrentAjaxCalls = s.getconcurrentAjaxCalls();      // number of ajax calls at same time
+	var numberoferrors = 0;                                    // number of errors
 
 	this.scan = function() {
 		runningAjaxCount = 0;
@@ -62,21 +63,24 @@ module.exports = function(s) {
 				// start downloading the data
 				v.downloadData({
 					finished : function(children) {
-						
+
 						// continue crawling
 						DFSScan();
 					},
 					httpError : function(data) {
+						numberoferrors += 1;
 						
 						// continue crawling
 						DFSScan();
 					},
 					parseError: function(data) {
+						numberoferrors += 1;
 						
 						// continue crawling
 						DFSScan();
 					},
 					emptyError : function(data) {
+						numberoferrors += 1;
 						
 						// continue crawling
 						DFSScan();	
@@ -125,7 +129,8 @@ module.exports = function(s) {
 			startTime : startTime,
 			duration : endTime - startTime,
 			maxvisitAJAX : maxvisitAJAX,
-			concurrentAjaxCalls : concurrentAjaxCalls
+			concurrentAjaxCalls : concurrentAjaxCalls,
+			numberoferrors : numberoferrors
 		};
 	};
 };
