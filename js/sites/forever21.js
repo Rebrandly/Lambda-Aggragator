@@ -172,8 +172,8 @@ module.exports = new function() {
 
 					// result is json object but with some weird wrapping text, this removes that stuff
 					var encodedjson = body.match(/({(.|\s)*})/)[0];
-					// decode the text fixing html entities
-					var json = $('<div/>').html(encodedjson).text();
+					// fix the stupid links
+					var encodedjson = encodedjson.replace(/http:\/\/www\.forever21\..*\/(http)/g,'$1');
 					// convert it into object
 					var obj = JSON.parse(encodedjson);
 					
@@ -203,15 +203,11 @@ module.exports = new function() {
 					var n = json.replace(/([a-zA-Z]+)(:)/g,'"$1"$2');
 					// parse it to an object
 					var obj = JSON.parse(n);
-					// add the size info
+
 					input.obj["size"] = input.size;
-					// add the id info
 					input.obj["id"] = input.id;
-					// add the special id info
 					input.obj["specialid"] = input.specialID;
-					// add the special id info
 					input.obj["url"] = input.url;
-					// add the inventory info
 					input.obj["inventory"] = obj;
 					
 					node.addmetadata("data", input.obj);
