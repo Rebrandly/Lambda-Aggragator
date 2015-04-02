@@ -18,7 +18,7 @@ var common = require('../common/common.js');
 
 module.exports = new function() {
 	
-	var maxvisitAJAX = 10;
+	var maxvisitAJAX = 20;
 	var concurrentAjaxCalls = 4;
 	var url = "http://www.forever21.com";
 	
