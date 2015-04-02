@@ -99,8 +99,6 @@ module.exports = function(n, i, di) {
 	};
 	
 	this.downloadTemplate = function(input, scanEvents, func) {
-		
-		// obtain raw data
 		request({
 			uri: input.data
 		}, function(error, response, body) {
@@ -112,29 +110,35 @@ module.exports = function(n, i, di) {
 				return console.log(error);
 			}
 			
-			try {
-				// obtain child node data
-				var childList = func(body);
-			} catch (err) {
-				node.addmetadata("error", err.message);
-				node.parseError(scanEvents, {
-					message : err.message
-				});
-				return console.log(err.message);
-			}
-			
-			if (childList.length == 0 && !node.gettmetadata().hasOwnProperty("leaf")) {
-				var msg = "Empty children list";
-				node.addmetadata("error", msg);
-				node.emptyError(scanEvents, {
-					message : msg
-				});
-				return console.log(msg);
-			}
-
-			// submit data
-			node.finished(scanEvents, childList);
+			templaceFinisher(body, scanEvents, func);
 		});	
+	};
+
+	this.directTemplate = function(input, scanEvents, func) {
+		templaceFinisher(input, scanEvents, func);
+	};
+	
+	var templaceFinisher = function(input, scanEvents, func) {
+		try {
+			var childList = func(input);
+		} catch (err) {
+			node.addmetadata("error", err.message);
+			node.parseError(scanEvents, {
+				message : err.message
+			});
+			return console.log(err.message);
+		}
+		
+		if (childList.length == 0 && !node.gettmetadata().hasOwnProperty("leaf")) {
+			var msg = "Empty children list";
+			node.addmetadata("error", msg);
+			node.emptyError(scanEvents, {
+				message : msg
+			});
+			return console.log(msg);
+		}
+
+		node.finished(scanEvents, childList);
 	};
 	
 	this.toJSON = function() {

@@ -56,26 +56,48 @@ module.exports = new function() {
 		function(input) {
 			return new LambdaNode(input.data, input, function(input, scanEvents, node) {
 				node.downloadTemplate(input, scanEvents, function(body) {
-					var parsedHTML = $.load(body);
-					return parsedHTML("#divNav .columns a").map(function(i, x) { 
-						return (nodes[2])({
-							data : $(x).attr("href"),
-							name : $(x).text()
-						}); 
+					var parsedHTML = $.load(body), childList = [];
+					
+					parsedHTML("#divNav ul.menu > li").each(function(i, x) { 
+						var header = $(x).find("a").eq(0);
+						var tabName = header.text().trim();
+						if (tabName != "Women" && tabName != "Men" && tabName != "Girls" && tabName != "Plus Sizes") {
+							return;
+						}
+
+						var innerChildList = [];
+						header.next().children("ul").find("li > a").each(function(i, x) {
+							var linkName = $(x).text().trim();
+							if (linkName == "Clothing") {
+								return;
+							}
+							innerChildList.push({
+								data : $(x).attr("href"),
+								name : linkName
+							});
+						});
+						
+						childList.push((nodes[2])({
+							data : innerChildList,
+							name : tabName
+						})); 
 					});
+					
+					return childList;
 				});
 			});
 		},
 		function(input) {
 			return new LambdaNode(input.name, input, function(input, scanEvents, node) {
-				node.downloadTemplate(input, scanEvents, function(body) {
-					var parsedHTML = $.load(body);
-					return parsedHTML("div.mdrop_column.columns.department_2 > ul > li > a:not([onclick])").map(function(i, x) { 
-						return (nodes[3])({
-							data : $(x).attr("href"),
-							name : $(x).text()
-						}); 
-					});
+				node.directTemplate(input, scanEvents, function(input) {
+					var dataList = input.data, i, l=dataList.length, childList=[];
+					for(i=0; i<l; i+=1) {
+						childList.push((nodes[3])({
+							data : (dataList[i]).data,
+							name : (dataList[i]).name
+						})); 
+					}
+					return childList;
 				});
 			});
 		},
