@@ -22,7 +22,9 @@ module.exports = function(n, i, di) {
 	var parent = null;          // parent of the node
 	var children = [];          // the children array
 	var node = this;            // reference to itself
-	var metadata = {};          // extra metadata
+	var metadata = {            // extra metadata
+		nodeURL : input.data
+	};          
 	var finished = false;       // state of finished
 	var failed = false;         // state of error
 	
@@ -97,7 +99,6 @@ module.exports = function(n, i, di) {
 	};
 	
 	this.downloadTemplate = function(input, scanEvents, func) {
-		node.addmetadata("nodeURL", input.data);
 		
 		// obtain raw data
 		request({
