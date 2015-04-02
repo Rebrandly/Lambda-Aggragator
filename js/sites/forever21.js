@@ -91,7 +91,7 @@ module.exports = new function() {
 					var i, childList=[], perPage = 300;
 					for(i=0; i<maxItems; i+=perPage) {
 						childList.push((nodes[4])({
-							data : "http://www.forever21.com/shop/CategoryNavigationResultsView?langId="+langId+"&catalogId="+catalogId+"&categoryId="+categoryId+"&storeId="+storeId+"&beginIndex="+i+"&pageSize="+perPage;
+							data : "http://www.forever21.com/shop/CategoryNavigationResultsView?langId="+langId+"&catalogId="+catalogId+"&categoryId="+categoryId+"&storeId="+storeId+"&beginIndex="+i+"&pageSize="+perPage
 						}));
 					}
 
