@@ -156,6 +156,7 @@ module.exports = new function() {
 							data : "http://www.forever21.com/webapp/wcs/stores/servlet/GetCatalogEntryDetailsByIDView?storeId="+input.storeId+"&catalogId="+input.catalogId+"&langId="+input.langId+"&catalogEntryId="+specialID+"&prodCounter=1",
 							id : input.id,
 							specialID : specialID,
+							url : input.data,
 							storeId : input.storeId,
 							size : JSON.stringify(obj[i]).match(/Size_([A-Z]+)/)[1]
 						}));
@@ -182,7 +183,8 @@ module.exports = new function() {
 						obj : obj,
 						size : input.size,
 						id : input.id,
-						specialID : input.specialID
+						specialID : input.specialID,
+						url : input.url
 					}));
 
 					return childList;
@@ -207,6 +209,8 @@ module.exports = new function() {
 					input.obj["id"] = input.id;
 					// add the special id info
 					input.obj["specialid"] = input.specialID;
+					// add the special id info
+					input.obj["url"] = input.url;
 					// add the inventory info
 					input.obj["inventory"] = obj;
 					

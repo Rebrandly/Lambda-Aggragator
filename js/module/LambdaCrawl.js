@@ -20,7 +20,7 @@ module.exports = function(s) {
 	var startTime = new Date();        // time the scan began
 	var endTime = startTime;           // time of supposed complete
 	var maxvisitAJAX = 10;             // the max ajax request in a row
-	var concurrentAjaxCalls = 4;       // number of ajax calls at same time
+	var concurrentAjaxCalls = 8;       // number of ajax calls at same time
 
 	this.scan = function() {
 		runningAjaxCount = 0;
