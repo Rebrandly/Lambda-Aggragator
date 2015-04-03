@@ -97,11 +97,11 @@ var nodes = [
 				var attr = parsedHTML("body div.paging_controls").eq(0).find("li.hoverover > a").last().attr("onclick");
 				var attr = attr.match(/pageNumber:"(\d+)",pageSize:"(\d+)"/);
 				var maxpageNumber = attr[1], pageSize = attr[2];
-				var maxItems = maxpageNumber * pageSize;
+				var totalItems = Math.min(100, maxpageNumber * pageSize);
 				
 				// create child node for each page
-				var i, childList=[], perPage = 300;
-				for(i=0; i<maxItems; i+=perPage) {
+				var i, childList=[], perPage = 100;
+				for(i=0; i<totalItems; i+=perPage) {
 					childList.push((nodes[4])({
 						data : "http://www.forever21.com/shop/CategoryNavigationResultsView?langId="+langId+"&catalogId="+catalogId+"&categoryId="+categoryId+"&storeId="+storeId+"&beginIndex="+i+"&pageSize="+perPage,
 						storeId : storeId,
