@@ -1,4 +1,4 @@
-/*!
+/*
  * Lambda Aggregator v0.0.2
  * http://lambdaaggregation.com/
  *
@@ -10,18 +10,18 @@
  * Date: 2015
  */
 
-module.exports = function(s) {
+module.exports = function(site) {
 
-	var site = s;                                              // the site object
-	var root = s.getRootNode();                                // the root node of the site
+	var root = site.getRootNode();                             // the root node of the site
 	var stack = [root];                                        // stack used for dfs search
 	var runningAjaxCount = 0;                                  // the current ajax count
 	var totalAjaxCount = 0;                                    // the total current ajax count
 	var startTime = new Date();                                // time the scan began
 	var endTime = startTime;                                   // time of supposed complete
-	var maxvisitAJAX = s.getmaxvisitAJAX();                    // the max ajax request in a row
-	var concurrentAjaxCalls = s.getconcurrentAjaxCalls();      // number of ajax calls at same time
+	var maxvisitAJAX = site.getmaxvisitAJAX();                 // the max ajax request in a row
+	var concurrentAjaxCalls = site.getconcurrentAjaxCalls();   // number of ajax calls at same time
 	var numberoferrors = 0;                                    // number of errors
+	var numberofitems = 0;                                     // number of items
 
 	this.scan = function() {
 		runningAjaxCount = 0;
@@ -62,8 +62,11 @@ module.exports = function(s) {
 				
 				// start downloading the data
 				v.downloadData({
-					finished : function(children) {
-
+					finished : function(children, isleaf) {
+						if (isleaf) {
+							numberofitems += 1;
+						}						
+						
 						// continue crawling
 						DFSScan();
 					},
@@ -130,7 +133,8 @@ module.exports = function(s) {
 			duration : endTime - startTime,
 			maxvisitAJAX : maxvisitAJAX,
 			concurrentAjaxCalls : concurrentAjaxCalls,
-			numberoferrors : numberoferrors
+			numberoferrors : numberoferrors,
+			numberofitems : numberofitems
 		};
 	};
 };

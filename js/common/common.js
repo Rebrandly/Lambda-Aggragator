@@ -1,4 +1,4 @@
-/*!
+/*
  * Lambda Aggregator v0.0.2
  * http://lambdaaggregation.com/
  *

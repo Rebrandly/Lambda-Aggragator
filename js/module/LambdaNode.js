@@ -1,4 +1,4 @@
-/*!
+/*
  * Lambda Node
  * http://lambdaaggregation.com/
  *
@@ -13,20 +13,17 @@
 // Load the request module to make requests.
 var request = require("request");
 
-module.exports = function(n, i, di) {
+module.exports = function(name, input, generateRawFunc) {
 
-	var name = n;               // name of node
-	var input = i;              // input
-	var generateRawFunc = di;   // function to handle getting data from input
 	var loopChild = -1;         // the index of the child node that needs to be searched
 	var parent = null;          // parent of the node
 	var children = [];          // the children array
 	var node = this;            // reference to itself
-	var metadata = {            // extra metadata
-		input : input
-	};          
 	var finished = false;       // state of finished
 	var failed = false;         // state of error
+	var metadata = {            // extra metadata
+		input : input
+	};    
 	
 	this.getName = function() {
 		return name;
@@ -64,6 +61,10 @@ module.exports = function(n, i, di) {
 		metadata[key] = val;
 	}
 	
+	this.isLeaf = function() {
+		return metadata.hasOwnProperty("leaf");
+	};
+	
 	this.downloadData = function(scanEvents) {
 		generateRawFunc(input, scanEvents, node);
 	};
@@ -80,7 +81,7 @@ module.exports = function(n, i, di) {
 			(childList[i]).setParent(node);
 		}
 		
-		scanEvents.finished(childList);
+		scanEvents.finished(childList, node.isLeaf());
 	};
 	
 	this.httpError = function(scanEvents, data) {
@@ -129,7 +130,7 @@ module.exports = function(n, i, di) {
 			return console.log(err.message);
 		}
 		
-		if (childList.length == 0 && !node.gettmetadata().hasOwnProperty("leaf")) {
+		if (childList.length == 0 && !node.isLeaf()) {
 			var msg = "Empty children list";
 			node.addmetadata("error", msg);
 			node.emptyError(scanEvents, {
