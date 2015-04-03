@@ -43,7 +43,7 @@ var nodes = [
 					if (tabName != "Women" && tabName != "Men" && tabName != "Girls" && tabName != "Plus Sizes") {
 						return;
 					}
-
+					
 					var innerChildList = [];
 					header.next().children("ul").find("li > a").each(function(i, x) {
 						var linkName = $(x).text().trim();
@@ -105,11 +105,11 @@ var nodes = [
 				}
 				
 				// LIMIT IT FOR TESTING PURPOSES
-				totalItems = Math.min(5, totalItems);
+				totalItems = Math.min(20, totalItems);
 				
 				// create child node for each page
-				var i, childList=[], perPage = 1;       // LIMIT IT FOR TESTING PURPOSES
-				for(i=1; i<totalItems; i+=perPage) {
+				var i, childList=[], perPage = 20;       // LIMIT IT FOR TESTING PURPOSES
+				for(i=0; i<totalItems; i+=perPage) {
 					childList.push((nodes[4])({
 						data : "http://www.forever21.com/shop/CategoryNavigationResultsView?langId="+langId+"&catalogId="+catalogId+"&categoryId="+categoryId+"&storeId="+storeId+"&beginIndex="+i+"&pageSize="+perPage,
 						storeId : storeId,
@@ -257,4 +257,4 @@ var nodes = [
 	}
 ];
 
-module.exports = new LambdaSite("http://www.forever21.com", 20, 4, nodes);
+module.exports = new LambdaSite("http://www.forever21.com", 60, 4, nodes);
