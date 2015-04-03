@@ -23,6 +23,7 @@ var nodes = [
 		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
+				// EQ(0) FOR TESTING PURPOSES
 				return parsedHTML("head > link[rel=canonical],[rel=alternate]").eq(0).map(function(i, x) { 
 					return (nodes[1])({
 						data : $(x).attr("href"),
@@ -49,6 +50,7 @@ var nodes = [
 						if (linkName == "Clothing") {
 							return;
 						}
+	
 						innerChildList.push({
 							data : $(x).attr("href"),
 							name : linkName
@@ -83,25 +85,31 @@ var nodes = [
 		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
-				
+
 				// get id
 				var categoryId = parsedHTML("body").attr("onunload").match(/'(\d+)'/)[1]; 
-
+				
 				// get more id's
-				var objStr = parsedHTML("head > script:not([src])").eq(0).html().match(/({(\s+|"[a-zA-Z]+":'(-?\d+|[a-z]+)?',?)+})/)[0];
-				var objStr = objStr.replace(/'/g, "\"");
-				var dataOBJ = JSON.parse(objStr); 
-				var storeId=dataOBJ.storeId, catalogId=dataOBJ.catalogId, langId=dataOBJ.langId;
+				var inputs = parsedHTML("#CatalogSearchForm > input[name=storeId], #CatalogSearchForm > input[name=catalogId], #CatalogSearchForm > input[name=langId]");
+				var storeId=$(inputs[0]).val(), catalogId=$(inputs[1]).val(), langId=$(inputs[2]).val();
 				
 				// calculate maximum page
-				var attr = parsedHTML("body div.paging_controls").eq(0).find("li.hoverover > a").last().attr("onclick");
-				var attr = attr.match(/pageNumber:"(\d+)",pageSize:"(\d+)"/);
-				var maxpageNumber = attr[1], pageSize = attr[2];
-				var totalItems = Math.min(100, maxpageNumber * pageSize);
+				var totalItems = 240;
+				var attr = parsedHTML("body div.paging_controls").eq(0).find("li.hoverover > a").last();
+				if (attr.length > 0) {
+					attr = attr.attr("onclick").match(/pageNumber:"(\d+)",pageSize:"(\d+)"/);
+					var maxpageNumber = attr[1], pageSize = attr[2];
+					totalItems = maxpageNumber * pageSize;
+				} else {
+					console.log("Page data not found, using default 240 for max number of items.");
+				}
+				
+				// LIMIT IT FOR TESTING PURPOSES
+				totalItems = Math.min(5, totalItems);
 				
 				// create child node for each page
-				var i, childList=[], perPage = 100;
-				for(i=0; i<totalItems; i+=perPage) {
+				var i, childList=[], perPage = 1;       // LIMIT IT FOR TESTING PURPOSES
+				for(i=1; i<totalItems; i+=perPage) {
 					childList.push((nodes[4])({
 						data : "http://www.forever21.com/shop/CategoryNavigationResultsView?langId="+langId+"&catalogId="+catalogId+"&categoryId="+categoryId+"&storeId="+storeId+"&beginIndex="+i+"&pageSize="+perPage,
 						storeId : storeId,
@@ -143,7 +151,7 @@ var nodes = [
 						name : name + " (" + id + ")"
 					}));
 				}
-
+				
 				return childList;
 			});
 		});
@@ -165,7 +173,8 @@ var nodes = [
 				for(var i=0; i<l; i+=1) {
 					specialID = (obj[i])["catentry_id"];
 					itemList += "&itemId_"+(i+1)+"=" + specialID;
-					sizeList.push(JSON.stringify(obj[i]).match(/Size_([A-Z]+)/)[1]);
+					var size = JSON.stringify(obj[i]).match(/Size_([A-Z]+|\d+(\/\d+)?)/)[1];
+					sizeList.push(size);
 				}
 				
 				// create child node for each product variation
