@@ -173,7 +173,7 @@ var nodes = [
 				for(var i=0; i<l; i+=1) {
 					specialID = (obj[i])["catentry_id"];
 					itemList += "&itemId_"+(i+1)+"=" + specialID;
-					var size = JSON.stringify(obj[i]).match(/Size_([A-Z]+|\d+(\/\d+)?)/)[1];
+					var size = JSON.stringify(obj[i]).match(/Size_([A-Z]+|\d+(\/\d+)*)/)[1];
 					sizeList.push(size);
 				}
 				
