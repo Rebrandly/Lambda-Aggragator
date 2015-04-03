@@ -43,14 +43,14 @@ var nodes = [
 					if (tabName != "Women" && tabName != "Men" && tabName != "Girls" && tabName != "Plus Sizes") {
 						return;
 					}
-					
+
 					var innerChildList = [];
 					header.next().children("ul").find("li > a").each(function(i, x) {
 						var linkName = $(x).text().trim();
 						if (linkName == "Clothing") {
 							return;
 						}
-	
+						
 						innerChildList.push({
 							data : $(x).attr("href"),
 							name : linkName
@@ -141,7 +141,7 @@ var nodes = [
 					var name = $(item).parent().find("> div.product_name").text().trim();
 					// get product page link
 					var link = $(item).find('a').eq(0).attr("onclick").match(/'([^,]+)'/)[1];
-
+					
 					childList.push((nodes[5])({
 						data : link,
 						id : id,
@@ -173,8 +173,8 @@ var nodes = [
 				for(var i=0; i<l; i+=1) {
 					specialID = (obj[i])["catentry_id"];
 					itemList += "&itemId_"+(i+1)+"=" + specialID;
-					var size = JSON.stringify(obj[i]).match(/Size_([A-Z]+|\d+(\/\d+)*)/)[1];
-					sizeList.push(size);
+					var sizematch = JSON.stringify(obj[i]).match(/Size_(([0-9]|[A-Z])+|\d+(\/\d+)*)/);
+					sizeList.push(sizematch == null ? sizematch : sizematch[1]);
 				}
 				
 				// create child node for each product variation
