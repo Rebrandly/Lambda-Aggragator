@@ -22,9 +22,11 @@ var fs = require('fs');
 // dynamically load all modules from directory and create the list of crawl instances
 var siteDir = './js/sites/', crawlLooper = [];
 fs.readdirSync(siteDir).forEach(function(file) {
-    var site = require(siteDir + file);
-	var crawler = new LambdaCrawl(site);
-	crawlLooper.push(crawler);
+	if (file.charAt(0) != "_") {
+		var site = require(siteDir + file);
+		var crawler = new LambdaCrawl(site);
+		crawlLooper.push(crawler);
+	}
 });
 
 // rotate the site in each interval. Has tolerance for checking it should be done.
