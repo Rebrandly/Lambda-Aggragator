@@ -241,10 +241,6 @@ var nodes = [
 				var obj = JSON.parse(encodedjson);
 				// remove useless info
 				delete (obj["catalogEntry"])["catalogEntryIdentifier"];
-				// add important info
-				obj["id"] = input.id;
-				obj["url"] = input.url;
-				obj["inventory"] = input.obj;
 				
 				// add data to node metadata
 				node.addmetadata("data", obj);
