@@ -23,6 +23,8 @@ var nodes = [
 		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
+				//node.addmetadata("url", input.data);
+				
 				// EQ(0) FOR TESTING PURPOSES
 				return parsedHTML("head > link[rel=canonical],[rel=alternate]").eq(0).map(function(i, x) { 
 					return (nodes[1])({
@@ -36,6 +38,7 @@ var nodes = [
 		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body), childList = [];
+				//node.addmetadata("url", input.data);
 				
 				parsedHTML("#divNav ul.menu > li").each(function(i, x) { 
 					var header = $(x).find("a").eq(0);
@@ -62,7 +65,7 @@ var nodes = [
 						name : tabName
 					})); 
 				});
-				
+					
 				return childList;
 			});
 		});
@@ -70,6 +73,8 @@ var nodes = [
 	function(input) {
 		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 			node.directTemplate(input, scanEvents, function(input) {
+				//node.addmetadata("category", input.name);
+				
 				var dataList = input.data, i, l=dataList.length, childList=[];
 				for(i=0; i<l; i+=1) {
 					childList.push((nodes[3])({
@@ -85,6 +90,7 @@ var nodes = [
 		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
+				//node.addmetadata("sub-category", input.name);
 
 				// get id
 				var categoryId = parsedHTML("body").attr("onunload").match(/'(\d+)'/)[1]; 
@@ -105,7 +111,7 @@ var nodes = [
 				}
 				
 				// LIMIT IT FOR TESTING PURPOSES
-				totalItems = Math.min(20, totalItems);
+				totalItems = Math.min(40, totalItems);
 				
 				// create child node for each page
 				var i, childList=[], perPage = 20;       // LIMIT IT FOR TESTING PURPOSES
@@ -177,18 +183,20 @@ var nodes = [
 					sizeList.push(sizematch == null ? sizematch : sizematch[1]);
 				}
 				
+				// add data to node metadata
+				node.addmetadata("product_id", input.id);
+				node.addmetadata("product_url", input.data);
+				
 				// create child node for each product variation
 				if (specialID != null) {
 					childList.push((nodes[6])({
 						data : "http://www.forever21.com/webapp/wcs/stores/servlet/GetInventoryStatusByIDView?storeId="+input.storeId+itemList,
-						id : input.id,
 						specialID : specialID,
-						url : input.data,
 						storeId : input.storeId,
 						catalogId : input.catalogId,
 						langId : input.langId,
 						sizeList : sizeList,
-						name : "Stock info for item " + input.id
+						name : "Stock Details"
 					}));
 				}
 				
@@ -215,14 +223,14 @@ var nodes = [
 					(stockList[i])["size"] = input.sizeList[i];
 				}
 				
+				// add data to node metadata
+				node.addmetadata("inventory", obj.results);
+				
 				// create child node for each product variation
 				var childList=[];
 				childList.push((nodes[7])({
 					data : "http://www.forever21.com/webapp/wcs/stores/servlet/GetCatalogEntryDetailsByIDView?storeId="+input.storeId+"&catalogId="+input.catalogId+"&langId="+input.langId+"&catalogEntryId="+input.specialID+"&prodCounter=1",
-					obj : obj,
-					id : input.id,
-					url : input.url,
-					name : "Product info for item " + input.id
+					name : "Product Details"
 				}));
 
 				return childList;
@@ -243,7 +251,7 @@ var nodes = [
 				delete (obj["catalogEntry"])["catalogEntryIdentifier"];
 				
 				// add data to node metadata
-				node.addmetadata("data", obj);
+				node.addmetadata("details", obj.catalogEntry);
 				// mark as leaf node
 				node.addmetadata("leaf", true);
 				

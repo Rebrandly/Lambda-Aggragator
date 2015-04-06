@@ -124,8 +124,6 @@ module.exports = function(site) {
 	
 	this.toJSON = function() {
 		return {
-			url : site.getURL(),
-			root : root,
 			stackCount : stack.length,
 			runningAjaxCount : runningAjaxCount,
 			totalAjaxCount : totalAjaxCount,
@@ -134,7 +132,8 @@ module.exports = function(site) {
 			maxvisitAJAX : maxvisitAJAX,
 			concurrentAjaxCalls : concurrentAjaxCalls,
 			numberoferrors : numberoferrors,
-			numberofitems : numberofitems
+			numberofitems : numberofitems,
+			root : root
 		};
 	};
 };

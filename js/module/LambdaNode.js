@@ -21,9 +21,7 @@ module.exports = function(name, input, generateRawFunc) {
 	var node = this;            // reference to itself
 	var finished = false;       // state of finished
 	var failed = false;         // state of error
-	var metadata = {            // extra metadata
-		input : input
-	};    
+	var metadata = {};          // extra metadata
 	
 	this.getName = function() {
 		return name;
@@ -44,7 +42,7 @@ module.exports = function(name, input, generateRawFunc) {
 	this.failed = function() {
 		return failed;
 	};
-	
+
 	this.setParent = function(p) {
 		parent = p;
 	};
