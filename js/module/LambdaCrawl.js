@@ -16,9 +16,9 @@ module.exports = function(site) {
 	var stack = [root];                                        // stack used for dfs search
 	var runningAjaxCount = 0;                                  // the current ajax count
 	var totalAjaxCount = 0;                                    // the total current ajax count
-	var startTime = new Date();                                // time the scan began
+	var maxvisitAJAX = site.getmaxvisitAJAX();                 // the max ajax request in a row	
+	var startTime = null;                                      // time the scan began
 	var endTime = startTime;                                   // time of supposed complete
-	var maxvisitAJAX = site.getmaxvisitAJAX();                 // the max ajax request in a row
 	var concurrentAjaxCalls = site.getconcurrentAjaxCalls();   // number of ajax calls at same time
 	var numberoferrors = 0;                                    // number of errors
 	var numberofitems = 0;                                     // number of items
@@ -26,7 +26,15 @@ module.exports = function(site) {
 	this.scan = function() {
 		runningAjaxCount = 0;
 		DFSScan();
+		
+		if (startTime == null) {
+			startTime = new Date();
+		}
 		console.log("Started crawling: " + root.getName());
+	};
+	
+	this.getStartTime = function() {
+		return startTime;
 	};
 	
 	this.hitLimit = function() {

@@ -39,9 +39,8 @@ if (crawlLooper.length > 0) {
 	setInterval(function(){ 
 		console.log("Rotating sites...");
 		crawlLooper.push(crawlLooper.shift());
-		
 		var crawler = crawlLooper[0];
-		if (crawler.hitLimit()) {
+		if (crawler.hitLimit() || crawler.getStartTime() == null) {
 			crawler.scan();
 		}
 	}, 10 * 1000);

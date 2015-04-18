@@ -261,4 +261,4 @@ var nodes = [
 	}
 ];
 
-module.exports = new LambdaSite("http://www.forever21.com", 60, 4, nodes);
+module.exports = new LambdaSite("http://www.forever21.com", 20, 4, nodes);
