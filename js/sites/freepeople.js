@@ -98,11 +98,14 @@ var nodes = [
 				for(i=0; i<l; i+=1) {
 					item = $(items[i]);
 					
+					// find price
 					price = item.find("div.offers").text().match(/\d.*[^\s]/)[0];
 					price = price.replace(/,/g,"");
 					
+					// find name
 					name = item.find("h3.name").text().trim();
 					
+					// find product variations
 					swatches = item.find("dl.swatches > dd > a"), swatchlst = [];
 					for(j=0; j<swatches.length; j+=1) {
 						swatch = $(swatches[j]);
@@ -112,6 +115,7 @@ var nodes = [
 						});
 					}
 
+					// find product url
 					link = item.find("div.media > a").attr("href");
 					
 					childList.push((nodes[4])({
@@ -134,13 +138,6 @@ var nodes = [
 				node.addmetadata("leaf", true);
 				
 				return [];
-				
-				var linkToAll = url + parsedHTML("a:contains('View All')").last().attr("href");
-		
-				return [(nodes[5])({
-					data : linkToAll,
-					name : "Full Page"
-				})]; 
 			});
 		});
 	},
