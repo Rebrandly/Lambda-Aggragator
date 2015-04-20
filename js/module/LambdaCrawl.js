@@ -72,10 +72,11 @@ module.exports = function(site) {
 				
 				// start downloading the data
 				v.downloadData({
-					finished : function(children, isleaf) {
-						if (isleaf) {
+					finished : function(node, children) {
+						if (node.isLeaf()) {
+							node.markUnLeaf();
 							numberofitems += 1;
-						}						
+						}					
 						
 						// continue crawling
 						DFSScan();

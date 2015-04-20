@@ -98,6 +98,7 @@ var nodes = [
 					
 					// find id
 					var id = item.find("div[data-stylenumber]").attr("data-stylenumber");
+					id = parseInt(id, 10);
 					
 					// avoid repeats
 					if (!scanEvents.recordID(id)) {
@@ -167,6 +168,7 @@ var nodes = [
 				// price
 				var priceTag = parsedHTML("dd.price");
 				var price = priceTag.find("span.dollars").text() + priceTag.find("sup.cents").text();
+				price = parseFloat(price);
 
 				// desc
 				var long_desc = parsedHTML("div.long-desc").text();

@@ -63,6 +63,10 @@ module.exports = function(name, input, generateRawFunc) {
 		return metadata.hasOwnProperty("leaf");
 	};
 	
+	this.markUnLeaf = function() {
+		delete metadata["leaf"];
+	};
+	
 	this.downloadData = function(scanEvents) {
 		generateRawFunc(input, scanEvents, node);
 	};
@@ -78,8 +82,8 @@ module.exports = function(name, input, generateRawFunc) {
 		for(i=0; i<l; i+=1) {
 			(childList[i]).setParent(node);
 		}
-		
-		scanEvents.finished(childList, node.isLeaf());
+
+		scanEvents.finished(node, childList);
 	};
 	
 	this.httpError = function(scanEvents, data) {
@@ -128,7 +132,7 @@ module.exports = function(name, input, generateRawFunc) {
 			return console.log(err.message);
 		}
 		
-		if (childList.length == 0 && !node.isLeaf()) {
+		if (!node.isLeaf() && childList.length == 0) {
 			var msg = "Empty children list";
 			node.addmetadata("error", msg);
 			node.emptyError(scanEvents, {
@@ -141,12 +145,17 @@ module.exports = function(name, input, generateRawFunc) {
 	};
 	
 	this.toJSON = function() {
-		return {
+		var obj = {
 			name : name,
 			children : children,
 			finished : finished,
-			failed : failed,
-			metadata : metadata
+			failed : failed
 		};
+		
+		if (Object.keys(metadata).length > 0) {
+			obj.metadata = metadata;
+		}
+		
+		return obj;
 	};
 };
