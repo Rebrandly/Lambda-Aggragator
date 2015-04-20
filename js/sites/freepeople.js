@@ -35,9 +35,11 @@ var nodes = [
 					if (tabName == "New" || tabName == "Dresses" || tabName == "accessories" || tabName == "Swim" || tabName == "sale" || tabName == "trends") {
 						return;
 					}
-					//if (tabName != "clothes") {
+					
+					//if (tabName != "shoes") {
 					//	return;
 					//}
+					//console.log(tabName);
 					
 					return (nodes[1])({
 						data : link,
@@ -51,15 +53,16 @@ var nodes = [
 		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
-		
+				
 				return parsedHTML("div#side-container li.link-item.link-group").eq(0).find("ul > li > a").map(function (i,x) {
 					var header = $(x);
 					var link = header.attr("href");
 					var tabName = header.text().trim();
 					
-					//if (tabName != "Dresses") {
+					//if (tabName != "boots") {
 					//	return;
 					//}
+					//console.log(tabName);
 					
 					return (nodes[2])({
 						data : link,
@@ -93,15 +96,25 @@ var nodes = [
 				return parsedHTML("li.thumbnail--large.thumbnail").map(function(i, x) {
 					var item = $(x);
 					
+					// find id
+					var id = item.find("div[data-stylenumber]").attr("data-stylenumber");
+					
+					// avoid repeats
+					if (!scanEvents.recordID(id)) {
+						console.log("detected repeat: " + id);
+						return;
+					}
+					
 					// find name
-					name = item.find("h3.name").text().trim();
+					var name = item.find("h3.name").text().trim();
 					
 					// find product url
-					link = item.find("div.media > a").attr("href");
+					var link = item.find("div.media > a").attr("href");
 					
 					return (nodes[4])({
 						data : link,
-						name : name
+						name : name,
+						id : id
 					}); 
 				});
 			});
@@ -111,14 +124,16 @@ var nodes = [
 		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
-				var metadata = parsedHTML("div.metadata");
 				
-				// product id
-				var id = metadata.find("span").text().trim();
-				
-				// image list
 				// this part reads the variation image links and names and puts them into objects
-				var match = body.match(/productImages\['[\w|-]+'\]\["[\w|-]+"\]\["[\w]"\]\["(\w+)"\] = "(.*)";/g), i, l=match.length, mainList = [], obj = {};
+				var match = body.match(/productImages\['[\w|-]+'\]\["[\w|-]+"\]\["[\w]"\]\["(\w+)"\] = "(.*)";/g);
+				if (match == null) {
+					throw { 
+						message : "Invalid product page" 
+					};
+				}
+				
+				var i, l=match.length, mainList = [], obj = {};
 				for(i=0; i<l; i+=1) {
 					var str = match[i];
 					var new_match = str.match(/\["(\w+)"\] = \"(.*)"/);
@@ -165,7 +180,7 @@ var nodes = [
 					data : link,
 					name : "Stock",
 					url : input.data,
-					id : id,
+					id : input.id,
 					variations : mainList,
 					price : price,
 					long_desc : long_desc,

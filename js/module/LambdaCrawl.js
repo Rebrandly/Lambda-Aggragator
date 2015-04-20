@@ -22,6 +22,8 @@ module.exports = function(site) {
 	var concurrentAjaxCalls = site.getconcurrentAjaxCalls();   // number of ajax calls at same time
 	var numberoferrors = 0;                                    // number of errors
 	var numberofitems = 0;                                     // number of items
+	var repeats = 0;                                           // number of repeats
+	var visitedIDList = {};                                    // record all id's
 
 	this.scan = function() {
 		runningAjaxCount = 0;
@@ -95,6 +97,15 @@ module.exports = function(site) {
 						
 						// continue crawling
 						DFSScan();	
+					},
+					recordID : function(id) {
+						var strid = String(id);
+						if (visitedIDList.hasOwnProperty(strid)) {
+							repeats += 1;
+							return false;
+						}
+						visitedIDList[strid] = true;
+						return true;
 					}
 				});
 				
@@ -141,6 +152,7 @@ module.exports = function(site) {
 			concurrentAjaxCalls : concurrentAjaxCalls,
 			numberoferrors : numberoferrors,
 			numberofitems : numberofitems,
+			repeats : repeats,
 			root : root
 		};
 	};
