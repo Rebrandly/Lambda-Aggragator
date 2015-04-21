@@ -32,11 +32,11 @@ var nodes = [
 					var tabName = header.text().trim();
 					
 					// filter high level categories
-					if (tabName == "New" || tabName == "Dresses" || tabName == "accessories" || tabName == "Swim" || tabName == "sale" || tabName == "trends") {
+					if (tabName == "New" || tabName == "Dresses" || tabName == "accessories" || tabName == "sale" || tabName == "trends") {
 						return;
 					}
 					
-					//if (tabName != "shoes") {
+					//if (tabName != "shoes") { // clothes
 					//	return;
 					//}
 					//console.log(tabName);
@@ -59,7 +59,7 @@ var nodes = [
 					var link = header.attr("href");
 					var tabName = header.text().trim();
 					
-					//if (tabName != "boots") {
+					//if (tabName != "socks & legwear") { // Dresses
 					//	return;
 					//}
 					//console.log(tabName);
@@ -93,7 +93,12 @@ var nodes = [
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
 
-				return parsedHTML("li.thumbnail--large.thumbnail").map(function(i, x) {
+				var lst = parsedHTML("li.thumbnail--large.thumbnail");
+				if (lst.length == 0) {
+					return [];
+				}
+				
+				var childList = lst.map(function(i, x) {
 					var item = $(x);
 					
 					// find id
@@ -108,6 +113,11 @@ var nodes = [
 					
 					// find name
 					var name = item.find("h3.name").text().trim();
+					//if (name != "Road Trip Heathered Ruffle Sock") {
+					//	return;
+					//}
+					//console.log(name);
+					
 					
 					// find product url
 					var link = item.find("div.media > a").attr("href");
@@ -118,6 +128,14 @@ var nodes = [
 						id : id
 					}); 
 				});
+				
+				if (childList.length == 0) {
+					throw {
+						message : "Empty due to all children being duplicates"
+					};
+				}
+				
+				return childList;
 			});
 		});
 	},
@@ -170,10 +188,18 @@ var nodes = [
 				var price = priceTag.find("span.dollars").text() + priceTag.find("sup.cents").text();
 				price = parseFloat(price);
 
+				var cleanStr = function(str) {
+					str = str.replace(/^(\r|\n| |\t)+/, "");
+					str = str.replace(/(\r|\n| |\t)+$/, "");
+					str = str.replace(/  +/g, " ");
+					str = str.replace(/ *\r\n */g, "</br>");
+					return str;
+				};
+				
 				// desc
-				var long_desc = parsedHTML("div.long-desc").text();
-				var material_desc = parsedHTML("div.care-desc").text();
-				var sizing_desc = parsedHTML("div.sizing-desc").text();
+				var long_desc = cleanStr(parsedHTML("div.long-desc").text());
+				var material_desc = cleanStr(parsedHTML("div.care-desc").text());
+				var sizing_desc = cleanStr(parsedHTML("div.sizing-desc").text());
 				
 				// link to stock
 				var link = parsedHTML("a.more-info.availability.dialog").attr("href");

@@ -132,7 +132,7 @@ module.exports = function(name, input, generateRawFunc) {
 			return console.log(err.message);
 		}
 		
-		if (!node.isLeaf() && childList.length == 0) {
+		if (childList.length == 0 && !node.isLeaf()) {
 			var msg = "Empty children list";
 			node.addmetadata("error", msg);
 			node.emptyError(scanEvents, {
