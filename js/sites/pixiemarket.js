@@ -66,70 +66,38 @@ var nodes = [
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
 				
-				return parsedHTML("div.category-products > ul.products-grid > li.item").map(function(i, x) { 
-					var item = $(x);
-					
-					// get name
-					var name = item.find("p.thumb-caption-title").text().trim();
-					
-					// get price
-					var pricetag = item.find("div.price-box");
-					var newprice = pricetag.find("span.special-price");
-					var price = newprice.length > 0 ? $(newprice[0]).text().match(/\d+\.\d+/) : pricetag.text().trim();
-
-					
-					console.log("+"+price+"+");
-					return;
-					
-					return (nodes[3])({
-						data : linkToAll,
-						name : name,
-						price : price
-					}); 
-				});	
-			});
-		});
-	},
-	function(input) {
-		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
-			node.downloadTemplate(input, scanEvents, function(body) {
-				var parsedHTML = $.load(body);
-
-				var lst = parsedHTML("li.thumbnail--large.thumbnail");
+				var lst = parsedHTML("div.category-products > ul.products-grid > li.item");
 				if (lst.length == 0) {
 					return [];
 				}
 				
-				var childList = lst.map(function(i, x) {
+				var childList =  lst.map(function(i, x) { 
 					var item = $(x);
 					
-					// find id
-					var id = item.find("div[data-stylenumber]").attr("data-stylenumber");
-					id = parseInt(id, 10);
-					
+					// get name
+					var name = item.find("p.thumb-caption-title").text().trim();
+
 					// avoid repeats
-					if (!scanEvents.recordID(id)) {
-						console.log("detected repeat: " + id);
+					if (!scanEvents.recordID(name)) {
+						console.log("detected repeat: " + name);
 						return;
 					}
 					
-					// find name
-					var name = item.find("h3.name").text().trim();
-					//if (name != "Road Trip Heathered Ruffle Sock") {
-					//	return;
-					//}
-					//console.log(name);
+					// get price
+					var pricetag = item.find("div.price-box");
+					var newprice = pricetag.find("span.special-price");
+					var price = newprice.length > 0 ? $(newprice[0]).text().match(/\d+\.\d+/) : pricetag.text().match(/\d+\.\d+/);
+					price = parseFloat(price);
+
+					// link
+					var link = item.find("a.thumb-image").attr("href");
 					
-					
-					// find product url
-					var link = item.find("div.media > a").attr("href");
-					
-					return (nodes[4])({
+					return (nodes[3])({
 						data : link,
 						name : name,
-						id : id
+						price : price
 					}); 
-				});
+				});	
 				
 				if (childList.length == 0) {
 					throw {
@@ -145,155 +113,45 @@ var nodes = [
 		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
-				
-				// this part reads the variation image links and names and puts them into objects
-				var match = body.match(/productImages\['[\w|-]+'\]\["[\w|-]+"\]\["[\w]"\]\["(\w+)"\] = "(.*)";/g);
-				if (match == null) {
-					throw { 
-						message : "Invalid product page" 
-					};
-				}
-				
-				var i, l=match.length, mainList = [], obj = {};
+
+				// get image list
+				var imagehtml = parsedHTML("#more-views > ul > li > a");
+				var i, l=imagehtml.length, imageList=[];
 				for(i=0; i<l; i+=1) {
-					var str = match[i];
-					var new_match = str.match(/\["(\w+)"\] = \"(.*)"/);
-					
-					var prop = new_match[1]
-					var val = new_match[2];
-					
-					if (prop == "aliasName" || prop == "optionName") {
-						obj[prop] = val;
-					}
-					if (prop == "detailSize") {
-						obj["image_links"] = [val];
-						
-						mainList.push(obj);
-						obj = {};
-					}
+					var item = $(imagehtml[i]);
+					imageList.push(item.attr("rel").match(/smallimage: '([^ ]+)'/)[1]);
+				}
+
+				// get size list
+				var sizeshtml = parsedHTML("ul.size-list-wrapper > li > a");
+				var i, l=sizeshtml.length, sizes=[];
+				for(i=0; i<l; i+=1) {
+					sizes.push($(sizeshtml[i]).attr("rel"));
 				}
 			
-				// this part groups the objects in a meaningful way
-				l=mainList.length;
-				for(i=l-1; i>0; i-=1) {
-					var last = mainList[i];
-					var before_last = mainList[i-1];
-					
-					if (last["aliasName"] == before_last["aliasName"]) {
-						before_last["image_links"] = before_last["image_links"].concat(last["image_links"]);
-						mainList.splice(i, 1);
-					}
-				}
+				// get id
+				var id = parsedHTML("span.sku").text().trim();
 				
-				// price
-				var priceTag = parsedHTML("dd.price");
-				var price = priceTag.find("span.dollars").text() + priceTag.find("sup.cents").text();
-				price = parseFloat(price);
-
-				var cleanStr = function(str) {
-					str = str.replace(/^(\r|\n| |\t)+/, "");
-					str = str.replace(/(\r|\n| |\t)+$/, "");
-					str = str.replace(/  +/g, " ");
-					str = str.replace(/ *\r\n */g, "</br>");
-					return str;
-				};
-				
-				// desc
-				var long_desc = cleanStr(parsedHTML("div.long-desc").text());
-				var material_desc = cleanStr(parsedHTML("div.care-desc").text());
-				var sizing_desc = cleanStr(parsedHTML("div.sizing-desc").text());
-				
-				// link to stock
-				var link = parsedHTML("a.more-info.availability.dialog").attr("href");
-				
-				return [(nodes[5])({
-					data : link,
-					name : "Stock",
-					url : input.data,
-					id : input.id,
-					variations : mainList,
-					price : price,
-					long_desc : long_desc,
-					material_desc : material_desc,
-					sizing_desc : sizing_desc
-				})]; 
-			});
-		});
-	},
-	function(input) {
-		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
-			node.downloadTemplate(input, scanEvents, function(body) {
-				var parsedHTML = $.load(body);
-				
-				// gets all rows of stock info, and groups them up into objects
-				var tablerows = parsedHTML("table.row-data > tbody > tr"), i, j, k, q, w, l=tablerows.length, lst, mainlst = [];
+				// get description
+				var deschtml = parsedHTML("#tabs-1 > p");
+				var i, l=deschtml.length, desclist=[];
 				for(i=0; i<l; i+=1) {
-					var row = $(tablerows[i]);
-					if (row.hasClass("first")) {
-						lst = [row];
-					} else if (row.hasClass("last")) {
-						lst.push(row);
-						mainlst.push(lst);
-					} else {
-						lst.push(row);
-					}
+					desclist.push($(deschtml[i]).text().trim());
 				}
-
-				// this part adds the stock/size info to each variation
-				for(i=0; i<mainlst.length; i+=1) {
-					var items = mainlst[i];
-					for(j=0; j<items.length; j+=1) {
-						var item = items[j];
-						
-						if (j==0) {
-							q = null;
-							
-							var img = item.find("img");
-							var swatch_link = img.attr("src");
-							var alias_name = img.attr("alt");
-							
-							for(k=0; k<input.variations.length; k+=1) {
-								w = input.variations[k];
-								if (w["aliasName"] == alias_name) {
-									w["swatch_link"] = swatch_link;
-									w["sizes"] = [];
-									q = w;
-									break;
-								}
-							}
-							
-							if (q == null) {
-								break;
-							}
-						}
-						
-						var size = item.find("td.item-size").text().trim();
-						var raw_stock = item.find("td.item-availability").text().trim();
-						
-						var stock = raw_stock.match(/(\d+-\d+|\d+)/);
-						stock = stock==null || stock.length == 0 ? 0 : stock[0];
-						var hasMore = raw_stock.indexOf("+") != -1;
-						
-						q["sizes"].push({
-							size : size,
-							stock : stock,
-							hasMore : hasMore
-						});
-					}
-				}
+				var desc = desclist.join("<br/>");
 
 				// mark as leaf
 				node.addmetadata("leaf", true);
 				
 				// add data to node metadata
-				node.addmetadata("url", input.url);
-				node.addmetadata("id", input.id);
-				node.addmetadata("variations", input.variations);
+				node.addmetadata("url", input.data);
+				node.addmetadata("id", id);
+				node.addmetadata("variations", sizes);
 				node.addmetadata("price", input.price);
-				node.addmetadata("long_desc", input.long_desc);
-				node.addmetadata("material_desc", input.material_desc);
-				node.addmetadata("sizing_desc", input.sizing_desc);
-
+				node.addmetadata("long_desc", desc);
+				node.addmetadata("name", input.name);
+				node.addmetadata("images", imageList);
+				
 				return [];
 			});
 		});
