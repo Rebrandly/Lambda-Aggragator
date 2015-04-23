@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 01:34:48 23/04/2015
+ * Last Modified Date: 02:19:11 23/04/2015
  */
 
 
@@ -153,21 +153,21 @@ var nodes = [
 				}
 				
 				// get size list
-				var sizeshtml = parsedHTML("ul.size-list-wrapper > li > a");
+				var sizeshtml = parsedHTML("div.product-sizes div.radio label.sku-label");
 				var i, l=sizeshtml.length, sizes=[];
 				for(i=0; i<l; i+=1) {
-					sizes.push($(sizeshtml[i]).attr("rel"));
+					var stock = $(sizeshtml[i]).attr("data-availableinventory");
+					if (stock == "low") stock = "1-5";
+					else if (stock == "normal") stock = "6+";
+					
+					sizes.push({
+						size : $(sizeshtml[i]).text().trim(),
+						stock : stock
+					});
 				}
 				
-				console.log(JSON.stringify(imageList));
-				return [];
-				
-			
-				// get id
-				var id = parsedHTML("span.sku").text().trim();
-				
 				// get description
-				var deschtml = parsedHTML("#tabs-1 > p");
+				var deschtml = parsedHTML("div.product-description p");
 				var i, l=deschtml.length, desclist=[];
 				for(i=0; i<l; i+=1) {
 					desclist.push($(deschtml[i]).text().trim());
@@ -179,7 +179,7 @@ var nodes = [
 				
 				// add data to node metadata
 				node.addmetadata("url", input.data);
-				node.addmetadata("id", id);
+				node.addmetadata("id", input.id);
 				node.addmetadata("variations", sizes);
 				node.addmetadata("price", input.price);
 				node.addmetadata("long_desc", desc);
