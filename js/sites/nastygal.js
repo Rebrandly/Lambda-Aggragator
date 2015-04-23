@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 20:46:06 22/04/2015
+ * Last Modified Date: 22:17:07 22/04/2015
  */
 
 
@@ -30,21 +30,17 @@ var nodes = [
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
 			
-				return parsedHTML("ul.menu-catalog > li").map(function(i, x) { 
+				return parsedHTML("li.nav-item-shop a.subhead").map(function(i, x) { 
 					var header = $(x);
-					var tabName = header.find("a").eq(0).text().trim();
-			
-					// filter high level categories
-					if (tabName == "What's new" || tabName == "Accessories" || tabName == "Sale" || tabName == "$20$30$40SALE" || tabName == "Back to stock" || tabName == "Blog") {
+					
+					var tabName = header.text().trim();
+					if (tabName != "Clothes" && tabName != "Shoes") {
 						return;
 					}
-					
-					var subheaders = header.find("ul.drop > li > a");
-					subheaders.splice(0,1);
-					
+			
 					return (nodes[1])({
-						name : tabName,
-						subheaders : subheaders
+						data : header.attr("href"),
+						name : tabName
 					}); 
 				});	
 			});
@@ -54,16 +50,45 @@ var nodes = [
 	function(input) {
 		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 			
-			node.directTemplate(input, scanEvents, function(input) {
-				var dataList = input.subheaders, i, l = dataList.length, childList=[];
-				for(i=0; i<l; i+=1) {
-					var anchor = $(dataList[i]);
-					childList.push((nodes[2])({
-						data : anchor.attr("href") + "?limit=all",
-						name : anchor.text().trim()
-					})); 
-				}
-				return childList;
+			node.downloadTemplate(input, scanEvents, function(body) {
+				var parsedHTML = $.load(body);
+			
+				return parsedHTML("div.category-filter div.sidebar-nav-section li.selector > a").map(function(i, x) { 
+					var header = $(x);
+					
+					var tabName = header.text().trim();
+					if (tabName == "Back In Stock") {
+						return;
+					}
+					
+					return (nodes[2])({
+						data : url + header.attr("href"),
+						name : tabName
+					}); 
+				});	
+			});
+			
+		});
+	},
+	function(input) {
+		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
+			
+			node.downloadTemplate(input, scanEvents, function(body) {
+				var parsedHTML = $.load(body);
+			
+				return parsedHTML("div.category-filter div.sidebar-nav-section li.selector > a").map(function(i, x) { 
+					var header = $(x);
+					
+					var tabName = header.text().trim();
+					
+					console.log(tabName);
+					return;
+					
+					return (nodes[3])({
+						data : url + header.attr("href") + "?viewAll=true",
+						name : tabName
+					}); 
+				});	
 			});
 			
 		});
