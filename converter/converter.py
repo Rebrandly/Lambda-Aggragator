@@ -52,7 +52,7 @@ def processSiteModule(fd, filename):
     string += "var nodes = [\n"        
     for i in range(len(nodes)):
         string += "\tfunction(input) {\n"
-        string += "\t\treturn new LambdaNode(input.data, input, function(input, scanEvents, node) {\n"
+        string += "\t\treturn new LambdaNode(input.name, input, function(input, scanEvents, node) {\n"
         node = nodes[i]
         for line in node:
             string += "\t\t\t" + line

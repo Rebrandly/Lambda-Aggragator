@@ -25,7 +25,8 @@ module.exports = function(url, maxvisitAJAX, concurrentAjaxCalls, nodes) {
 	
 	this.getRootNode = function() {
 		return (nodes[0])({
-			data : url
+			data : url,
+			name : url
 		});
 	};
 };

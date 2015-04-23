@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 20:24:55 22/04/2015
+ * Last Modified Date: 20:39:02 22/04/2015
  */
 
 
@@ -25,7 +25,7 @@ var url = "http://www.pixiemarket.com";
 
 var nodes = [
 	function(input) {
-		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
@@ -52,7 +52,7 @@ var nodes = [
 		});
 	},
 	function(input) {
-		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 			
 			node.directTemplate(input, scanEvents, function(input) {
 				var dataList = input.subheaders, i, l = dataList.length, childList=[];
@@ -69,7 +69,7 @@ var nodes = [
 		});
 	},
 	function(input) {
-		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
@@ -119,7 +119,7 @@ var nodes = [
 		});
 	},
 	function(input) {
-		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
