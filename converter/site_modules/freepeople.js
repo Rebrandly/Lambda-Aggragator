@@ -2,7 +2,7 @@ FreePeople
 http://www.freepeople.com
 60
 4
-1
+0
 
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);

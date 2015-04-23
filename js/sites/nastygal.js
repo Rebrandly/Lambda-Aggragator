@@ -1,12 +1,12 @@
 /*
- * PixieMarket Site Module
+ * NastyGal Site Module
  *
  * Developer: Ryan Steve D'Souza
  * http://www.linkedin.com/profile/view?id=282676120
  *
  * Copyright 2015
  *
- * Last Modified Date: 20:39:02 22/04/2015
+ * Last Modified Date: 20:46:06 22/04/2015
  */
 
 
@@ -20,7 +20,7 @@ var LambdaSite = require('../module/LambdaSite.js');
 var common = require('../common/common.js');
 
 
-var url = "http://www.pixiemarket.com";
+var url = "http://www.nastygal.com";
 
 
 var nodes = [

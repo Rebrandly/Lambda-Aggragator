@@ -1,8 +1,8 @@
-PixieMarket
-http://www.pixiemarket.com
+NastyGal
+http://www.nastygal.com
 60
 4
-0
+1
 
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
