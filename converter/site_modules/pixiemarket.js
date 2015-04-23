@@ -65,7 +65,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		// get price
 		var pricetag = item.find("div.price-box");
 		var newprice = pricetag.find("span.special-price");
-		var price = newprice.length > 0 ? $(newprice[0]).text().match(/\d+\.\d+/) : pricetag.text().match(/\d+\.\d+/);
+		var price = newprice.length > 0 ? newprice.text().match(/\d+\.\d+/) : pricetag.text().match(/\d+\.\d+/);
 		price = parseFloat(price);
 
 		// link

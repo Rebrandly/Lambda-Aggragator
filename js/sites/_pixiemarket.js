@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 22:17:07 22/04/2015
+ * Last Modified Date: 01:00:26 23/04/2015
  */
 
 
@@ -94,7 +94,7 @@ var nodes = [
 					// get price
 					var pricetag = item.find("div.price-box");
 					var newprice = pricetag.find("span.special-price");
-					var price = newprice.length > 0 ? $(newprice[0]).text().match(/\d+\.\d+/) : pricetag.text().match(/\d+\.\d+/);
+					var price = newprice.length > 0 ? newprice.text().match(/\d+\.\d+/) : pricetag.text().match(/\d+\.\d+/);
 					price = parseFloat(price);
 			
 					// link

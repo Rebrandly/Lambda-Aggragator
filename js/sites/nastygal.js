@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 22:17:07 22/04/2015
+ * Last Modified Date: 01:00:26 23/04/2015
  */
 
 
@@ -79,14 +79,9 @@ var nodes = [
 				return parsedHTML("div.category-filter div.sidebar-nav-section li.selector > a").map(function(i, x) { 
 					var header = $(x);
 					
-					var tabName = header.text().trim();
-					
-					console.log(tabName);
-					return;
-					
 					return (nodes[3])({
 						data : url + header.attr("href") + "?viewAll=true",
-						name : tabName
+						name : header.text().trim()
 					}); 
 				});	
 			});
@@ -99,7 +94,7 @@ var nodes = [
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
 				
-				var lst = parsedHTML("div.category-products > ul.products-grid > li.item");
+				var lst = parsedHTML("div.product-list-item");
 				if (lst.length == 0) {
 					return [];
 				}
@@ -108,25 +103,32 @@ var nodes = [
 					var item = $(x);
 					
 					// get name
-					var name = item.find("p.thumb-caption-title").text().trim();
+					var name = item.find("div.product-name").text().trim();
+			
+					// get id
+					var id = item.attr("data-product-id");
 			
 					// avoid repeats
-					if (!scanEvents.recordID(name)) {
-						console.log("detected repeat: " + name);
+					if (!scanEvents.recordID(id)) {
+						console.log("detected repeat: " + id);
 						return;
 					}
 					
 					// get price
-					var pricetag = item.find("div.price-box");
-					var newprice = pricetag.find("span.special-price");
-					var price = newprice.length > 0 ? $(newprice[0]).text().match(/\d+\.\d+/) : pricetag.text().match(/\d+\.\d+/);
+					var pricetag = item.find("div.product-price");
+					var newprice = pricetag.find("span.current-price.sale");
+					var price = newprice.length > 0 ? newprice.text().match(/\d+\.\d+/) : pricetag.text().match(/\d+\.\d+/);
 					price = parseFloat(price);
 			
 					// link
-					var link = item.find("a.thumb-image").attr("href");
+					var link = item.find("a.product-link").attr("href");
+					
+					console.log(link);
+					return;
 					
 					return (nodes[3])({
 						data : link,
+						id : id,
 						name : name,
 						price : price
 					}); 
