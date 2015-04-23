@@ -26,8 +26,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	});	
 });
 
-----
-
 node.directTemplate(input, scanEvents, function(input) {
 	var dataList = input.subheaders, i, l = dataList.length, childList=[];
 	for(i=0; i<l; i+=1) {
@@ -39,8 +37,6 @@ node.directTemplate(input, scanEvents, function(input) {
 	}
 	return childList;
 });
-
-----
 
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
@@ -87,8 +83,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	return childList;
 });
 
-----
-
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
 
@@ -132,5 +126,3 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	
 	return [];
 });
-
-----

@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 01:00:26 23/04/2015
+ * Last Modified Date: 01:34:48 23/04/2015
  */
 
 
@@ -44,7 +44,6 @@ var nodes = [
 					}); 
 				});	
 			});
-			
 		});
 	},
 	function(input) {
@@ -67,7 +66,6 @@ var nodes = [
 					}); 
 				});	
 			});
-			
 		});
 	},
 	function(input) {
@@ -85,7 +83,6 @@ var nodes = [
 					}); 
 				});	
 			});
-			
 		});
 	},
 	function(input) {
@@ -123,10 +120,7 @@ var nodes = [
 					// link
 					var link = item.find("a.product-link").attr("href");
 					
-					console.log(link);
-					return;
-					
-					return (nodes[3])({
+					return (nodes[4])({
 						data : link,
 						id : id,
 						name : name,
@@ -142,7 +136,6 @@ var nodes = [
 				
 				return childList;
 			});
-			
 		});
 	},
 	function(input) {
@@ -152,19 +145,23 @@ var nodes = [
 				var parsedHTML = $.load(body);
 			
 				// get image list
-				var imagehtml = parsedHTML("#more-views > ul > li > a");
+				var imagehtml = parsedHTML("#product-images-carousel li.carousel-item img");
 				var i, l=imagehtml.length, imageList=[];
 				for(i=0; i<l; i+=1) {
 					var item = $(imagehtml[i]);
-					imageList.push(item.attr("rel").match(/smallimage: '([^ ]+)'/)[1]);
+					imageList.push(item.attr("src"));
 				}
-			
+				
 				// get size list
 				var sizeshtml = parsedHTML("ul.size-list-wrapper > li > a");
 				var i, l=sizeshtml.length, sizes=[];
 				for(i=0; i<l; i+=1) {
 					sizes.push($(sizeshtml[i]).attr("rel"));
 				}
+				
+				console.log(JSON.stringify(imageList));
+				return [];
+				
 			
 				// get id
 				var id = parsedHTML("span.sku").text().trim();
@@ -190,9 +187,7 @@ var nodes = [
 				node.addmetadata("images", imageList);
 				
 				return [];
-			});
-			
-		});
+			});		});
 	}
 ];
 

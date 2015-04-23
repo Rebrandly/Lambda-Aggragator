@@ -20,8 +20,8 @@ def processSiteModule(fd, filename):
     start = 0
     for i in range(len(codelist)):
         dashescount = codelist[i].count("-")
-        if dashescount > 0 and dashescount == len(codelist[i].strip()):
-            nodes.append(codelist[start:i])
+        if codelist[i].startswith("});"):
+            nodes.append(codelist[start:i+1])
             start = i+1
                 
     string =  "/*\n"

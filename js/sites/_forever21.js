@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 01:00:26 23/04/2015
+ * Last Modified Date: 01:34:48 23/04/2015
  */
 
 
@@ -38,7 +38,6 @@ var nodes = [
 					}); 
 				});	
 			});
-			
 		});
 	},
 	function(input) {
@@ -76,7 +75,6 @@ var nodes = [
 					
 				return childList;
 			});
-			
 		});
 	},
 	function(input) {
@@ -94,7 +92,6 @@ var nodes = [
 				}
 				return childList;
 			});
-			
 		});
 	},
 	function(input) {
@@ -139,7 +136,6 @@ var nodes = [
 			
 				return childList;
 			});
-			
 		});
 	},
 	function(input) {
@@ -174,7 +170,6 @@ var nodes = [
 				
 				return childList;
 			});
-			
 		});
 	},
 	function(input) {
@@ -218,7 +213,6 @@ var nodes = [
 				
 				return childList;
 			});
-			
 		});
 	},
 	function(input) {
@@ -253,7 +247,6 @@ var nodes = [
 			
 				return childList;
 			});
-			
 		});
 	},
 	function(input) {
@@ -276,9 +269,7 @@ var nodes = [
 				node.addmetadata("leaf", true);
 				
 				return [];
-			});
-			
-		});
+			});		});
 	}
 ];
 

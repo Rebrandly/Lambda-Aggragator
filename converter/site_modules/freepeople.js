@@ -29,8 +29,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	});	
 });
 
-----
-
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
 	
@@ -51,8 +49,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	});
 });
 
-----
-
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
 
@@ -65,8 +61,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		name : "Full Page"
 	})]; 
 });
-
-----
 
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
@@ -115,8 +109,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	
 	return childList;
 });
-
-----
 
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
@@ -194,8 +186,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	})]; 
 });
 
-----
-
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
 	
@@ -270,5 +260,3 @@ node.downloadTemplate(input, scanEvents, function(body) {
 
 	return [];
 });
-
-----

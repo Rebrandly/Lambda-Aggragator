@@ -22,8 +22,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	});	
 });
 
-----
-
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
 
@@ -42,8 +40,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	});	
 });
 
-----
-
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
 
@@ -56,8 +52,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		}); 
 	});	
 });
-
-----
 
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
@@ -108,25 +102,27 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	return childList;
 });
 
-----
-
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
 
 	// get image list
-	var imagehtml = parsedHTML("#more-views > ul > li > a");
+	var imagehtml = parsedHTML("#product-images-carousel li.carousel-item img");
 	var i, l=imagehtml.length, imageList=[];
 	for(i=0; i<l; i+=1) {
 		var item = $(imagehtml[i]);
-		imageList.push(item.attr("rel").match(/smallimage: '([^ ]+)'/)[1]);
+		imageList.push(item.attr("src"));
 	}
-
+	
 	// get size list
 	var sizeshtml = parsedHTML("ul.size-list-wrapper > li > a");
 	var i, l=sizeshtml.length, sizes=[];
 	for(i=0; i<l; i+=1) {
 		sizes.push($(sizeshtml[i]).attr("rel"));
 	}
+	
+	console.log(JSON.stringify(imageList));
+	return [];
+	
 
 	// get id
 	var id = parsedHTML("span.sku").text().trim();
@@ -153,5 +149,3 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	
 	return [];
 });
-
-----

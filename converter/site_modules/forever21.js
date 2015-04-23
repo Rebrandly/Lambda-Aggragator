@@ -16,8 +16,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	});	
 });
 
-----
-
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body), childList = [];
 	//node.addmetadata("url", input.data);
@@ -51,8 +49,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	return childList;
 });
 
-----
-
 node.directTemplate(input, scanEvents, function(input) {
 	//node.addmetadata("category", input.name);
 	
@@ -65,8 +61,6 @@ node.directTemplate(input, scanEvents, function(input) {
 	}
 	return childList;
 });
-
-----
 
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
@@ -108,8 +102,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	return childList;
 });
 
-----
-
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
 	
@@ -139,8 +131,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	
 	return childList;
 });
-
-----
 
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
@@ -181,8 +171,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	return childList;
 });
 
-----
-
 node.downloadTemplate(input, scanEvents, function(body) {
 	
 	// result is json object but with some weird wrapping text, this removes that stuff
@@ -213,8 +201,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	return childList;
 });
 
-----
-
 node.downloadTemplate(input, scanEvents, function(body) {
 	
 	// result is json object but with some weird wrapping text, this removes that stuff
@@ -233,5 +219,3 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	
 	return [];
 });
-
-----
