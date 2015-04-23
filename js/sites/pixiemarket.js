@@ -1,13 +1,14 @@
 /*
  * PixieMarket Site Module
  *
- * Developers: Ryan Steve D'Souza
+ * Developer: Ryan Steve D'Souza
  * http://www.linkedin.com/profile/view?id=282676120
  *
  * Copyright 2015
  *
- * Date: 2015
+ * Last Modified Date: 20:24:55 22/04/2015
  */
+
 
 // Load the cheerio module to parse html responses.
 var $ = require('cheerio');
@@ -18,18 +19,21 @@ var LambdaSite = require('../module/LambdaSite.js');
 // Load my custom node object
 var common = require('../common/common.js');
 
+
 var url = "http://www.pixiemarket.com";
+
 
 var nodes = [
 	function(input) {
 		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
-
+			
 				return parsedHTML("ul.menu-catalog > li").map(function(i, x) { 
 					var header = $(x);
 					var tabName = header.find("a").eq(0).text().trim();
-
+			
 					// filter high level categories
 					if (tabName == "What's new" || tabName == "Accessories" || tabName == "Sale" || tabName == "$20$30$40SALE" || tabName == "Back to stock" || tabName == "Blog") {
 						return;
@@ -44,10 +48,12 @@ var nodes = [
 					}); 
 				});	
 			});
+			
 		});
 	},
 	function(input) {
-		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
+		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+			
 			node.directTemplate(input, scanEvents, function(input) {
 				var dataList = input.subheaders, i, l = dataList.length, childList=[];
 				for(i=0; i<l; i+=1) {
@@ -59,10 +65,12 @@ var nodes = [
 				}
 				return childList;
 			});
+			
 		});
 	},
 	function(input) {
-		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
+		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
 				
@@ -76,7 +84,7 @@ var nodes = [
 					
 					// get name
 					var name = item.find("p.thumb-caption-title").text().trim();
-
+			
 					// avoid repeats
 					if (!scanEvents.recordID(name)) {
 						console.log("detected repeat: " + name);
@@ -88,7 +96,7 @@ var nodes = [
 					var newprice = pricetag.find("span.special-price");
 					var price = newprice.length > 0 ? $(newprice[0]).text().match(/\d+\.\d+/) : pricetag.text().match(/\d+\.\d+/);
 					price = parseFloat(price);
-
+			
 					// link
 					var link = item.find("a.thumb-image").attr("href");
 					
@@ -107,13 +115,15 @@ var nodes = [
 				
 				return childList;
 			});
+			
 		});
 	},
 	function(input) {
-		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
+		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
-
+			
 				// get image list
 				var imagehtml = parsedHTML("#more-views > ul > li > a");
 				var i, l=imagehtml.length, imageList=[];
@@ -121,7 +131,7 @@ var nodes = [
 					var item = $(imagehtml[i]);
 					imageList.push(item.attr("rel").match(/smallimage: '([^ ]+)'/)[1]);
 				}
-
+			
 				// get size list
 				var sizeshtml = parsedHTML("ul.size-list-wrapper > li > a");
 				var i, l=sizeshtml.length, sizes=[];
@@ -139,7 +149,7 @@ var nodes = [
 					desclist.push($(deschtml[i]).text().trim());
 				}
 				var desc = desclist.join("<br/>");
-
+			
 				// mark as leaf
 				node.addmetadata("leaf", true);
 				
@@ -154,8 +164,10 @@ var nodes = [
 				
 				return [];
 			});
+			
 		});
 	}
 ];
+
 
 module.exports = new LambdaSite(url, 60, 4, nodes);

@@ -1,13 +1,14 @@
 /*
  * Forever21 Site Module
  *
- * Developers: Ryan Steve D'Souza
+ * Developer: Ryan Steve D'Souza
  * http://www.linkedin.com/profile/view?id=282676120
  *
  * Copyright 2015
  *
- * Date: 2015
+ * Last Modified Date: 20:24:55 22/04/2015
  */
+
 
 // Load the cheerio module to parse html responses.
 var $ = require('cheerio');
@@ -18,9 +19,14 @@ var LambdaSite = require('../module/LambdaSite.js');
 // Load my custom node object
 var common = require('../common/common.js');
 
+
+var url = "http://www.forever21.com";
+
+
 var nodes = [
 	function(input) {
 		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
 				//node.addmetadata("url", input.data);
@@ -32,10 +38,12 @@ var nodes = [
 					}); 
 				});	
 			});
+			
 		});
 	},
 	function(input) {
 		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body), childList = [];
 				//node.addmetadata("url", input.data);
@@ -46,7 +54,7 @@ var nodes = [
 					if (tabName != "Women" && tabName != "Men" && tabName != "Girls" && tabName != "Plus Sizes") {
 						return;
 					}
-
+			
 					var innerChildList = [];
 					header.next().children("ul").find("li > a").each(function(i, x) {
 						var linkName = $(x).text().trim();
@@ -68,10 +76,12 @@ var nodes = [
 					
 				return childList;
 			});
+			
 		});
 	},
 	function(input) {
-		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
+		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+			
 			node.directTemplate(input, scanEvents, function(input) {
 				//node.addmetadata("category", input.name);
 				
@@ -84,14 +94,16 @@ var nodes = [
 				}
 				return childList;
 			});
+			
 		});
 	},
 	function(input) {
-		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
+		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
 				//node.addmetadata("sub-category", input.name);
-
+			
 				// get id
 				var categoryId = parsedHTML("body").attr("onunload").match(/'(\d+)'/)[1]; 
 				
@@ -124,18 +136,20 @@ var nodes = [
 						name : "Page with items " + (i+1) + "-" + (i+perPage)
 					}));
 				}
-
+			
 				return childList;
 			});
+			
 		});
 	},
 	function(input) {
-		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
+		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
 				
 				var items = parsedHTML("div[class=product] > div[class=product_image][id]");
-
+			
 				// create child node for each product
 				var i, l=items.length, childList=[];
 				for(var i=0; i<l; i+=1) {
@@ -160,13 +174,15 @@ var nodes = [
 				
 				return childList;
 			});
+			
 		});
 	},
 	function(input) {
-		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
+		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
-
+			
 				// find the snippet which gives info on other products
 				var encodedjson = parsedHTML("#entitledItem_" + input.id).html();
 				// decode the text fixing html entities
@@ -202,10 +218,12 @@ var nodes = [
 				
 				return childList;
 			});
+			
 		});
 	},
 	function(input) {
-		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
+		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				
 				// result is json object but with some weird wrapping text, this removes that stuff
@@ -232,13 +250,15 @@ var nodes = [
 					data : "http://www.forever21.com/webapp/wcs/stores/servlet/GetCatalogEntryDetailsByIDView?storeId="+input.storeId+"&catalogId="+input.catalogId+"&langId="+input.langId+"&catalogEntryId="+input.specialID+"&prodCounter=1",
 					name : "Product Details"
 				}));
-
+			
 				return childList;
 			});
+			
 		});
 	},
 	function(input) {
-		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
+		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				
 				// result is json object but with some weird wrapping text, this removes that stuff
@@ -257,8 +277,10 @@ var nodes = [
 				
 				return [];
 			});
+			
 		});
 	}
 ];
 
-module.exports = new LambdaSite("http://www.forever21.com", 20, 4, nodes);
+
+module.exports = new LambdaSite(url, 60, 4, nodes);

@@ -1,13 +1,14 @@
 /*
  * FreePeople Site Module
  *
- * Developers: Ryan Steve D'Souza
+ * Developer: Ryan Steve D'Souza
  * http://www.linkedin.com/profile/view?id=282676120
  *
  * Copyright 2015
  *
- * Date: 2015
+ * Last Modified Date: 20:24:55 22/04/2015
  */
+
 
 // Load the cheerio module to parse html responses.
 var $ = require('cheerio');
@@ -18,14 +19,17 @@ var LambdaSite = require('../module/LambdaSite.js');
 // Load my custom node object
 var common = require('../common/common.js');
 
+
 var url = "http://www.freepeople.com";
+
 
 var nodes = [
 	function(input) {
 		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
-
+			
 				return parsedHTML("div.wl-navigation-banner li.link-item > a").map(function(i, x) { 
 					var header = $(x);
 					var link = header.attr("href");
@@ -47,10 +51,12 @@ var nodes = [
 					}); 
 				});	
 			});
+			
 		});
 	},
 	function(input) {
-		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
+		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
 				
@@ -70,29 +76,33 @@ var nodes = [
 					}); 
 				});
 			});
+			
 		});
 	},
 	function(input) {
-		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
+		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
-
+			
 				// get the link to the button to view all products at same time, if it exists
 				var viewAllButton = parsedHTML("a:contains('View All')");
 				var linkToAll = viewAllButton.length <= 1 ? input.data : url + viewAllButton.last().attr("href");
-		
+			
 				return [(nodes[3])({
 					data : linkToAll,
 					name : "Full Page"
 				})]; 
 			});
+			
 		});
 	},
 	function(input) {
-		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
+		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
-
+			
 				var lst = parsedHTML("li.thumbnail--large.thumbnail");
 				if (lst.length == 0) {
 					return [];
@@ -137,10 +147,12 @@ var nodes = [
 				
 				return childList;
 			});
+			
 		});
 	},
 	function(input) {
-		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
+		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
 				
@@ -187,7 +199,7 @@ var nodes = [
 				var priceTag = parsedHTML("dd.price");
 				var price = priceTag.find("span.dollars").text() + priceTag.find("sup.cents").text();
 				price = parseFloat(price);
-
+			
 				var cleanStr = function(str) {
 					str = str.replace(/^(\r|\n| |\t)+/, "");
 					str = str.replace(/(\r|\n| |\t)+$/, "");
@@ -216,10 +228,12 @@ var nodes = [
 					sizing_desc : sizing_desc
 				})]; 
 			});
+			
 		});
 	},
 	function(input) {
-		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
+		return new LambdaNode(input.data, input, function(input, scanEvents, node) {
+			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
 				
@@ -236,7 +250,7 @@ var nodes = [
 						lst.push(row);
 					}
 				}
-
+			
 				// this part adds the stock/size info to each variation
 				for(i=0; i<mainlst.length; i+=1) {
 					var items = mainlst[i];
@@ -279,7 +293,7 @@ var nodes = [
 						});
 					}
 				}
-
+			
 				// mark as leaf
 				node.addmetadata("leaf", true);
 				
@@ -291,11 +305,13 @@ var nodes = [
 				node.addmetadata("long_desc", input.long_desc);
 				node.addmetadata("material_desc", input.material_desc);
 				node.addmetadata("sizing_desc", input.sizing_desc);
-
+			
 				return [];
 			});
+			
 		});
 	}
 ];
+
 
 module.exports = new LambdaSite(url, 60, 4, nodes);
