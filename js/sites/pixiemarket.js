@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 02:19:11 23/04/2015
+ * Last Modified Date: 03:11:57 24/04/2015
  */
 
 
@@ -27,6 +27,17 @@ var nodes = [
 	function(input) {
 		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 			
+			node.directTemplate(input, scanEvents, function(input) {
+				return [(nodes[1])({
+					data : input.data,
+					name : "Women"
+				})]; 
+			});
+		});
+	},
+	function(input) {
+		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
+			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
 			
@@ -42,7 +53,7 @@ var nodes = [
 					var subheaders = header.find("ul.drop > li > a");
 					subheaders.splice(0,1);
 					
-					return (nodes[1])({
+					return (nodes[2])({
 						name : tabName,
 						subheaders : subheaders
 					}); 
@@ -57,7 +68,7 @@ var nodes = [
 				var dataList = input.subheaders, i, l = dataList.length, childList=[];
 				for(i=0; i<l; i+=1) {
 					var anchor = $(dataList[i]);
-					childList.push((nodes[2])({
+					childList.push((nodes[3])({
 						data : anchor.attr("href") + "?limit=all",
 						name : anchor.text().trim()
 					})); 
@@ -89,6 +100,8 @@ var nodes = [
 						return;
 					}
 					
+					if (i > 0) return;
+					
 					// get price
 					var pricetag = item.find("div.price-box");
 					var newprice = pricetag.find("span.special-price");
@@ -98,7 +111,7 @@ var nodes = [
 					// link
 					var link = item.find("a.thumb-image").attr("href");
 					
-					return (nodes[3])({
+					return (nodes[4])({
 						data : link,
 						name : name,
 						price : price
@@ -133,7 +146,9 @@ var nodes = [
 				var sizeshtml = parsedHTML("ul.size-list-wrapper > li > a");
 				var i, l=sizeshtml.length, sizes=[];
 				for(i=0; i<l; i+=1) {
-					sizes.push($(sizeshtml[i]).attr("rel"));
+					sizes.push({
+						size: $(sizeshtml[i]).attr("rel")
+					});
 				}
 			
 				// get id
@@ -153,11 +168,14 @@ var nodes = [
 				// add data to node metadata
 				node.addmetadata("url", input.data);
 				node.addmetadata("id", id);
-				node.addmetadata("variations", sizes);
 				node.addmetadata("price", input.price);
 				node.addmetadata("long_desc", desc);
-				node.addmetadata("name", input.name);
-				node.addmetadata("images", imageList);
+				node.addmetadata("variations", {
+					"0" : { 
+						image_links: imageList,
+						sizes : sizes
+					}
+				});
 				
 				return [];
 			});		});

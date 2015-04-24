@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 02:19:11 23/04/2015
+ * Last Modified Date: 03:11:57 24/04/2015
  */
 
 
@@ -24,6 +24,17 @@ var url = "http://www.freepeople.com";
 
 
 var nodes = [
+	function(input) {
+		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
+			
+			node.directTemplate(input, scanEvents, function(input) {
+				return [(nodes[1])({
+					data : input.data,
+					name : "Women"
+				})]; 
+			});
+		});
+	},
 	function(input) {
 		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 			
@@ -45,7 +56,7 @@ var nodes = [
 					//}
 					//console.log(tabName);
 					
-					return (nodes[1])({
+					return (nodes[2])({
 						data : link,
 						name : tabName
 					}); 
@@ -69,7 +80,7 @@ var nodes = [
 					//}
 					//console.log(tabName);
 					
-					return (nodes[2])({
+					return (nodes[3])({
 						data : link,
 						name : tabName
 					}); 
@@ -87,9 +98,9 @@ var nodes = [
 				var viewAllButton = parsedHTML("a:contains('View All')");
 				var linkToAll = viewAllButton.length <= 1 ? input.data : url + viewAllButton.last().attr("href");
 			
-				return [(nodes[3])({
+				return [(nodes[4])({
 					data : linkToAll,
-					name : "Full Page"
+					name : "View All"
 				})]; 
 			});
 		});
@@ -118,6 +129,8 @@ var nodes = [
 						return;
 					}
 					
+					if (i > 0) return;
+					
 					// find name
 					var name = item.find("h3.name").text().trim();
 					//if (name != "Road Trip Heathered Ruffle Sock") {
@@ -129,7 +142,7 @@ var nodes = [
 					// find product url
 					var link = item.find("div.media > a").attr("href");
 					
-					return (nodes[4])({
+					return (nodes[5])({
 						data : link,
 						name : name,
 						id : id
@@ -212,16 +225,14 @@ var nodes = [
 				// link to stock
 				var link = parsedHTML("a.more-info.availability.dialog").attr("href");
 				
-				return [(nodes[5])({
+				return [(nodes[6])({
 					data : link,
 					name : "Stock",
 					url : input.data,
 					id : input.id,
 					variations : mainList,
 					price : price,
-					long_desc : long_desc,
-					material_desc : material_desc,
-					sizing_desc : sizing_desc
+					long_desc : long_desc + "<br/>" + material_desc + "<br/>" + sizing_desc
 				})]; 
 			});
 		});
@@ -298,8 +309,6 @@ var nodes = [
 				node.addmetadata("variations", input.variations);
 				node.addmetadata("price", input.price);
 				node.addmetadata("long_desc", input.long_desc);
-				node.addmetadata("material_desc", input.material_desc);
-				node.addmetadata("sizing_desc", input.sizing_desc);
 			
 				return [];
 			});		});

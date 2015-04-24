@@ -2,7 +2,14 @@ PixieMarket
 http://www.pixiemarket.com
 60
 4
-0
+1
+
+node.directTemplate(input, scanEvents, function(input) {
+	return [(nodes[1])({
+		data : input.data,
+		name : "Women"
+	})]; 
+});
 
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
@@ -19,7 +26,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		var subheaders = header.find("ul.drop > li > a");
 		subheaders.splice(0,1);
 		
-		return (nodes[1])({
+		return (nodes[2])({
 			name : tabName,
 			subheaders : subheaders
 		}); 
@@ -30,7 +37,7 @@ node.directTemplate(input, scanEvents, function(input) {
 	var dataList = input.subheaders, i, l = dataList.length, childList=[];
 	for(i=0; i<l; i+=1) {
 		var anchor = $(dataList[i]);
-		childList.push((nodes[2])({
+		childList.push((nodes[3])({
 			data : anchor.attr("href") + "?limit=all",
 			name : anchor.text().trim()
 		})); 
@@ -58,6 +65,8 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			return;
 		}
 		
+		//if (i > 0) return;
+		
 		// get price
 		var pricetag = item.find("div.price-box");
 		var newprice = pricetag.find("span.special-price");
@@ -67,7 +76,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		// link
 		var link = item.find("a.thumb-image").attr("href");
 		
-		return (nodes[3])({
+		return (nodes[4])({
 			data : link,
 			name : name,
 			price : price
@@ -98,7 +107,9 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	var sizeshtml = parsedHTML("ul.size-list-wrapper > li > a");
 	var i, l=sizeshtml.length, sizes=[];
 	for(i=0; i<l; i+=1) {
-		sizes.push($(sizeshtml[i]).attr("rel"));
+		sizes.push({
+			size: $(sizeshtml[i]).attr("rel")
+		});
 	}
 
 	// get id
@@ -118,11 +129,14 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	// add data to node metadata
 	node.addmetadata("url", input.data);
 	node.addmetadata("id", id);
-	node.addmetadata("variations", sizes);
 	node.addmetadata("price", input.price);
 	node.addmetadata("long_desc", desc);
-	node.addmetadata("name", input.name);
-	node.addmetadata("images", imageList);
+	node.addmetadata("variations", {
+		"0" : { 
+			image_links: imageList,
+			sizes : sizes
+		}
+	});
 	
 	return [];
 });

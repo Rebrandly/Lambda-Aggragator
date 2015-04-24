@@ -55,7 +55,7 @@
 				}
 
 				var name = "<span class='node " + cls + "' data-id='" + node_id + "'>" + v.name + "</span>";
-				if (v.failed) name += " (ERROR)";
+				if (v.failed) name += " (" + v.metadata.error + ")";
 				dfsStr += tab + name + "<br/>";
 				
 				node_id += 1;

@@ -4,6 +4,13 @@ http://www.nastygal.com
 4
 1
 
+node.directTemplate(input, scanEvents, function(input) {
+	return [(nodes[1])({
+		data : input.data,
+		name : "Women"
+	})]; 
+});
+
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
 
@@ -15,7 +22,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			return;
 		}
 
-		return (nodes[1])({
+		return (nodes[2])({
 			data : header.attr("href"),
 			name : tabName
 		}); 
@@ -33,7 +40,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			return;
 		}
 		
-		return (nodes[2])({
+		return (nodes[3])({
 			data : url + header.attr("href"),
 			name : tabName
 		}); 
@@ -46,7 +53,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	return parsedHTML("div.category-filter div.sidebar-nav-section li.selector > a").map(function(i, x) { 
 		var header = $(x);
 		
-		return (nodes[3])({
+		return (nodes[4])({
 			data : url + header.attr("href") + "?viewAll=true",
 			name : header.text().trim()
 		}); 
@@ -76,6 +83,8 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			return;
 		}
 		
+		//if (i > 0) return;
+		
 		// get price
 		var pricetag = item.find("div.product-price");
 		var newprice = pricetag.find("span.current-price.sale");
@@ -85,7 +94,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		// link
 		var link = item.find("a.product-link").attr("href");
 		
-		return (nodes[4])({
+		return (nodes[5])({
 			data : link,
 			id : id,
 			name : name,
@@ -118,12 +127,21 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	var i, l=sizeshtml.length, sizes=[];
 	for(i=0; i<l; i+=1) {
 		var stock = $(sizeshtml[i]).attr("data-availableinventory");
-		if (stock == "low") stock = "1-5";
-		else if (stock == "normal") stock = "6+";
+		
+		if (stock == "low") {
+			stock = "1-5";
+			var hasMore = false;
+		} else if (stock == "normal") {
+			stock = "5";
+			var hasMore = true;
+		} else {
+			var hasMore = false;
+		}
 		
 		sizes.push({
 			size : $(sizeshtml[i]).text().trim(),
-			stock : stock
+			stock : stock,
+			hasMore : hasMore
 		});
 	}
 	
@@ -141,11 +159,14 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	// add data to node metadata
 	node.addmetadata("url", input.data);
 	node.addmetadata("id", input.id);
-	node.addmetadata("variations", sizes);
 	node.addmetadata("price", input.price);
 	node.addmetadata("long_desc", desc);
-	node.addmetadata("name", input.name);
-	node.addmetadata("images", imageList);
+	node.addmetadata("variations", {
+		"0" : { 
+			image_links: imageList,
+			sizes : sizes
+		}
+	});
 	
 	return [];
 });
