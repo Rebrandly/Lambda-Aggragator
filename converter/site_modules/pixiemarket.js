@@ -65,7 +65,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			return;
 		}
 		
-		//if (i > 0) return;
+		if (i > 0) return;
 		
 		// get price
 		var pricetag = item.find("div.price-box");

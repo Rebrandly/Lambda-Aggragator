@@ -90,7 +90,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			return;
 		}
 		
-		//if (i > 0) return;
+		if (i > 0) return;
 		
 		// find name
 		var name = item.find("h3.name").text().trim();
@@ -247,7 +247,8 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			
 			q["sizes"].push({
 				size : size,
-				stock : stock,
+				stock_min : parseInt(stock, 10),
+				stock_max : parseInt(stock, 10),
 				hasMore : hasMore
 			});
 		}

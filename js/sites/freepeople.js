@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 03:11:57 24/04/2015
+ * Last Modified Date: 16:56:30 24/04/2015
  */
 
 
@@ -294,7 +294,8 @@ var nodes = [
 						
 						q["sizes"].push({
 							size : size,
-							stock : stock,
+							stock_min : parseInt(stock, 10),
+							stock_max : parseInt(stock, 10),
 							hasMore : hasMore
 						});
 					}

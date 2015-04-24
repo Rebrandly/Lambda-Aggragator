@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 03:11:57 24/04/2015
+ * Last Modified Date: 16:56:30 24/04/2015
  */
 
 
@@ -169,25 +169,30 @@ var nodes = [
 				var sizeshtml = parsedHTML("div.product-sizes div.radio label.sku-label");
 				var i, l=sizeshtml.length, sizes=[];
 				for(i=0; i<l; i+=1) {
-					var stock = $(sizeshtml[i]).attr("data-availableinventory");
+					var stock_min = $(sizeshtml[i]).attr("data-availableinventory");
+					var stock_max = stock_min;
+					var hasMore = false;
 					
-					if (stock == "low") {
-						stock = "1-5";
-						var hasMore = false;
-					} else if (stock == "normal") {
-						stock = "5";
-						var hasMore = true;
+					if (stock_min == "low") {
+						stock_min = 1;
+						stock_max = 5;
+					} else if (stock_min == "normal") {
+						stock_min = 6;
+						stock_max = 6;
+						hasMore = true;
 					} else {
-						var hasMore = false;
+						stock_min = parseInt(stock_min, 10);
+						stock_max = stock_min;
 					}
 					
 					sizes.push({
 						size : $(sizeshtml[i]).text().trim(),
-						stock : stock,
+						stock_min : stock_min,
+						stock_max : stock_min,
 						hasMore : hasMore
 					});
 				}
-				
+			
 				// get description
 				var deschtml = parsedHTML("div.product-description p");
 				var i, l=deschtml.length, desclist=[];
