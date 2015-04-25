@@ -131,12 +131,12 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	node.addmetadata("id", id);
 	node.addmetadata("price", input.price);
 	node.addmetadata("long_desc", desc);
-	node.addmetadata("variations", {
-		"0" : { 
+	node.addmetadata("variations", [
+		{ 
 			image_links: imageList,
 			sizes : sizes
 		}
-	});
+	]);
 	
 	return [];
 });

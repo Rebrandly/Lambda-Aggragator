@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 16:56:30 24/04/2015
+ * Last Modified Date: 17:40:02 24/04/2015
  */
 
 
@@ -144,7 +144,8 @@ var nodes = [
 					
 					return (nodes[5])({
 						data : link,
-						name : name,
+						name : "Stock",
+						prod_name : name,
 						id : id
 					}); 
 				});
@@ -227,7 +228,7 @@ var nodes = [
 				
 				return [(nodes[6])({
 					data : link,
-					name : "Stock",
+					name : input.prod_name,
 					url : input.data,
 					id : input.id,
 					variations : mainList,

@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 16:56:30 24/04/2015
+ * Last Modified Date: 17:40:02 24/04/2015
  */
 
 
@@ -209,12 +209,12 @@ var nodes = [
 				node.addmetadata("id", input.id);
 				node.addmetadata("price", input.price);
 				node.addmetadata("long_desc", desc);
-				node.addmetadata("variations", {
-					"0" : { 
+				node.addmetadata("variations", [
+					{ 
 						image_links: imageList,
 						sizes : sizes
 					}
-				});
+				]);
 				
 				return [];
 			});		});
