@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 02:23:35 25/04/2015
+ * Last Modified Date: 15:25:42 25/04/2015
  */
 
 
@@ -121,7 +121,6 @@ var nodes = [
 					
 					// find id
 					var id = item.find("div[data-stylenumber]").attr("data-stylenumber");
-					id = parseInt(id, 10);
 					
 					// avoid repeats
 					if (!scanEvents.recordID(id)) {
@@ -129,7 +128,7 @@ var nodes = [
 						return;
 					}
 					
-					//if (i > 0) return;
+					if (i > 0) return;
 					
 					// name
 					var name = item.find("h3.name").text().trim();

@@ -71,9 +71,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	var childList =  lst.map(function(i, x) { 
 		var item = $(x);
 		
-		// get name
-		var name = item.find("div.product-name").text().trim();
-
 		// get id
 		var id = item.attr("data-product-id");
 
@@ -83,7 +80,11 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			return;
 		}
 		
-		//if (i > 0) return;
+		if (i > 0) return;
+		
+		// get name
+		var name = item.find("div.product-name").text().trim();
+
 		
 		// get price
 		var pricetag = item.find("div.product-price");

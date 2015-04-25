@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 02:23:35 25/04/2015
+ * Last Modified Date: 15:25:42 25/04/2015
  */
 
 
@@ -110,9 +110,6 @@ var nodes = [
 				var childList =  lst.map(function(i, x) { 
 					var item = $(x);
 					
-					// get name
-					var name = item.find("div.product-name").text().trim();
-			
 					// get id
 					var id = item.attr("data-product-id");
 			
@@ -122,7 +119,11 @@ var nodes = [
 						return;
 					}
 					
-					//if (i > 0) return;
+					if (i > 0) return;
+					
+					// get name
+					var name = item.find("div.product-name").text().trim();
+			
 					
 					// get price
 					var pricetag = item.find("div.product-price");

@@ -2,7 +2,7 @@ FreePeople
 http://www.freepeople.com
 60
 4
-0
+1
 
 node.directTemplate(input, scanEvents, function(input) {
 	return [(nodes[1])({
@@ -82,7 +82,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		
 		// find id
 		var id = item.find("div[data-stylenumber]").attr("data-stylenumber");
-		id = parseInt(id, 10);
 		
 		// avoid repeats
 		if (!scanEvents.recordID(id)) {
@@ -90,7 +89,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			return;
 		}
 		
-		//if (i > 0) return;
+		if (i > 0) return;
 		
 		// name
 		var name = item.find("h3.name").text().trim();
@@ -146,7 +145,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		var prop = new_match[1]
 		var val = new_match[2];
 		
-		if (prop == "aliasName" || prop == "optionName") {
+		if (prop == "aliasName") {
 			obj[prop] = val;
 		}
 		if (prop == "detailSize") {
