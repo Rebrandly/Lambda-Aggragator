@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 15:25:42 25/04/2015
+ * Last Modified Date: 16:59:03 25/04/2015
  */
 
 
@@ -188,7 +188,7 @@ var nodes = [
 					var prop = new_match[1]
 					var val = new_match[2];
 					
-					if (prop == "aliasName" || prop == "optionName") {
+					if (prop == "aliasName") {
 						obj[prop] = val;
 					}
 					if (prop == "detailSize") {

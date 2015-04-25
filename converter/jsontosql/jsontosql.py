@@ -12,12 +12,12 @@ def getProperty(obj, key):
     if key in obj:
         val = obj[key]
         
-        if isinstance(val, str) or isinstance(val, unicode):
+        if isinstance(val, unicode):
             val = val.replace("'", "\\'")
             
         if isinstance(val, list):
             for i in range(len(val)):
-                if isinstance(val[i], str) or isinstance(val, unicode):
+                if isinstance(val, unicode):
                     val[i] = val[i].replace("'", "\\'")
     return val
 
@@ -65,13 +65,13 @@ def processProduct(product, category_list):
         image_links = getProperty(variation, "image_links") 
         size_list = getProperty(variation, "sizes")
 
-        string =  "INSERT INTO product_variation (id, product_id, origin_id, name, created_at, updated_at)\n"
-        string += "VALUES (%d, %d, '%s', '%s', %s, %s);\n\n" % (PRODUCT_VARIATION_ID, PRODUCT_ID, "", aliasName, "NOW()", "NOW()")    
+        string =  "INSERT INTO product_variation (id, product_id, origin_id, name, swatch_filepath, created_at, updated_at)\n"
+        string += "VALUES (%d, %d, '%s', '%s', '%s', %s, %s);\n" % (PRODUCT_VARIATION_ID, PRODUCT_ID, "", aliasName, swatch_link, "NOW()", "NOW()")    
         RESULT.write(string.encode('utf8'))        
 
         for image_link in image_links:
             string =  "INSERT INTO product_image (product_variation_id, filepath)\n"
-            string += "VALUES (%d, '%s');\n\n" % (PRODUCT_VARIATION_ID, image_link)    
+            string += "VALUES (%d, '%s');\n" % (PRODUCT_VARIATION_ID, image_link)    
             RESULT.write(string.encode('utf8'))               
 
         if size_list:
@@ -84,16 +84,18 @@ def processProduct(product, category_list):
                 hasMore = getProperty(sizeobj, "hasMore")
 
                 string =  "INSERT INTO variation_size (product_variation_id, size)\n"
-                string += "VALUES (%d, '%s');\n\n" % (PRODUCT_VARIATION_ID, size)    
+                string += "VALUES (%d, '%s');\n" % (PRODUCT_VARIATION_ID, size)    
                 RESULT.write(string.encode('utf8'))         
                 
                 if stock_min!="" and stock_max!="" and hasMore!="":
                     string =  "INSERT INTO variation_stock (product_variation_id, min, max, has_more)\n"
-                    string += "VALUES (%d, %d, %d, %d);\n\n" % (PRODUCT_VARIATION_ID, stock_min, stock_max, hasMore)
+                    string += "VALUES (%d, %d, %d, %d);\n" % (PRODUCT_VARIATION_ID, stock_min, stock_max, hasMore)
                 else:
                     string =  "INSERT INTO variation_stock (product_variation_id)\n"
-                    string += "VALUES (%d);\n\n" % (PRODUCT_VARIATION_ID)                        
+                    string += "VALUES (%d);\n" % (PRODUCT_VARIATION_ID)                        
                 RESULT.write(string.encode('utf8'))    
+        
+        RESULT.write("\n\n")
         
         PRODUCT_VARIATION_ID += 1
     PRODUCT_ID += 1
