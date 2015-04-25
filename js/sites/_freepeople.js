@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 02:04:41 25/04/2015
+ * Last Modified Date: 02:23:35 25/04/2015
  */
 
 
@@ -51,7 +51,7 @@ var nodes = [
 						return;
 					}
 					
-					//if (tabName != "shoes") { // clothes
+					//if (tabName != "sale") { // clothes
 					//	return;
 					//}
 					//console.log(tabName);
@@ -75,7 +75,7 @@ var nodes = [
 					var link = header.attr("href");
 					var tabName = header.text().trim();
 					
-					//if (tabName != "socks & legwear") { // Dresses
+					//if (tabName != "new sale") { // Dresses
 					//	return;
 					//}
 					//console.log(tabName);
@@ -125,18 +125,22 @@ var nodes = [
 					
 					// avoid repeats
 					if (!scanEvents.recordID(id)) {
-						console.log("detected repeat: " + id);
+						//console.log("detected repeat: " + id);
 						return;
 					}
 					
-					if (i > 0) return;
+					//if (i > 0) return;
 					
 					// name
 					var name = item.find("h3.name").text().trim();
-			
+					//if (name != "Mini Paddle Earrings") {
+					//	return;
+					//}
+					//console.log(name);
+					
 					// price
 					var newpricetag = item.find("span.price");
-					var originalpricetag = item.find("span.original");
+					var originalpricetag = item.find("del.original");
 					var current_price = parseFloat(newpricetag.text().match(/\d+\.\d+/));
 					var original_price = originalpricetag.length == 0 ? current_price : parseFloat(originalpricetag.text().match(/\d+\.\d+/));
 					

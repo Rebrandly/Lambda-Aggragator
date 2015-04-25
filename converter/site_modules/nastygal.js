@@ -2,7 +2,7 @@ NastyGal
 http://www.nastygal.com
 60
 4
-0
+1
 
 node.directTemplate(input, scanEvents, function(input) {
 	return [(nodes[1])({
@@ -83,7 +83,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			return;
 		}
 		
-		if (i > 0) return;
+		//if (i > 0) return;
 		
 		// get price
 		var pricetag = item.find("div.product-price");

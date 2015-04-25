@@ -2,7 +2,7 @@ FreePeople
 http://www.freepeople.com
 60
 4
-1
+0
 
 node.directTemplate(input, scanEvents, function(input) {
 	return [(nodes[1])({
@@ -24,7 +24,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			return;
 		}
 		
-		//if (tabName != "shoes") { // clothes
+		//if (tabName != "sale") { // clothes
 		//	return;
 		//}
 		//console.log(tabName);
@@ -44,7 +44,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		var link = header.attr("href");
 		var tabName = header.text().trim();
 		
-		//if (tabName != "socks & legwear") { // Dresses
+		//if (tabName != "new sale") { // Dresses
 		//	return;
 		//}
 		//console.log(tabName);
@@ -86,18 +86,22 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		
 		// avoid repeats
 		if (!scanEvents.recordID(id)) {
-			console.log("detected repeat: " + id);
+			//console.log("detected repeat: " + id);
 			return;
 		}
 		
-		if (i > 0) return;
+		//if (i > 0) return;
 		
 		// name
 		var name = item.find("h3.name").text().trim();
-
+		//if (name != "Mini Paddle Earrings") {
+		//	return;
+		//}
+		//console.log(name);
+		
 		// price
 		var newpricetag = item.find("span.price");
-		var originalpricetag = item.find("span.original");
+		var originalpricetag = item.find("del.original");
 		var current_price = parseFloat(newpricetag.text().match(/\d+\.\d+/));
 		var original_price = originalpricetag.length == 0 ? current_price : parseFloat(originalpricetag.text().match(/\d+\.\d+/));
 		
