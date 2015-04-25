@@ -2,7 +2,7 @@ NastyGal
 http://www.nastygal.com
 60
 4
-1
+0
 
 node.directTemplate(input, scanEvents, function(input) {
 	return [(nodes[1])({
@@ -87,9 +87,10 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		
 		// get price
 		var pricetag = item.find("div.product-price");
-		var newprice = pricetag.find("span.current-price.sale");
-		var price = newprice.length > 0 ? newprice.text().match(/\d+\.\d+/) : pricetag.text().match(/\d+\.\d+/);
-		price = parseFloat(price);
+		var newpricetag = pricetag.find("span.current-price");
+		var originalpricetag = pricetag.find("span.original-price");
+		var current_price = parseFloat(newpricetag.text().match(/\d+\.\d+/));
+		var original_price = originalpricetag.length == 0 ? current_price : parseFloat(originalpricetag.text().match(/\d+\.\d+/));
 
 		// link
 		var link = item.find("a.product-link").attr("href");
@@ -98,7 +99,8 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			data : link,
 			id : id,
 			name : name,
-			price : price
+			current_price : current_price,
+			original_price : original_price
 		}); 
 	});	
 	
@@ -164,7 +166,8 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	// add data to node metadata
 	node.addmetadata("url", input.data);
 	node.addmetadata("id", input.id);
-	node.addmetadata("price", input.price);
+	node.addmetadata("current_price", input.current_price);
+	node.addmetadata("original_price", input.original_price);
 	node.addmetadata("long_desc", desc);
 	node.addmetadata("variations", [
 		{ 

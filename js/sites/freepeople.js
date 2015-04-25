@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 17:40:02 24/04/2015
+ * Last Modified Date: 02:04:41 25/04/2015
  */
 
 
@@ -47,7 +47,7 @@ var nodes = [
 					var tabName = header.text().trim();
 					
 					// filter high level categories
-					if (tabName == "New" || tabName == "Dresses" || tabName == "accessories" || tabName == "sale" || tabName == "trends") {
+					if (tabName == "New" || tabName == "Dresses" || tabName == "accessories" || tabName == "trends") {
 						return;
 					}
 					
@@ -131,13 +131,14 @@ var nodes = [
 					
 					if (i > 0) return;
 					
-					// find name
+					// name
 					var name = item.find("h3.name").text().trim();
-					//if (name != "Road Trip Heathered Ruffle Sock") {
-					//	return;
-					//}
-					//console.log(name);
-					
+			
+					// price
+					var newpricetag = item.find("span.price");
+					var originalpricetag = item.find("span.original");
+					var current_price = parseFloat(newpricetag.text().match(/\d+\.\d+/));
+					var original_price = originalpricetag.length == 0 ? current_price : parseFloat(originalpricetag.text().match(/\d+\.\d+/));
 					
 					// find product url
 					var link = item.find("div.media > a").attr("href");
@@ -146,7 +147,9 @@ var nodes = [
 						data : link,
 						name : "Stock",
 						prod_name : name,
-						id : id
+						id : id,
+						current_price : current_price,
+						original_price : original_price
 					}); 
 				});
 				
@@ -204,11 +207,6 @@ var nodes = [
 						mainList.splice(i, 1);
 					}
 				}
-				
-				// price
-				var priceTag = parsedHTML("dd.price");
-				var price = priceTag.find("span.dollars").text() + priceTag.find("sup.cents").text();
-				price = parseFloat(price);
 			
 				var cleanStr = function(str) {
 					str = str.replace(/^(\r|\n| |\t)+/, "");
@@ -232,7 +230,8 @@ var nodes = [
 					url : input.data,
 					id : input.id,
 					variations : mainList,
-					price : price,
+					current_price : input.current_price,
+					original_price : input.original_price,
 					long_desc : long_desc + "<br/>" + material_desc + "<br/>" + sizing_desc
 				})]; 
 			});
@@ -308,9 +307,10 @@ var nodes = [
 				// add data to node metadata
 				node.addmetadata("url", input.url);
 				node.addmetadata("id", input.id);
-				node.addmetadata("variations", input.variations);
-				node.addmetadata("price", input.price);
+				node.addmetadata("current_price", input.current_price);
+				node.addmetadata("original_price", input.original_price);
 				node.addmetadata("long_desc", input.long_desc);
+				node.addmetadata("variations", input.variations);
 			
 				return [];
 			});		});

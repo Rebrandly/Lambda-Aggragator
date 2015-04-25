@@ -20,7 +20,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		var tabName = header.text().trim();
 		
 		// filter high level categories
-		if (tabName == "New" || tabName == "Dresses" || tabName == "accessories" || tabName == "sale" || tabName == "trends") {
+		if (tabName == "New" || tabName == "Dresses" || tabName == "accessories" || tabName == "trends") {
 			return;
 		}
 		
@@ -92,13 +92,14 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		
 		if (i > 0) return;
 		
-		// find name
+		// name
 		var name = item.find("h3.name").text().trim();
-		//if (name != "Road Trip Heathered Ruffle Sock") {
-		//	return;
-		//}
-		//console.log(name);
-		
+
+		// price
+		var newpricetag = item.find("span.price");
+		var originalpricetag = item.find("span.original");
+		var current_price = parseFloat(newpricetag.text().match(/\d+\.\d+/));
+		var original_price = originalpricetag.length == 0 ? current_price : parseFloat(originalpricetag.text().match(/\d+\.\d+/));
 		
 		// find product url
 		var link = item.find("div.media > a").attr("href");
@@ -107,7 +108,9 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			data : link,
 			name : "Stock",
 			prod_name : name,
-			id : id
+			id : id,
+			current_price : current_price,
+			original_price : original_price
 		}); 
 	});
 	
@@ -161,11 +164,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			mainList.splice(i, 1);
 		}
 	}
-	
-	// price
-	var priceTag = parsedHTML("dd.price");
-	var price = priceTag.find("span.dollars").text() + priceTag.find("sup.cents").text();
-	price = parseFloat(price);
 
 	var cleanStr = function(str) {
 		str = str.replace(/^(\r|\n| |\t)+/, "");
@@ -189,7 +187,8 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		url : input.data,
 		id : input.id,
 		variations : mainList,
-		price : price,
+		current_price : input.current_price,
+		original_price : input.original_price,
 		long_desc : long_desc + "<br/>" + material_desc + "<br/>" + sizing_desc
 	})]; 
 });
@@ -261,9 +260,10 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	// add data to node metadata
 	node.addmetadata("url", input.url);
 	node.addmetadata("id", input.id);
-	node.addmetadata("variations", input.variations);
-	node.addmetadata("price", input.price);
+	node.addmetadata("current_price", input.current_price);
+	node.addmetadata("original_price", input.original_price);
 	node.addmetadata("long_desc", input.long_desc);
+	node.addmetadata("variations", input.variations);
 
 	return [];
 });

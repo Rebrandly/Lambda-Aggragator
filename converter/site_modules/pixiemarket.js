@@ -2,7 +2,7 @@ PixieMarket
 http://www.pixiemarket.com
 60
 4
-1
+0
 
 node.directTemplate(input, scanEvents, function(input) {
 	return [(nodes[1])({
@@ -69,9 +69,16 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		
 		// get price
 		var pricetag = item.find("div.price-box");
-		var newprice = pricetag.find("span.special-price");
-		var price = newprice.length > 0 ? newprice.text().match(/\d+\.\d+/) : pricetag.text().match(/\d+\.\d+/);
-		price = parseFloat(price);
+		var regularpricetag = pricetag.find("span.regular-price");
+		var oldpricetag = pricetag.find("span.old-price");
+		var specialpricetag = pricetag.find("span.special-price");
+		if (regularpricetag.length == 0) {
+			var current_price = parseFloat(specialpricetag.text().match(/\d+\.\d+/));
+			var original_price = parseFloat(oldpricetag.text().match(/\d+\.\d+/));
+		} else {
+			var current_price = parseFloat(regularpricetag.text().match(/\d+\.\d+/));
+			var original_price = current_price;
+		}
 
 		// link
 		var link = item.find("a.thumb-image").attr("href");
@@ -79,7 +86,8 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		return (nodes[4])({
 			data : link,
 			name : name,
-			price : price
+			current_price : current_price,
+			original_price : original_price
 		}); 
 	});	
 	
@@ -129,7 +137,8 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	// add data to node metadata
 	node.addmetadata("url", input.data);
 	node.addmetadata("id", id);
-	node.addmetadata("price", input.price);
+	node.addmetadata("current_price", input.current_price);
+	node.addmetadata("original_price", input.original_price);
 	node.addmetadata("long_desc", desc);
 	node.addmetadata("variations", [
 		{ 
