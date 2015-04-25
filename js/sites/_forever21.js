@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 16:59:03 25/04/2015
+ * Last Modified Date: 19:03:58 25/04/2015
  */
 
 
@@ -20,6 +20,9 @@ var LambdaSite = require('../module/LambdaSite.js');
 var common = require('../common/common.js');
 
 
+var name = "Forever21";
+var city = "Los Angeles";
+var country = "California";
 var url = "http://www.forever21.com";
 
 
@@ -29,7 +32,11 @@ var nodes = [
 			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
-				//node.addmetadata("url", input.data);
+				node.addmetadata("site_info", {
+					url: url,
+					city : city,
+					country : country
+				});
 				
 				// EQ(0) FOR TESTING PURPOSES
 				return parsedHTML("head > link[rel=canonical],[rel=alternate]").eq(0).map(function(i, x) { 
@@ -45,7 +52,6 @@ var nodes = [
 			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body), childList = [];
-				//node.addmetadata("url", input.data);
 				
 				parsedHTML("#divNav ul.menu > li").each(function(i, x) { 
 					var header = $(x).find("a").eq(0);
@@ -81,8 +87,7 @@ var nodes = [
 		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 			
 			node.directTemplate(input, scanEvents, function(input) {
-				//node.addmetadata("category", input.name);
-				
+			
 				var dataList = input.data, i, l=dataList.length, childList=[];
 				for(i=0; i<l; i+=1) {
 					childList.push((nodes[3])({
@@ -99,7 +104,6 @@ var nodes = [
 			
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
-				//node.addmetadata("sub-category", input.name);
 			
 				// get id
 				var categoryId = parsedHTML("body").attr("onunload").match(/'(\d+)'/)[1]; 
@@ -274,4 +278,4 @@ var nodes = [
 ];
 
 
-module.exports = new LambdaSite(url, 60, 4, nodes);
+module.exports = new LambdaSite(name, url, 60, 4, nodes);

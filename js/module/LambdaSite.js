@@ -9,7 +9,7 @@
  * Date: 2015
  */
 
-module.exports = function(url, maxvisitAJAX, concurrentAjaxCalls, nodes) {
+module.exports = function(name, url, maxvisitAJAX, concurrentAjaxCalls, nodes) {
 	
 	this.getURL = function() {
 		return url;
@@ -26,7 +26,7 @@ module.exports = function(url, maxvisitAJAX, concurrentAjaxCalls, nodes) {
 	this.getRootNode = function() {
 		return (nodes[0])({
 			data : url,
-			name : url
+			name : name
 		});
 	};
 };

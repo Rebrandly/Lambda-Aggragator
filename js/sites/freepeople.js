@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 16:59:03 25/04/2015
+ * Last Modified Date: 19:03:58 25/04/2015
  */
 
 
@@ -20,6 +20,9 @@ var LambdaSite = require('../module/LambdaSite.js');
 var common = require('../common/common.js');
 
 
+var name = "FreePeople";
+var city = "Philadelphia";
+var country = "Pennsylvania";
 var url = "http://www.freepeople.com";
 
 
@@ -28,6 +31,12 @@ var nodes = [
 		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 			
 			node.directTemplate(input, scanEvents, function(input) {
+				node.addmetadata("site_info", {
+					url: url,
+					city : city,
+					country : country
+				});
+				
 				return [(nodes[1])({
 					data : input.data,
 					name : "Women"
@@ -321,4 +330,4 @@ var nodes = [
 ];
 
 
-module.exports = new LambdaSite(url, 60, 4, nodes);
+module.exports = new LambdaSite(name, url, 60, 4, nodes);

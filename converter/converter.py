@@ -8,10 +8,12 @@ def processSiteModule(fd, filename):
     
     name = lines[0].strip()
     url = lines[1].strip()
-    maxrequests = lines[2].strip()
-    concurrentrequests = lines[3].strip()
-    active = lines[4].strip() == "1"
-    codelist = lines[5:]
+    city = lines[2].strip()
+    country = lines[3].strip()
+    maxrequests = lines[4].strip()
+    concurrentrequests = lines[5].strip()
+    active = lines[6].strip() == "1"
+    codelist = lines[7:]
     
     if not active:
         filename = "_" + filename
@@ -46,6 +48,9 @@ def processSiteModule(fd, filename):
     string += "var common = require('../common/common.js');\n" 
     string += "\n\n"
     
+    string += "var name = \"" + name + "\";\n"
+    string += "var city = \"" + city + "\";\n"
+    string += "var country = \"" + country + "\";\n"
     string += "var url = \"" + url + "\";\n"
     string += "\n\n"
     
@@ -64,7 +69,7 @@ def processSiteModule(fd, filename):
     string += "];\n"
     string += "\n\n"
     
-    string += "module.exports = new LambdaSite(url, " + maxrequests + ", " + concurrentrequests + ", nodes);"  
+    string += "module.exports = new LambdaSite(name, url, " + maxrequests + ", " + concurrentrequests + ", nodes);"  
     
     return string, filename
         
