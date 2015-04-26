@@ -252,6 +252,7 @@ def processProduct(sitename, product, category_list, siteinfo):
             addToproduct_images("(%d, %d, '%s')" % (PRODUCT_IMAGE_ID, PRODUCT_VARIATION_ID, image_link))
             PRODUCT_IMAGE_ID += 1 
             
+        # add the size and stock info
         if size_list:
             for sizeobj in size_list:    
                 
@@ -266,9 +267,6 @@ def processProduct(sitename, product, category_list, siteinfo):
                 # add to product stock
                 addTovariation_stocks("(%d, %s, %s, %s)" % (PRODUCT_VARIATION_ID, stock_min if stock_min!="" else "null", stock_max if stock_max!="" else "null", hasMore if hasMore!="" else "null"))
 
-        
-        
-        
         PRODUCT_VARIATION_ID += 1
     PRODUCT_ID += 1
             
@@ -292,7 +290,6 @@ with open('json.txt') as data_file:
 
 
 result = open("result.sql", "w")
-
 result.write(getcategories().encode('utf8'))
 result.write(gethuman_demographics().encode('utf8'))
 result.write(getcountries().encode('utf8'))
@@ -304,5 +301,4 @@ result.write(gethuman_demographics_categories().encode('utf8'))
 result.write(getproduct_images().encode('utf8'))
 result.write(getvariation_sizes().encode('utf8'))
 result.write(getvariation_stocks().encode('utf8'))
-
 result.close()
