@@ -76,39 +76,39 @@ def processProduct(sitename, product, category_list, siteinfo):
     hdemo = category_list[0]
     hdemo_id, added = addToList(hdemo, HUMAN_DEMO)
     if added:
-        string =  "INSERT INTO human_demographic (id, name) VALUES (%d, '%s');\n\n\n" % (hdemo_id, hdemo)    
+        string =  "INSERT INTO human_demographics (id, name) VALUES (%d, '%s');\n\n\n" % (hdemo_id, hdemo)    
         RESULT.write(string.encode('utf8'))  
         
     cat = category_list[1]
     cat_id, added = addToList(cat, CATEGORY)
     if added:
-        string =  "INSERT INTO category (id, name) VALUES (%d, '%s');\n\n\n" % (cat_id, cat)    
+        string =  "INSERT INTO categories (id, name) VALUES (%d, '%s');\n\n\n" % (cat_id, cat)    
         RESULT.write(string.encode('utf8'))    
         
     pair = (hdemo_id, cat_id)
     if not pair in HD_CAT:    
         HD_CAT.append(pair)
-        string =  "INSERT INTO human_demographic_category (human_demographic_id, category_id) VALUES (%d, %d);\n\n\n" % (hdemo_id, cat_id)    
+        string =  "INSERT INTO human_demographics_categories (human_demographic_id, category_id) VALUES (%d, %d);\n\n\n" % (hdemo_id, cat_id)    
         RESULT.write(string.encode('utf8'))    
         
     country_id, added = addToList(site_country, COUNTRY)    
     if added:
-        string =  "INSERT INTO country (id, country) VALUES (%d, '%s');\n\n\n" % (country_id, site_country)    
+        string =  "INSERT INTO countries (id, country) VALUES (%d, '%s');\n\n\n" % (country_id, site_country)    
         RESULT.write(string.encode('utf8')) 
         
     city_id, added = addToList(site_city, CITY)  
     if added:
-        string =  "INSERT INTO city (id, city, country_id) VALUES (%d, '%s', %d);\n\n\n" % (city_id, site_city, country_id)    
+        string =  "INSERT INTO cities (id, city, country_id) VALUES (%d, '%s', %d);\n\n\n" % (city_id, site_city, country_id)    
         RESULT.write(string.encode('utf8')) 
         
     sname_id, added = addToList(sitename, SITE_NAME)
     if added:
-        string =  "INSERT INTO retailer (id, name, homepage_link, city_id) VALUES (%d, '%s', '%s', %d);\n\n\n" % (sname_id, sitename, site_url, city_id)    
+        string =  "INSERT INTO retailers (id, name, homepage_link, city_id) VALUES (%d, '%s', '%s', %d);\n\n\n" % (sname_id, sitename, site_url, city_id)    
         RESULT.write(string.encode('utf8')) 
 
 
     
-    string =  "INSERT INTO product (id, origin_id, category_id, title, description, homepage_product_link, original_price, sale_price, retailer_id, active, upvotes) VALUES (%d, '%s', %d, '%s', '%s', '%s', %.2f, %.2f, %d, %s, %d);\n\n" % (PRODUCT_ID, id, cat_id, name, desc, url, orig_price, cur_price, sname_id, "True", 0)    
+    string =  "INSERT INTO products (id, origin_id, category_id, title, description, homepage_product_link, original_price, sale_price, retailer_id, active, upvotes) VALUES (%d, '%s', %d, '%s', '%s', '%s', %.2f, %.2f, %d, %s, %d);\n\n" % (PRODUCT_ID, id, cat_id, name, desc, url, orig_price, cur_price, sname_id, "True", 0)    
     RESULT.write(string.encode('utf8'))
     
     
@@ -124,7 +124,7 @@ def processProduct(sitename, product, category_list, siteinfo):
 
 
 
-        string =  "INSERT INTO product_variation (id, product_id, origin_id, name, swatch_filepath, created_at, updated_at) VALUES (%d, %d, '%s', '%s', '%s', %s, %s);\n" % (PRODUCT_VARIATION_ID, PRODUCT_ID, "", aliasName, swatch_link, "NOW()", "NOW()")    
+        string =  "INSERT INTO product_variations (id, product_id, origin_id, name, swatch_filepath, created_at, updated_at) VALUES (%d, %d, '%s', '%s', '%s', %s, %s);\n" % (PRODUCT_VARIATION_ID, PRODUCT_ID, "", aliasName, swatch_link, "NOW()", "NOW()")    
         RESULT.write(string.encode('utf8'))        
        
 
@@ -133,7 +133,7 @@ def processProduct(sitename, product, category_list, siteinfo):
             for image_link in image_links:
                 Img_Array.append("(%d, %d, '%s')" % (PRODUCT_IMAGE_ID, PRODUCT_VARIATION_ID, image_link))
                 PRODUCT_IMAGE_ID += 1
-            string = "INSERT INTO product_image (id, product_variation_id, filepath) VALUES " + (",".join(Img_Array)) + ";\n"
+            string = "INSERT INTO product_images (id, product_variation_id, filepath) VALUES " + (",".join(Img_Array)) + ";\n"
             RESULT.write(string.encode('utf8'))  
             
             
@@ -160,16 +160,16 @@ def processProduct(sitename, product, category_list, siteinfo):
                 
                 
             if len(Size_Array) > 0:
-                string = "INSERT INTO variation_size (product_variation_id, size) VALUES " + (",".join(Size_Array)) + ";\n"
+                string = "INSERT INTO variation_sizes (product_variation_id, size) VALUES " + (",".join(Size_Array)) + ";\n"
                 RESULT.write(string.encode('utf8')) 
 
 
                 
             if len(Stock_Array) > 0:
                 if stock_min!="" and stock_max!="" and hasMore!="":
-                    string = "INSERT INTO variation_stock (product_variation_id, min, max, has_more) VALUES " + (",".join(Stock_Array)) + ";\n"
+                    string = "INSERT INTO variation_stocks (product_variation_id, min, max, has_more) VALUES " + (",".join(Stock_Array)) + ";\n"
                 else:
-                    string = "INSERT INTO variation_stock (product_variation_id) VALUES " + (",".join(Stock_Array)) + ";\n"
+                    string = "INSERT INTO variation_stocks (product_variation_id) VALUES " + (",".join(Stock_Array)) + ";\n"
                 RESULT.write(string.encode('utf8')) 
         
         

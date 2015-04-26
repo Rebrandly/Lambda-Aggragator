@@ -1,6 +1,6 @@
 drop schema public cascade;
 create schema public;
-	
+
 CREATE TABLE "categories" (
 	"id" integer,
 	"name" VARCHAR(255),
@@ -9,10 +9,10 @@ CREATE TABLE "categories" (
   OIDS=FALSE
 );
 
-CREATE TABLE "social_media" (
+CREATE TABLE "social_medias" (
 	"id" integer,
 	"name" VARCHAR(255),
-	CONSTRAINT Social_Media_pk PRIMARY KEY (id)
+	CONSTRAINT Social_Medias_pk PRIMARY KEY (id)
 ) WITH (
   OIDS=FALSE
 );
@@ -107,13 +107,13 @@ CREATE TABLE "product_images" (
   OIDS=FALSE
 );
 
-CREATE TABLE "retailers_social_media" (
+CREATE TABLE "retailers_social_medias" (
 	"social_media_id" integer,
 	"retailer_id" integer,
 	"social_media_link" TEXT,
-	CONSTRAINT Retailers_Social_Media_pk PRIMARY KEY (social_media_id,retailer_id),
-	CONSTRAINT Retailers_Social_Media_fk0 FOREIGN KEY (social_media_id) REFERENCES social_media(id),
-	CONSTRAINT Retailers_Social_Media_fk1 FOREIGN KEY (retailer_id) REFERENCES retailers(id)
+	CONSTRAINT Retailers_Social_Medias_pk PRIMARY KEY (social_media_id,retailer_id),
+	CONSTRAINT Retailers_Social_Medias_fk0 FOREIGN KEY (social_media_id) REFERENCES social_medias(id),
+	CONSTRAINT Retailers_Social_Medias_fk1 FOREIGN KEY (retailer_id) REFERENCES retailers(id)
 ) WITH (
   OIDS=FALSE
 );
