@@ -62,13 +62,22 @@ def processCategory(sitename, lst, siteinfo, names=[]):
             # create a new list and add the tag if its not in exception list
             new_names_list = list(names)
             if not name in IGNORE_CATEGORY_LIST:
-                new_names_list.append(name.title())
+                new_names_list.append(cleanCategory(name))
             
             processCategory(sitename, category["children"], siteinfo, new_names_list)
              
              
-             
-             
+def cleanCategory(cat):
+    if cat.count("&") > 0:
+        l = [c.strip() for c in cat.split("&")]
+        l.sort()
+        cat = " & ".join(l)
+    elif cat.count("+") > 0:
+        l = [c.strip() for c in cat.split("+")]
+        l.sort()
+        cat = " & ".join(l)
+    cat = cat.title()
+    return cat
              
              
              
