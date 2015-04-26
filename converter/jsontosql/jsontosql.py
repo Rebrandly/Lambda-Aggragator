@@ -1,61 +1,189 @@
 import json
-from pprint import pprint
 
+# ignore these categories
 IGNORE_CATEGORY_LIST = ["View All", "Stock", "Clothes", "clothes"]
+
+# incrementing id values
 PRODUCT_ID = 1
 PRODUCT_VARIATION_ID = 1
 PRODUCT_IMAGE_ID = 1
+
+# record unique names 
 HUMAN_DEMO = []
 CATEGORY = []
 SITE_NAME = []
 CITY = []
 COUNTRY = []
 HD_CAT = []
-RESULT = open("result.sql", "w")
 
 
+'''
+Reads property value from the object. Escapes strings to work in postgreSQL.
+Returns empty string if key not found.
+'''
 def getProperty(obj, key):
-    val = ""
     if key in obj:
         val = obj[key]
-        
         if isinstance(val, unicode):
-            val = val.replace("'", "''")
-        elif isinstance(val, list):
-            for i in range(len(val)):
-                if isinstance(val, unicode):
-                    val[i] = val[i].replace("'", "''")
-    return val
+            return val.replace("'", "''")
+        if isinstance(val, list) and len(val)>0 and isinstance(val[0], unicode):
+            return [x.replace("'", "''") for x in val]
+        return val
+    return ""
 
-def digger(sitename, lst, siteinfo, names=[]):
-    global IGNORE_CATEGORY_LIST
-    
-    for category in lst:
-        if "metadata" in category and category["finished"]:
-            processProduct(sitename, category, names, siteinfo)
-        else:
-            # category tag name
-            name = getProperty(category, "name")
-        
-            new_names_list = names[:]
-            if not name in IGNORE_CATEGORY_LIST:
-                new_names_list.append(name.title())
-            
-            digger(sitename, category["children"], siteinfo, new_names_list)
-        
-        
+'''
+Adds a unique value to the list if it's not there.
+Returns the id representing it and a boolean indicating if it was added.
+'''
 def addToList(val, lst):
     if val in lst:
         val_id = lst.index(val) + 1
         return val_id, False
-    else:
-        lst.append(val)
-        val_id = len(lst)
-        return val_id, True
+    lst.append(val)
+    val_id = len(lst)
+    return val_id, True
+
+'''
+Traverses the site tree storing the category names.
+'''
+def processCategory(sitename, lst, siteinfo, names=[]):
+    global IGNORE_CATEGORY_LIST
+    
+    for category in lst:
         
+        # if this node is a product that did finished successfuly
+        if "metadata" in category and category["finished"]:
+            processProduct(sitename, category, names, siteinfo)
+
+        else:
+            # category tag name
+            name = getProperty(category, "name")
         
+            # create a new list and add the tag if its not in exception list
+            new_names_list = list(names)
+            if not name in IGNORE_CATEGORY_LIST:
+                new_names_list.append(name.title())
+            
+            processCategory(sitename, category["children"], siteinfo, new_names_list)
+             
+             
+             
+             
+             
+             
+             
+             
+HUMAN_VALUES = []             
+def addTohuman_demographics(val):
+    global HUMAN_VALUES
+    HUMAN_VALUES.append(val)
+def gethuman_demographics():
+    global HUMAN_VALUES
+    if len(HUMAN_VALUES) > 0:
+        return "INSERT INTO human_demographics (id, name) VALUES " + (",".join(HUMAN_VALUES)) + ";\n"
+    
+CAT_VALUES = []
+def addTocategories(val):  
+    global CAT_VALUES
+    CAT_VALUES.append(val)
+def getcategories():
+    global CAT_VALUES
+    if len(CAT_VALUES) > 0:
+        return "INSERT INTO categories (id, name) VALUES " + (",".join(CAT_VALUES)) + ";\n"
+
+HUMAN_CAT_VALUES = []    
+def addTohuman_demographics_categories(val):
+    global HUMAN_CAT_VALUES
+    HUMAN_CAT_VALUES.append(val)
+def gethuman_demographics_categories():
+    global HUMAN_CAT_VALUES
+    if len(HUMAN_CAT_VALUES) > 0:
+        return "INSERT INTO human_demographics_categories (human_demographic_id, category_id) VALUES " + (",".join(HUMAN_CAT_VALUES)) + ";\n"
+
+COUNTRY_VALUES = []
+def addTocountries(val):   
+    global COUNTRY_VALUES
+    COUNTRY_VALUES.append(val)
+def getcountries():  
+    global COUNTRY_VALUES
+    if len(COUNTRY_VALUES) > 0:
+        return "INSERT INTO countries (id, country) VALUES " + (",".join(COUNTRY_VALUES)) + ";\n"
+    
+CITY_VALUES = []
+def addTocities(val):    
+    global CITY_VALUES
+    CITY_VALUES.append(val)
+def getcities():
+    global CITY_VALUES
+    if len(CITY_VALUES) > 0:
+        return "INSERT INTO cities (id, city, country_id) VALUES " + (",".join(CITY_VALUES)) + ";\n"
+    
+RETAILER_VALUES = []
+def addToretailers(val):
+    global RETAILER_VALUES
+    RETAILER_VALUES.append(val)
+def getretailers():
+    global RETAILER_VALUES
+    if len(RETAILER_VALUES) > 0:
+        return "INSERT INTO retailers (id, name, homepage_link, city_id) VALUES " + (",".join(RETAILER_VALUES)) + ";\n"
+    
+PRODUCT_VALUES = []
+def addToproducts(val):  
+    global PRODUCT_VALUES
+    PRODUCT_VALUES.append(val)
+def getproducts():
+    global PRODUCT_VALUES
+    if len(PRODUCT_VALUES) > 0:
+        return "INSERT INTO products (id, origin_id, category_id, title, description, homepage_product_link, original_price, sale_price, retailer_id, active, upvotes) VALUES " + (",".join(PRODUCT_VALUES)) + ";\n"
+    
+PRODUCT_VAR_VALUES = []
+def addToproduct_variations(val):
+    global PRODUCT_VAR_VALUES
+    PRODUCT_VAR_VALUES.append(val)
+def getproduct_variations():
+    global PRODUCT_VAR_VALUES
+    if len(PRODUCT_VAR_VALUES) > 0:
+        return "INSERT INTO product_variations (id, product_id, origin_id, name, swatch_filepath, created_at, updated_at) VALUES " + (",".join(PRODUCT_VAR_VALUES)) + ";\n"
+    
+PRODUCT_IMG_VALUES = []
+def addToproduct_images(val):
+    global PRODUCT_IMG_VALUES
+    PRODUCT_IMG_VALUES.append(val)
+def getproduct_images():
+    global PRODUCT_IMG_VALUES
+    if len(PRODUCT_IMG_VALUES) > 0:
+        return "INSERT INTO product_images (id, product_variation_id, filepath) VALUES " + (",".join(PRODUCT_IMG_VALUES)) + ";\n"
+    
+PRODUCT_VAR_SIZE = []
+def addTovariation_sizes(val):  
+    global PRODUCT_VAR_SIZE
+    PRODUCT_VAR_SIZE.append(val)
+def getvariation_sizes():
+    global PRODUCT_VAR_SIZE
+    if len(PRODUCT_VAR_SIZE) > 0:
+        return "INSERT INTO variation_sizes (product_variation_id, size) VALUES " + (",".join(PRODUCT_VAR_SIZE)) + ";\n"
+    
+PRODUCT_VAR_STOCK = []
+def addTovariation_stocks(val):  
+    global PRODUCT_VAR_STOCK
+    PRODUCT_VAR_STOCK.append(val)
+def getvariation_stocks():
+    global PRODUCT_VAR_STOCK
+    if len(PRODUCT_VAR_STOCK) > 0:
+        return "INSERT INTO variation_stocks (product_variation_id, min, max, has_more) VALUES " + (",".join(PRODUCT_VAR_STOCK)) + ";\n"
+
+
+
+
+
+
+
+
+'''
+Produces the sql code by processing the product.
+'''
 def processProduct(sitename, product, category_list, siteinfo):
-    global PRODUCT_ID, PRODUCT_VARIATION_ID, PRODUCT_IMAGE_ID, HUMAN_DEMO, CATEGORY, SITE_NAME, HD_CAT, CITY, COUNTRY, RESULT
+    global PRODUCT_ID, PRODUCT_VARIATION_ID, PRODUCT_IMAGE_ID, HUMAN_DEMO, CATEGORY, SITE_NAME, HD_CAT, CITY, COUNTRY
     
     data = product["metadata"]    
     
@@ -72,108 +200,72 @@ def processProduct(sitename, product, category_list, siteinfo):
     variations = getProperty(data, "variations")
     
     
-    
+    # add and generate the human_demographic record
     hdemo = category_list[0]
     hdemo_id, added = addToList(hdemo, HUMAN_DEMO)
     if added:
-        string =  "INSERT INTO human_demographics (id, name) VALUES (%d, '%s');\n\n\n" % (hdemo_id, hdemo)    
-        RESULT.write(string.encode('utf8'))  
+        addTohuman_demographics("(%d, '%s')" % (hdemo_id, hdemo))    
         
+    # add and generate the category record    
     cat = category_list[1]
     cat_id, added = addToList(cat, CATEGORY)
     if added:
-        string =  "INSERT INTO categories (id, name) VALUES (%d, '%s');\n\n\n" % (cat_id, cat)    
-        RESULT.write(string.encode('utf8'))    
+        addTocategories("(%d, '%s')" % (cat_id, cat))       
         
+    # add and generate the human_demographic-category record
     pair = (hdemo_id, cat_id)
     if not pair in HD_CAT:    
         HD_CAT.append(pair)
-        string =  "INSERT INTO human_demographics_categories (human_demographic_id, category_id) VALUES (%d, %d);\n\n\n" % (hdemo_id, cat_id)    
-        RESULT.write(string.encode('utf8'))    
+        addTohuman_demographics_categories("(%d, %d)" % (hdemo_id, cat_id))     
         
+    # add and generate the country record     
     country_id, added = addToList(site_country, COUNTRY)    
     if added:
-        string =  "INSERT INTO countries (id, country) VALUES (%d, '%s');\n\n\n" % (country_id, site_country)    
-        RESULT.write(string.encode('utf8')) 
+        addTocountries("(%d, '%s')" % (country_id, site_country))    
         
+    # add and generate the city record 
     city_id, added = addToList(site_city, CITY)  
     if added:
-        string =  "INSERT INTO cities (id, city, country_id) VALUES (%d, '%s', %d);\n\n\n" % (city_id, site_city, country_id)    
-        RESULT.write(string.encode('utf8')) 
+        addTocities("(%d, '%s', %d)" % (city_id, site_city, country_id))   
         
-    sname_id, added = addToList(sitename, SITE_NAME)
+    # add and generate the retailer record     
+    retailer_id, added = addToList(sitename, SITE_NAME)
     if added:
-        string =  "INSERT INTO retailers (id, name, homepage_link, city_id) VALUES (%d, '%s', '%s', %d);\n\n\n" % (sname_id, sitename, site_url, city_id)    
-        RESULT.write(string.encode('utf8')) 
+        addToretailers("(%d, '%s', '%s', %d)" % (retailer_id, sitename, site_url, city_id))    
 
 
-    
-    string =  "INSERT INTO products (id, origin_id, category_id, title, description, homepage_product_link, original_price, sale_price, retailer_id, active, upvotes) VALUES (%d, '%s', %d, '%s', '%s', '%s', %.2f, %.2f, %d, %s, %d);\n\n" % (PRODUCT_ID, id, cat_id, name, desc, url, orig_price, cur_price, sname_id, "True", 0)    
-    RESULT.write(string.encode('utf8'))
-    
-    
+    # add the products record
+    addToproducts("(%d, '%s', %d, '%s', '%s', '%s', %.2f, %.2f, %d, %s, %d)" % (PRODUCT_ID, id, cat_id, name, desc, url, orig_price, cur_price, retailer_id, "True", 0))    
     
     for variation in variations:   
-        
         
         aliasName = getProperty(variation, "aliasName")
         swatch_link = getProperty(variation, "swatch_link")
         image_links = getProperty(variation, "image_links") 
         size_list = getProperty(variation, "sizes")
 
-
-
-
-        string =  "INSERT INTO product_variations (id, product_id, origin_id, name, swatch_filepath, created_at, updated_at) VALUES (%d, %d, '%s', '%s', '%s', %s, %s);\n" % (PRODUCT_VARIATION_ID, PRODUCT_ID, "", aliasName, swatch_link, "NOW()", "NOW()")    
-        RESULT.write(string.encode('utf8'))        
+        # add to product variations
+        addToproduct_variations("(%d, %d, '%s', '%s', '%s', %s, %s)" % (PRODUCT_VARIATION_ID, PRODUCT_ID, "", aliasName, swatch_link, "NOW()", "NOW()"))      
        
-
-        if len(image_links) > 0:
-            Img_Array = []
-            for image_link in image_links:
-                Img_Array.append("(%d, %d, '%s')" % (PRODUCT_IMAGE_ID, PRODUCT_VARIATION_ID, image_link))
-                PRODUCT_IMAGE_ID += 1
-            string = "INSERT INTO product_images (id, product_variation_id, filepath) VALUES " + (",".join(Img_Array)) + ";\n"
-            RESULT.write(string.encode('utf8'))  
+        # add image links
+        for image_link in image_links:
+            addToproduct_images("(%d, %d, '%s')" % (PRODUCT_IMAGE_ID, PRODUCT_VARIATION_ID, image_link))
+            PRODUCT_IMAGE_ID += 1 
             
-            
-
         if size_list:
-            
-            Size_Array = []
-            Stock_Array = []
-            
             for sizeobj in size_list:    
+                
                 # other properties
                 size = getProperty(sizeobj, "size")
                 stock_min = getProperty(sizeobj, "stock_min")
                 stock_max = getProperty(sizeobj, "stock_max")
                 hasMore = getProperty(sizeobj, "hasMore")
       
-                Size_Array.append("(%d, '%s')" % (PRODUCT_VARIATION_ID, size))
-                
-                if stock_min!="" and stock_max!="" and hasMore!="":
-                    Stock_Array.append("(%d, %d, %d, %s)" % (PRODUCT_VARIATION_ID, stock_min, stock_max, hasMore))
-                else:
-                    Stock_Array.append("(%d)" % (PRODUCT_VARIATION_ID))
-                
-                
-                
-            if len(Size_Array) > 0:
-                string = "INSERT INTO variation_sizes (product_variation_id, size) VALUES " + (",".join(Size_Array)) + ";\n"
-                RESULT.write(string.encode('utf8')) 
+                # add to product size
+                addTovariation_sizes("(%d, '%s')" % (PRODUCT_VARIATION_ID, size))
+                # add to product stock
+                addTovariation_stocks("(%d, %s, %s, %s)" % (PRODUCT_VARIATION_ID, stock_min if stock_min!="" else "null", stock_max if stock_max!="" else "null", hasMore if hasMore!="" else "null"))
 
-
-                
-            if len(Stock_Array) > 0:
-                if stock_min!="" and stock_max!="" and hasMore!="":
-                    string = "INSERT INTO variation_stocks (product_variation_id, min, max, has_more) VALUES " + (",".join(Stock_Array)) + ";\n"
-                else:
-                    string = "INSERT INTO variation_stocks (product_variation_id) VALUES " + (",".join(Stock_Array)) + ";\n"
-                RESULT.write(string.encode('utf8')) 
-        
-        
-        RESULT.write("\n")
         
         
         
@@ -184,16 +276,33 @@ def processProduct(sitename, product, category_list, siteinfo):
 
 with open('json.txt') as data_file:    
     data = json.load(data_file)
-    sites = data["response"]
     
-    for site in sites:
+    for site in data["response"]:
+    
         root = site["root"]
         
         name = root["name"]
         obj = root["children"] 
         siteinfo = root["metadata"]["site_info"]
         
-        digger(name, obj, siteinfo)
+        processCategory(name, obj, siteinfo)
 
 
-RESULT.close()
+
+
+
+result = open("result.sql", "w")
+
+result.write(getcategories().encode('utf8'))
+result.write(gethuman_demographics().encode('utf8'))
+result.write(getcountries().encode('utf8'))
+result.write(getcities().encode('utf8'))
+result.write(getretailers().encode('utf8'))
+result.write(getproducts().encode('utf8'))
+result.write(getproduct_variations().encode('utf8'))
+result.write(gethuman_demographics_categories().encode('utf8'))
+result.write(getproduct_images().encode('utf8'))
+result.write(getvariation_sizes().encode('utf8'))
+result.write(getvariation_stocks().encode('utf8'))
+
+result.close()
