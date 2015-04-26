@@ -1,10 +1,18 @@
 PixieMarket
 http://www.pixiemarket.com
+New York
+New York
 60
 4
 1
 
 node.directTemplate(input, scanEvents, function(input) {
+	node.addmetadata("site_info", {
+		url: url,
+		city : city,
+		country : country
+	});
+	
 	return [(nodes[1])({
 		data : input.data,
 		name : "Women"
@@ -65,7 +73,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			return;
 		}
 		
-		if (i > 0) return;
+		//if (i > 0) return;
 		
 		// get price
 		var pricetag = item.find("div.price-box");

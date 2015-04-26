@@ -9,7 +9,7 @@ CREATE TABLE "product" (
 	"description" TEXT,
 	"homepage_product_link" TEXT,
 	"original_price" FLOAT,
-	"sale_price" integer,
+	"sale_price" FLOAT,
 	"retailer_id" integer,
 	"active" BOOLEAN,
 	"upvotes" integer,
@@ -27,9 +27,10 @@ CREATE TABLE "human_demographic" (
 );
 
 CREATE TABLE "product_image" (
+	"id" integer,
 	"product_variation_id" integer,
 	"filepath" TEXT,
-	CONSTRAINT Product_Image_pk PRIMARY KEY (product_variation_id)
+	CONSTRAINT Product_Image_pk PRIMARY KEY (id)
 ) WITH (
   OIDS=FALSE
 );

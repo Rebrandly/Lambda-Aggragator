@@ -1,10 +1,18 @@
 NastyGal
 http://www.nastygal.com
+Los Angeles
+California
 60
 4
 1
 
 node.directTemplate(input, scanEvents, function(input) {
+	node.addmetadata("site_info", {
+		url: url,
+		city : city,
+		country : country
+	});
+	
 	return [(nodes[1])({
 		data : input.data,
 		name : "Women"
@@ -80,7 +88,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			return;
 		}
 		
-		if (i > 0) return;
+		//if (i > 0) return;
 		
 		// get name
 		var name = item.find("div.product-name").text().trim();

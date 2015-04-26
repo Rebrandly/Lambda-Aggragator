@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 19:03:58 25/04/2015
+ * Last Modified Date: 19:57:36 25/04/2015
  */
 
 
@@ -128,7 +128,7 @@ var nodes = [
 						return;
 					}
 					
-					if (i > 0) return;
+					//if (i > 0) return;
 					
 					// get name
 					var name = item.find("div.product-name").text().trim();

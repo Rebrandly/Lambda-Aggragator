@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 19:03:58 25/04/2015
+ * Last Modified Date: 19:57:36 25/04/2015
  */
 
 
@@ -137,7 +137,7 @@ var nodes = [
 						return;
 					}
 					
-					if (i > 0) return;
+					//if (i > 0) return;
 					
 					// name
 					var name = item.find("h3.name").text().trim();

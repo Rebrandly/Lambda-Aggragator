@@ -1,12 +1,18 @@
 Forever21
 http://www.forever21.com
+Los Angeles
+California
 60
 4
 0
 
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
-	//node.addmetadata("url", input.data);
+	node.addmetadata("site_info", {
+		url: url,
+		city : city,
+		country : country
+	});
 	
 	// EQ(0) FOR TESTING PURPOSES
 	return parsedHTML("head > link[rel=canonical],[rel=alternate]").eq(0).map(function(i, x) { 
@@ -18,7 +24,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body), childList = [];
-	//node.addmetadata("url", input.data);
 	
 	parsedHTML("#divNav ul.menu > li").each(function(i, x) { 
 		var header = $(x).find("a").eq(0);
@@ -50,8 +55,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 });
 
 node.directTemplate(input, scanEvents, function(input) {
-	//node.addmetadata("category", input.name);
-	
+
 	var dataList = input.data, i, l=dataList.length, childList=[];
 	for(i=0; i<l; i+=1) {
 		childList.push((nodes[3])({
@@ -64,7 +68,6 @@ node.directTemplate(input, scanEvents, function(input) {
 
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
-	//node.addmetadata("sub-category", input.name);
 
 	// get id
 	var categoryId = parsedHTML("body").attr("onunload").match(/'(\d+)'/)[1]; 
