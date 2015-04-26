@@ -25,6 +25,8 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		
 		console.log(tabName);
 		
+		var submenu = parsedHTML("div.sub-menu[data-sub-menu-name=]")
+		
 		return [];
 
 		// filter high level categories
