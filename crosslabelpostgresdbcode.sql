@@ -1,9 +1,8 @@
-DROP TABLE IF EXISTS product, human_demographic, product_image, retailer, variation_size, category, social_media, retailer_social_media, product_variation, variation_stock, city, country;
+DROP TABLE IF EXISTS product, human_demographic, product_image, retailer, variation_size, category, social_media, retailer_social_media, human_demographic_category, product_variation, variation_stock, city, country;
 
 CREATE TABLE "product" (
 	"id" integer,
 	"origin_id" VARCHAR(255),
-	"human_demographic_id" integer,
 	"category_id" integer,
 	"title" VARCHAR(255),
 	"description" TEXT,
@@ -22,6 +21,14 @@ CREATE TABLE "human_demographic" (
 	"id" integer,
 	"name" VARCHAR(255),
 	CONSTRAINT Human_Demographic_pk PRIMARY KEY (id)
+) WITH (
+  OIDS=FALSE
+);
+
+CREATE TABLE "human_demographic_category" (
+	"human_demographic_id" integer,
+	"category_id" integer,
+	CONSTRAINT Human_Demographic_Category_pk PRIMARY KEY(human_demographic_id, category_id)
 ) WITH (
   OIDS=FALSE
 );
@@ -119,7 +126,8 @@ CREATE TABLE "country" (
 );
 
 
-ALTER TABLE "product" ADD CONSTRAINT Product_fk0 FOREIGN KEY (human_demographic_id) REFERENCES human_demographic(id);
+ALTER TABLE "human_demographic_category" ADD CONSTRAINT Human_Demographic_Category_fk0 FOREIGN KEY (human_demographic_id) REFERENCES human_demographic(id);
+ALTER TABLE "human_demographic_category" ADD CONSTRAINT Human_Demographic_Category_fk1 FOREIGN KEY (category_id) REFERENCES category(id);
 ALTER TABLE "product" ADD CONSTRAINT Product_fk1 FOREIGN KEY (category_id) REFERENCES category(id);
 ALTER TABLE "product" ADD CONSTRAINT Product_fk2 FOREIGN KEY (retailer_id) REFERENCES retailer(id);
 ALTER TABLE "product_image" ADD CONSTRAINT Product_Image_fk0 FOREIGN KEY (product_variation_id) REFERENCES product_variation(id);

@@ -10,6 +10,7 @@ CATEGORY = []
 SITE_NAME = []
 CITY = []
 COUNTRY = []
+HD_CAT = []
 RESULT = open("result.sql", "w")
 
 
@@ -54,7 +55,7 @@ def addToList(val, lst):
         
         
 def processProduct(sitename, product, category_list, siteinfo):
-    global PRODUCT_ID, PRODUCT_VARIATION_ID, PRODUCT_IMAGE_ID, HUMAN_DEMO, CATEGORY, SITE_NAME, CITY, COUNTRY, RESULT
+    global PRODUCT_ID, PRODUCT_VARIATION_ID, PRODUCT_IMAGE_ID, HUMAN_DEMO, CATEGORY, SITE_NAME, HD_CAT, CITY, COUNTRY, RESULT
     
     data = product["metadata"]    
     
@@ -71,81 +72,110 @@ def processProduct(sitename, product, category_list, siteinfo):
     variations = getProperty(data, "variations")
     
     
+    
     hdemo = category_list[0]
     hdemo_id, added = addToList(hdemo, HUMAN_DEMO)
     if added:
-        string =  "INSERT INTO human_demographic (id, name)\n"
-        string += "VALUES (%d, '%s');\n\n\n" % (hdemo_id, hdemo)    
+        string =  "INSERT INTO human_demographic (id, name) VALUES (%d, '%s');\n\n\n" % (hdemo_id, hdemo)    
         RESULT.write(string.encode('utf8'))  
         
     cat = category_list[1]
     cat_id, added = addToList(cat, CATEGORY)
     if added:
-        string =  "INSERT INTO category (id, name)\n"
-        string += "VALUES (%d, '%s');\n\n\n" % (cat_id, cat)    
+        string =  "INSERT INTO category (id, name) VALUES (%d, '%s');\n\n\n" % (cat_id, cat)    
+        RESULT.write(string.encode('utf8'))    
+        
+    pair = (hdemo_id, cat_id)
+    if not pair in HD_CAT:    
+        HD_CAT.append(pair)
+        string =  "INSERT INTO human_demographic_category (human_demographic_id, category_id) VALUES (%d, %d);\n\n\n" % (hdemo_id, cat_id)    
         RESULT.write(string.encode('utf8'))    
         
     country_id, added = addToList(site_country, COUNTRY)    
     if added:
-        string =  "INSERT INTO country (id, country)\n"
-        string += "VALUES (%d, '%s');\n\n\n" % (country_id, site_country)    
+        string =  "INSERT INTO country (id, country) VALUES (%d, '%s');\n\n\n" % (country_id, site_country)    
         RESULT.write(string.encode('utf8')) 
         
     city_id, added = addToList(site_city, CITY)  
     if added:
-        string =  "INSERT INTO city (id, city, country_id)\n"
-        string += "VALUES (%d, '%s', %d);\n\n\n" % (city_id, site_city, country_id)    
+        string =  "INSERT INTO city (id, city, country_id) VALUES (%d, '%s', %d);\n\n\n" % (city_id, site_city, country_id)    
         RESULT.write(string.encode('utf8')) 
         
     sname_id, added = addToList(sitename, SITE_NAME)
     if added:
-        string =  "INSERT INTO retailer (id, name, homepage_link, city_id)\n"
-        string += "VALUES (%d, '%s', '%s', %d);\n\n\n" % (sname_id, sitename, site_url, city_id)    
+        string =  "INSERT INTO retailer (id, name, homepage_link, city_id) VALUES (%d, '%s', '%s', %d);\n\n\n" % (sname_id, sitename, site_url, city_id)    
         RESULT.write(string.encode('utf8')) 
+
+
     
-    string =  "INSERT INTO product (id, origin_id, human_demographic_id, category_id, title, description, homepage_product_link, original_price, sale_price, retailer_id, active, upvotes)\n"
-    string += "VALUES (%d, '%s', %d, %d, '%s', '%s', '%s', %.2f, %.2f, %d, %s, %d);\n\n" % (PRODUCT_ID, id, hdemo_id, cat_id, name, desc, url, orig_price, cur_price, sname_id, "True", 0)    
+    string =  "INSERT INTO product (id, origin_id, category_id, title, description, homepage_product_link, original_price, sale_price, retailer_id, active, upvotes) VALUES (%d, '%s', %d, '%s', '%s', '%s', %.2f, %.2f, %d, %s, %d);\n\n" % (PRODUCT_ID, id, cat_id, name, desc, url, orig_price, cur_price, sname_id, "True", 0)    
     RESULT.write(string.encode('utf8'))
     
-    for variation in variations:    
+    
+    
+    for variation in variations:   
+        
+        
         aliasName = getProperty(variation, "aliasName")
         swatch_link = getProperty(variation, "swatch_link")
         image_links = getProperty(variation, "image_links") 
         size_list = getProperty(variation, "sizes")
 
-        string =  "INSERT INTO product_variation (id, product_id, origin_id, name, swatch_filepath, created_at, updated_at)\n"
-        string += "VALUES (%d, %d, '%s', '%s', '%s', %s, %s);\n" % (PRODUCT_VARIATION_ID, PRODUCT_ID, "", aliasName, swatch_link, "NOW()", "NOW()")    
-        RESULT.write(string.encode('utf8'))        
 
-        for image_link in image_links:
-            string =  "INSERT INTO product_image (id, product_variation_id, filepath)\n"
-            string += "VALUES (%d, %d, '%s');\n" % (PRODUCT_IMAGE_ID, PRODUCT_VARIATION_ID, image_link)    
-            RESULT.write(string.encode('utf8'))      
+
+
+        string =  "INSERT INTO product_variation (id, product_id, origin_id, name, swatch_filepath, created_at, updated_at) VALUES (%d, %d, '%s', '%s', '%s', %s, %s);\n" % (PRODUCT_VARIATION_ID, PRODUCT_ID, "", aliasName, swatch_link, "NOW()", "NOW()")    
+        RESULT.write(string.encode('utf8'))        
+       
+
+        if len(image_links) > 0:
+            Img_Array = []
+            for image_link in image_links:
+                Img_Array.append("(%d, %d, '%s')" % (PRODUCT_IMAGE_ID, PRODUCT_VARIATION_ID, image_link))
+                PRODUCT_IMAGE_ID += 1
+            string = "INSERT INTO product_image (id, product_variation_id, filepath) VALUES " + (",".join(Img_Array)) + ";\n"
+            RESULT.write(string.encode('utf8'))  
             
-            PRODUCT_IMAGE_ID += 1
+            
 
         if size_list:
-            for sizeobj in size_list:
-                
+            
+            Size_Array = []
+            Stock_Array = []
+            
+            for sizeobj in size_list:    
                 # other properties
                 size = getProperty(sizeobj, "size")
                 stock_min = getProperty(sizeobj, "stock_min")
                 stock_max = getProperty(sizeobj, "stock_max")
                 hasMore = getProperty(sizeobj, "hasMore")
-
-                string =  "INSERT INTO variation_size (product_variation_id, size)\n"
-                string += "VALUES (%d, '%s');\n" % (PRODUCT_VARIATION_ID, size)    
-                RESULT.write(string.encode('utf8'))         
+      
+                Size_Array.append("(%d, '%s')" % (PRODUCT_VARIATION_ID, size))
                 
                 if stock_min!="" and stock_max!="" and hasMore!="":
-                    string =  "INSERT INTO variation_stock (product_variation_id, min, max, has_more)\n"
-                    string += "VALUES (%d, %d, %d, %s);\n" % (PRODUCT_VARIATION_ID, stock_min, stock_max, hasMore)
+                    Stock_Array.append("(%d, %d, %d, %s)" % (PRODUCT_VARIATION_ID, stock_min, stock_max, hasMore))
                 else:
-                    string =  "INSERT INTO variation_stock (product_variation_id)\n"
-                    string += "VALUES (%d);\n" % (PRODUCT_VARIATION_ID)                        
-                RESULT.write(string.encode('utf8'))    
+                    Stock_Array.append("(%d)" % (PRODUCT_VARIATION_ID))
+                
+                
+                
+            if len(Size_Array) > 0:
+                string = "INSERT INTO variation_size (product_variation_id, size) VALUES " + (",".join(Size_Array)) + ";\n"
+                RESULT.write(string.encode('utf8')) 
+
+
+                
+            if len(Stock_Array) > 0:
+                if stock_min!="" and stock_max!="" and hasMore!="":
+                    string = "INSERT INTO variation_stock (product_variation_id, min, max, has_more) VALUES " + (",".join(Stock_Array)) + ";\n"
+                else:
+                    string = "INSERT INTO variation_stock (product_variation_id) VALUES " + (",".join(Stock_Array)) + ";\n"
+                RESULT.write(string.encode('utf8')) 
         
-        RESULT.write("\n\n")
+        
+        RESULT.write("\n")
+        
+        
         
         PRODUCT_VARIATION_ID += 1
     PRODUCT_ID += 1

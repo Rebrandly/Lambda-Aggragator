@@ -4,7 +4,7 @@ Philadelphia
 Pennsylvania
 60
 4
-1
+0
 
 node.directTemplate(input, scanEvents, function(input) {
 	node.addmetadata("site_info", {
