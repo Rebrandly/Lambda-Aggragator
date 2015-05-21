@@ -43,6 +43,10 @@ module.exports = function(name, input, generateRawFunc) {
 		return failed;
 	};
 
+	this.getParent = function() {
+		return parent;
+	};
+	
 	this.setParent = function(p) {
 		parent = p;
 	};
@@ -51,9 +55,12 @@ module.exports = function(name, input, generateRawFunc) {
 		return children;
 	};
 	
-	this.gettmetadata = function() {
-		return metadata;
-	}
+	this.removeChild = function(child) {
+		var ind = children.indexOf(child);
+		if (ind != -1) {
+			children.splice(ind, 1);
+		}		
+	};
 	
 	this.addmetadata = function(key, val) {
 		metadata[key] = val;
@@ -86,19 +93,19 @@ module.exports = function(name, input, generateRawFunc) {
 		scanEvents.finished(node, childList);
 	};
 	
-	this.httpError = function(scanEvents, data) {
+	this.httpError = function(scanEvents) {
 		failed = true;
-		scanEvents.httpError(data);
+		scanEvents.httpError(node);
 	};
 	
-	this.parseError = function(scanEvents, data) {
+	this.parseError = function(scanEvents) {
 		failed = true;
-		scanEvents.parseError(data);
+		scanEvents.parseError(node);
 	};
 	
-	this.emptyError = function(scanEvents, data) {
+	this.emptyError = function(scanEvents) {
 		failed = true;
-		scanEvents.emptyError(data);
+		scanEvents.emptyError(node);
 	};
 	
 	this.downloadTemplate = function(input, scanEvents, func) {
@@ -107,14 +114,12 @@ module.exports = function(name, input, generateRawFunc) {
 		}, function(error, response, body) {
 			if (error) {
 				node.addmetadata("error", error);
-				node.httpError(scanEvents, {
-					message : error
-				});
+				node.httpError(scanEvents);
 				return console.log(error);
 			}
 			
 			templaceFinisher(body, scanEvents, func);
-		});	
+		});
 	};
 
 	this.directTemplate = function(input, scanEvents, func) {
@@ -126,18 +131,14 @@ module.exports = function(name, input, generateRawFunc) {
 			var childList = func(input);
 		} catch (err) {
 			node.addmetadata("error", err.message);
-			node.parseError(scanEvents, {
-				message : err.message
-			});
+			node.parseError(scanEvents);
 			return console.log(err.message);
 		}
 		
 		if (childList.length == 0 && !node.isLeaf()) {
 			var msg = "Empty children list";
 			node.addmetadata("error", msg);
-			node.emptyError(scanEvents, {
-				message : msg
-			});
+			node.emptyError(scanEvents);
 			return console.log(msg);
 		}
 
@@ -147,9 +148,7 @@ module.exports = function(name, input, generateRawFunc) {
 	this.toJSON = function() {
 		var obj = {
 			name : name,
-			children : children,
-			finished : finished,
-			failed : failed
+			children : children
 		};
 		
 		if (Object.keys(metadata).length > 0) {

@@ -20,10 +20,10 @@ module.exports = function(site) {
 	var startTime = null;                                      // time the scan began
 	var endTime = startTime;                                   // time of supposed complete
 	var concurrentAjaxCalls = site.getconcurrentAjaxCalls();   // number of ajax calls at same time
-	var numberoferrors = 0;                                    // number of errors
 	var numberofitems = 0;                                     // number of items
 	var repeats = 0;                                           // number of repeats
 	var visitedIDList = {};                                    // record all id's
+	var badNodes = [];                                         // record all bad nodes
 
 	this.scan = function() {
 		runningAjaxCount = 0;
@@ -40,7 +40,20 @@ module.exports = function(site) {
 	};
 	
 	this.hitLimit = function() {
+		return didhitLimit();
+	};
+	
+	var didhitLimit = function() {
 		return runningAjaxCount >= maxvisitAJAX;
+	};
+	
+	var registerBadNode = function(node) {
+		badNodes.push(node);
+		var parent = node.getParent();
+		if (parent != null) {
+			parent.removeChild(node);
+		}
+		console.log("FOUND BAD NODE!!!!!!!");
 	};
 	
 	var DFSScan = function() {
@@ -49,7 +62,7 @@ module.exports = function(site) {
 		endTime = new Date();
 		
 		// don't go past time allocated
-		if (runningAjaxCount >= maxvisitAJAX) {
+		if (didhitLimit()) {
 			return;
 		}
 		
@@ -81,20 +94,20 @@ module.exports = function(site) {
 						// continue crawling
 						DFSScan();
 					},
-					httpError : function(data) {
-						numberoferrors += 1;
+					httpError : function(node) {
+						registerBadNode(node);
 						
 						// continue crawling
 						DFSScan();
 					},
-					parseError: function(data) {
-						numberoferrors += 1;
+					parseError: function(node) {
+						registerBadNode(node);
 						
 						// continue crawling
 						DFSScan();
 					},
-					emptyError : function(data) {
-						numberoferrors += 1;
+					emptyError : function(node) {
+						registerBadNode(node);
 						
 						// continue crawling
 						DFSScan();	
@@ -151,7 +164,8 @@ module.exports = function(site) {
 			duration : endTime - startTime,
 			maxvisitAJAX : maxvisitAJAX,
 			concurrentAjaxCalls : concurrentAjaxCalls,
-			numberoferrors : numberoferrors,
+			numberoferrors : badNodes.length,
+			badNodes : badNodes,
 			numberofitems : numberofitems,
 			repeats : repeats,
 			root : root

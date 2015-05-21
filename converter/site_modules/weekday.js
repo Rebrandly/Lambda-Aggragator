@@ -4,7 +4,7 @@ Copenhagen
 Denmark
 60
 4
-1
+0
 
 node.downloadTemplate(input, scanEvents, function(body) {
 	node.addmetadata("site_info", {

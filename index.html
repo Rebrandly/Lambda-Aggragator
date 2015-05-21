@@ -25,15 +25,7 @@
 				font-size:10px;
 				cursor: pointer; 
 				cursor: hand;
-			}
-			.failed {
-				background-color:#FF7373;
-			}
-			.finished {
 				background-color:#A6FF71;
-			}
-			.unexplored {
-				background-color:#FFEE71;
 			}
 		</style>
 		
@@ -46,16 +38,7 @@
 				tab = tab || "";
 				globdata[node_id] = JSON.stringify(v.metadata);
 				
-				if (v.failed) {
-					var cls = "failed";
-				} else if (v.finished) {
-					var cls = "finished";
-				} else {
-					var cls = "unexplored";
-				}
-
-				var name = "<span class='node " + cls + "' data-id='" + node_id + "'>" + v.name + "</span>";
-				if (v.failed) name += " (" + v.metadata.error + ")";
+				var name = "<span class='node' data-id='" + node_id + "'>" + v.name + "</span>";
 				dfsStr += tab + name + "<br/>";
 				
 				node_id += 1;
@@ -90,7 +73,7 @@
 							str += "<div>Concurrent AJAX Calls: " + site.concurrentAjaxCalls + "</div>";
 							str += "<div>Start Time: " + site.startTime + "</div>";
 							str += "<div>Duration: " + (site.duration/1000.0)/60.0 + " minutes</div>";
-							str += "<div>Errors: " + site.numberoferrors + "</div>";
+							str += "<div>Errors: " + site.badNodes.length + "</div>";
 							str += "<div>Items: " + site.numberofitems + "</div>";
 							str += "<div>Repeats: " + site.repeats + "</div>";
 							str += "<br/>";

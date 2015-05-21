@@ -4,7 +4,7 @@ Philadelphia
 Pennsylvania
 60
 4
-0
+1
 
 node.directTemplate(input, scanEvents, function(input) {
 	node.addmetadata("site_info", {
@@ -188,7 +188,81 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	var long_desc = cleanStr(parsedHTML("div.long-desc").text());
 	var material_desc = cleanStr(parsedHTML("div.care-desc").text());
 	var sizing_desc = cleanStr(parsedHTML("div.sizing-desc").text());
+	var desc = long_desc + "<br/>" + material_desc + "<br/>" + sizing_desc;
 	
+	if (desc == null) {
+		console.log("desc = null");
+	} else {
+		//console.log(desc);
+		var spandex = desc.match(/(\d+% )?Spandex/gi);
+		var neoprene = desc.match(/\d+% Neoprene/gi);
+		var nylon = desc.match(/(\d+% )?Nylon/gi);
+		var cotton = desc.match(/\d+% Cotton/gi);
+		var polyamide = desc.match(/\d+% Polyamide/gi);
+		var poliamyd = desc.match(/\d+% Poliamyd/gi);
+		var elastane = desc.match(/\d+% Elastane/gi);
+		var elastomer = desc.match(/\d+% Elastomer/gi);
+		var leather = desc.match(/(\d+% )?Leather/gi);
+		var voile = desc.match(/(\d+% )?Solid Soft Voile/gi);
+		var polyester = desc.match(/\d+% Polyester/gi);
+		var lycraspandex = desc.match(/\d+% Lycra Spandex/gi);
+		var rayon = desc.match(/(\d+% )?Rayon/gi);
+		var linen = desc.match(/\d+% Linen/gi);
+		var viscose = desc.match(/\d+% Viscose/gi);
+		var wool = desc.match(/\d+% Wool/gi);
+		var acrylic = desc.match(/\d+% Acrylic/gi);
+		var modal = desc.match(/\d+% Modal/gi);
+		var pimacotton = desc.match(/\d+% Pima Cotton/gi);
+		var silk = desc.match(/\d+% Silk/gi);
+		
+		if (spandex!=null) {
+			console.log(spandex[0]);
+		} else if (neoprene!=null) {
+			console.log(neoprene[0]);
+		} else if (nylon!=null) {
+			console.log(nylon[0]);
+		} else if (cotton!=null) {
+			console.log(cotton[0]);
+		} else if (polyamide!=null) {
+			console.log(polyamide[0]);
+		} else if (elastane!=null) {
+			console.log(elastane[0]);
+		} else if (leather!=null) {
+			console.log(leather[0]);
+		} else if (polyester!=null) {
+			console.log(polyester[0]);
+		} else if (lycraspandex!=null) {
+			console.log(lycraspandex[0]);
+		} else if (rayon!=null) {
+			console.log(rayon[0]);
+		} else if (linen!=null) {
+			console.log(linen[0]);
+		} else if (voile!=null) {
+			console.log(voile[0]);
+		} else if (poliamyd!=null) {
+			console.log(poliamyd[0]);
+		} else if (elastomer!=null) {
+			console.log(elastomer[0]);
+		} else if (viscose!=null) {
+			console.log(viscose[0]);
+		} else if (wool!=null) {
+			console.log(wool[0]);
+		} else if (acrylic!=null) {
+			console.log(acrylic[0]);
+		} else if (modal!=null) {
+			console.log(modal[0]);
+		} else if (pimacotton!=null) {
+			console.log(pimacotton[0]);
+		} else if (silk!=null) {
+			console.log(silk[0]);
+		} else {
+			console.log(desc);
+			throw { 
+				message : "MATERIAL NOT FOUND!!!" 
+			};
+		}
+	}
+
 	// link to stock
 	var link = parsedHTML("a.more-info.availability.dialog").attr("href");
 	
@@ -200,7 +274,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		variations : mainList,
 		current_price : input.current_price,
 		original_price : input.original_price,
-		long_desc : long_desc + "<br/>" + material_desc + "<br/>" + sizing_desc
+		long_desc : desc
 	})]; 
 });
 

@@ -16,8 +16,11 @@ var http = require('http');
 var LambdaCrawl = require('./js/module/LambdaCrawl.js');
 // Load file writer
 var fs = require('fs');
+// Load common functions
+var common = require('./js/common/common.js');
 
 
+var ROTATION_FREQUENCY = 10; // rotate every 10 seconds
 
 // dynamically load all modules from directory and create the list of crawl instances
 var siteDir = './js/sites/', crawlLooper = [];
@@ -43,12 +46,8 @@ if (crawlLooper.length > 0) {
 		if (crawler.hitLimit() || crawler.getStartTime() == null) {
 			crawler.scan();
 		}
-	}, 10 * 1000);
+	}, ROTATION_FREQUENCY * 1000); 
 }
-
-
-
-var common = require('./js/common/common.js');
 
 // Configure our HTTP server to respond to all requests.
 var server = http.createServer(function (req, res) {
