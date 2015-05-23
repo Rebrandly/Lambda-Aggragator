@@ -339,8 +339,8 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		}
 	}
 
-	// mark as leaf
-	node.addmetadata("leaf", true);
+	// register item
+	scanEvents.setItem();
 	
 	// add data to node metadata
 	node.addmetadata("url", input.url);

@@ -1,5 +1,5 @@
 /*
- * Forever21 Site Module
+ * Lambda Site
  *
  * Developers: Ryan Steve D'Souza
  * http://www.linkedin.com/profile/view?id=282676120

@@ -29,7 +29,7 @@
 			}
 		</style>
 		
-		<script src="js/plugin/jquery-2.1.4.min.js"></script>
+		<script src="../js/plugin/jquery-2.1.4.min.js"></script>
 		
 		<script>
 			var dfsStr, globdata = {}, node_id=0;
@@ -71,11 +71,9 @@
 							str += "<div>Max Running AJAX Visits: " + site.maxvisitAJAX + "</div>";
 							str += "<div>Total AJAX Count: " + site.totalAjaxCount + "</div>";
 							str += "<div>Concurrent AJAX Calls: " + site.concurrentAjaxCalls + "</div>";
-							str += "<div>Start Time: " + site.startTime + "</div>";
-							str += "<div>Duration: " + (site.duration/1000.0)/60.0 + " minutes</div>";
-							str += "<div>Errors: " + site.badNodes.length + "</div>";
 							str += "<div>Items: " + site.numberofitems + "</div>";
 							str += "<div>Repeats: " + site.repeats + "</div>";
+							str += "<div>Errors: " + site.numberoferrors + "</div>";
 							str += "<br/>";
 							
 							dfsStr = "";
@@ -84,6 +82,7 @@
 							rcontext.html(dfsStr);
 							context.html(str);
 							context.append(rcontext);
+							
 							$("body").append(context);
 							if (i < sites.length-1) {
 								$("body").append("<hr/>");

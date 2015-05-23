@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 20:54:24 20/05/2015
+ * Last Modified Date: 16:40:02 23/05/2015
  */
 
 
@@ -42,6 +42,7 @@ var nodes = [
 					name : "Women"
 				})]; 
 			});
+
 		});
 	},
 	function(input) {
@@ -64,6 +65,7 @@ var nodes = [
 					}); 
 				});	
 			});
+
 		});
 	},
 	function(input) {
@@ -86,6 +88,7 @@ var nodes = [
 					}); 
 				});	
 			});
+
 		});
 	},
 	function(input) {
@@ -103,6 +106,7 @@ var nodes = [
 					}); 
 				});	
 			});
+
 		});
 	},
 	function(input) {
@@ -161,6 +165,7 @@ var nodes = [
 				
 				return childList;
 			});
+
 		});
 	},
 	function(input) {
@@ -213,8 +218,8 @@ var nodes = [
 				}
 				var desc = desclist.join("<br/>");
 			
-				// mark as leaf
-				node.addmetadata("leaf", true);
+				// register item
+				scanEvents.setItem();
 				
 				// add data to node metadata
 				node.addmetadata("url", input.data);
@@ -230,7 +235,8 @@ var nodes = [
 				]);
 				
 				return [];
-			});		});
+			});
+		});
 	}
 ];
 

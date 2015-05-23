@@ -142,8 +142,8 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	}
 	var desc = desclist.join("<br/>");
 
-	// mark as leaf
-	node.addmetadata("leaf", true);
+	// register item
+	scanEvents.setItem();
 	
 	// add data to node metadata
 	node.addmetadata("url", input.data);

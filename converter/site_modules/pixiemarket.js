@@ -4,7 +4,7 @@ New York
 New York
 60
 4
-0
+1
 
 node.directTemplate(input, scanEvents, function(input) {
 	node.addmetadata("site_info", {
@@ -139,8 +139,8 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	}
 	var desc = desclist.join("<br/>");
 
-	// mark as leaf
-	node.addmetadata("leaf", true);
+	// register item
+	scanEvents.setItem();
 	
 	// add data to node metadata
 	node.addmetadata("url", input.data);

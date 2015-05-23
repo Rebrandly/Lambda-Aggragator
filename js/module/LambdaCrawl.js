@@ -1,6 +1,5 @@
 /*
- * Lambda Aggregator v0.0.2
- * http://lambdaaggregation.com/
+ * Lambda Crawl
  *
  * Developers: Ryan Steve D'Souza
  * http://www.linkedin.com/profile/view?id=282676120
@@ -15,32 +14,24 @@ module.exports = function(site) {
 	var root = site.getRootNode();                             // the root node of the site
 	var stack = [root];                                        // stack used for dfs search
 	var runningAjaxCount = 0;                                  // the current ajax count
-	var totalAjaxCount = 0;                                    // the total current ajax count
 	var maxvisitAJAX = site.getmaxvisitAJAX();                 // the max ajax request in a row	
-	var startTime = null;                                      // time the scan began
-	var endTime = startTime;                                   // time of supposed complete
+	var totalAjaxCount = 0;                                    // the total current ajax count
 	var concurrentAjaxCalls = site.getconcurrentAjaxCalls();   // number of ajax calls at same time
 	var numberofitems = 0;                                     // number of items
 	var repeats = 0;                                           // number of repeats
 	var visitedIDList = {};                                    // record all id's
 	var badNodes = [];                                         // record all bad nodes
-
+	var active = false;                                        // is this crawl active
+	
 	this.scan = function() {
+		active = true;
 		runningAjaxCount = 0;
 		DFSScan();
-		
-		if (startTime == null) {
-			startTime = new Date();
-		}
 		console.log("Started crawling: " + root.getName());
 	};
 	
-	this.getStartTime = function() {
-		return startTime;
-	};
-	
-	this.hitLimit = function() {
-		return didhitLimit();
+	this.readyToCrawl = function() {
+		return didhitLimit() || !active;
 	};
 	
 	var didhitLimit = function() {
@@ -53,13 +44,11 @@ module.exports = function(site) {
 		if (parent != null) {
 			parent.removeChild(node);
 		}
-		console.log("FOUND BAD NODE!!!!!!!");
+		node.setParent(null);
+		console.log("FOUND BAD NODE!");
 	};
 	
 	var DFSScan = function() {
-		
-		// set end time
-		endTime = new Date();
 		
 		// don't go past time allocated
 		if (didhitLimit()) {
@@ -74,7 +63,7 @@ module.exports = function(site) {
 			var v = stack[i];
 			
 			// if not started processing
-			if (v.getloopChild() == -1) { 
+			if (!v.hasStartedLooping()) { 
 			
 				// mark as started processing
 				v.setloopChild(0);   
@@ -85,58 +74,44 @@ module.exports = function(site) {
 				
 				// start downloading the data
 				v.downloadData({
-					finished : function(node, children) {
-						if (node.isLeaf()) {
-							node.markUnLeaf();
-							numberofitems += 1;
-						}					
-						
-						// continue crawling
+					finished : function(node) {
 						DFSScan();
 					},
-					httpError : function(node) {
-						registerBadNode(node);
-						
-						// continue crawling
+					error : function() {
 						DFSScan();
 					},
-					parseError: function(node) {
-						registerBadNode(node);
-						
-						// continue crawling
-						DFSScan();
-					},
-					emptyError : function(node) {
-						registerBadNode(node);
-						
-						// continue crawling
-						DFSScan();	
+					setItem : function() {
+						numberofitems += 1;
 					},
 					recordID : function(id) {
-						var strid = String(id);
-						if (visitedIDList.hasOwnProperty(strid)) {
+						if (!(typeof id == 'string' || id instanceof String)) {
+							id = String(id);
+						}
+						if (visitedIDList.hasOwnProperty(id)) {
 							repeats += 1;
 							return false;
 						}
-						visitedIDList[strid] = true;
+						visitedIDList[id] = true;
 						return true;
 					}
 				});
-				
-			// if finished processing
-			} else if (v.done()) {
+			// if finished downloading, start looping through children
+			} else if (v.doneDownload()) {
 			
 				var children = v.getChildren();
 				var targetIndex = v.getloopChild();
 				
 				// if child index pointing to a valid child
 				if (targetIndex < children.length) {
-					
 					stack.push(children[targetIndex]);
-					v.setloopChild(targetIndex + 1);
-					
-				// no more children, so remove from stack
+					targetIndex += 1;
+				} 
+				
+				// check if still valid
+				if (targetIndex < children.length) {
+					v.setloopChild(targetIndex);
 				} else {
+					// no more children, so remove from stack
 					stack.splice(i, 1);
 				}
 				
@@ -146,7 +121,10 @@ module.exports = function(site) {
 			// if failed
 			} else if (v.failed()) {
 				
-				// node failed to remove from stack
+				// register it
+				registerBadNode(v);
+				
+				// node failed, so remove from stack
 				stack.splice(i, 1);
 				
 				// continue crawling
@@ -159,15 +137,12 @@ module.exports = function(site) {
 		return {
 			stackCount : stack.length,
 			runningAjaxCount : runningAjaxCount,
-			totalAjaxCount : totalAjaxCount,
-			startTime : startTime,
-			duration : endTime - startTime,
 			maxvisitAJAX : maxvisitAJAX,
+			totalAjaxCount : totalAjaxCount,
 			concurrentAjaxCalls : concurrentAjaxCalls,
-			numberoferrors : badNodes.length,
-			badNodes : badNodes,
 			numberofitems : numberofitems,
 			repeats : repeats,
+			numberoferrors : badNodes.length,
 			root : root
 		};
 	};

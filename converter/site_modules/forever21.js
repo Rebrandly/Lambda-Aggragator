@@ -217,8 +217,8 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	
 	// add data to node metadata
 	node.addmetadata("details", obj.catalogEntry);
-	// mark as leaf node
-	node.addmetadata("leaf", true);
+	// register item
+	scanEvents.setItem();
 	
 	return [];
 });

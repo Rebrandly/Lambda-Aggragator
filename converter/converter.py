@@ -61,7 +61,7 @@ def processSiteModule(fd, filename):
         node = nodes[i]
         for line in node:
             string += "\t\t\t" + line
-        string += "\t\t});\n"
+        string += "\n\t\t});\n"
         string += "\t}"
         if i < len(nodes)-1:
             string += ","

@@ -1,6 +1,5 @@
 /*
- * Lambda Aggregator v0.0.2
- * http://lambdaaggregation.com/
+ * Lambda Aggregator
  *
  * Developers: Ryan Steve D'Souza
  * http://www.linkedin.com/profile/view?id=282676120
@@ -19,8 +18,8 @@ var fs = require('fs');
 // Load common functions
 var common = require('./js/common/common.js');
 
-
-var ROTATION_FREQUENCY = 10; // rotate every 10 seconds
+// rotate sites every 10 seconds
+var ROTATION_FREQUENCY = 10; 
 
 // dynamically load all modules from directory and create the list of crawl instances
 var siteDir = './js/sites/', crawlLooper = [];
@@ -36,17 +35,20 @@ fs.readdirSync(siteDir).forEach(function(file) {
 // past tolerance and it assumes the site is fully crawled
 if (crawlLooper.length > 0) {
 	
-	// start scanning first site
-	crawlLooper[0].scan();
+	// get first site
+	var crawler = crawlLooper[0];
+	// start scanning it
+	crawler.scan();
 	
 	setInterval(function(){ 
 		console.log("Rotating sites...");
 		crawlLooper.push(crawlLooper.shift());
-		var crawler = crawlLooper[0];
-		if (crawler.hitLimit() || crawler.getStartTime() == null) {
+		if (crawler.readyToCrawl()) {
 			crawler.scan();
 		}
 	}, ROTATION_FREQUENCY * 1000); 
+} else {
+	console.log("No sites to crawl...");
 }
 
 // Configure our HTTP server to respond to all requests.

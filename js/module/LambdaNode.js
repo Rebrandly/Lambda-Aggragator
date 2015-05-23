@@ -1,6 +1,5 @@
 /*
  * Lambda Node
- * http://lambdaaggregation.com/
  *
  * Developers: Ryan Steve D'Souza
  * http://www.linkedin.com/profile/view?id=282676120
@@ -27,15 +26,19 @@ module.exports = function(name, input, generateRawFunc) {
 		return name;
 	};
 	
+	this.hasStartedLooping = function() {
+		return loopChild >= 0;
+	};
+	
 	this.getloopChild = function() {
 		return loopChild;
 	};
 	
-	this.setloopChild = function(q) {
-		loopChild = q;
+	this.setloopChild = function(index) {
+		loopChild = index;
 	};
 	
-	this.done = function() {
+	this.doneDownload = function() {
 		return finished;
 	};
 	
@@ -65,15 +68,7 @@ module.exports = function(name, input, generateRawFunc) {
 	this.addmetadata = function(key, val) {
 		metadata[key] = val;
 	}
-	
-	this.isLeaf = function() {
-		return metadata.hasOwnProperty("leaf");
-	};
-	
-	this.markUnLeaf = function() {
-		delete metadata["leaf"];
-	};
-	
+
 	this.downloadData = function(scanEvents) {
 		generateRawFunc(input, scanEvents, node);
 	};
@@ -83,38 +78,33 @@ module.exports = function(name, input, generateRawFunc) {
 		
 		// set child data
 		Array.prototype.push.apply(children, childList);
-		
 		// set parent data
-		var i, l=childList.length;
+		var i, l=children.length;
 		for(i=0; i<l; i+=1) {
-			(childList[i]).setParent(node);
+			(children[i]).setParent(node);
 		}
-
-		scanEvents.finished(node, childList);
+		// clear list
+		childList.length = 0;
+		
+		scanEvents.finished(node);
 	};
 	
-	this.httpError = function(scanEvents) {
+	this.error = function(scanEvents) {
 		failed = true;
-		scanEvents.httpError(node);
+		
+		scanEvents.error();
 	};
 	
-	this.parseError = function(scanEvents) {
-		failed = true;
-		scanEvents.parseError(node);
-	};
-	
-	this.emptyError = function(scanEvents) {
-		failed = true;
-		scanEvents.emptyError(node);
-	};
-	
+	////////////////////////////////////////////////////////////////////
+	// this part downloads the data
+	////////////////////////////////////////////////////////////////////
 	this.downloadTemplate = function(input, scanEvents, func) {
 		request({
 			uri: input.data
 		}, function(error, response, body) {
 			if (error) {
 				node.addmetadata("error", error);
-				node.httpError(scanEvents);
+				node.error(scanEvents);
 				return console.log(error);
 			}
 			
@@ -131,19 +121,13 @@ module.exports = function(name, input, generateRawFunc) {
 			var childList = func(input);
 		} catch (err) {
 			node.addmetadata("error", err.message);
-			node.parseError(scanEvents);
+			node.error(scanEvents);
 			return console.log(err.message);
-		}
-		
-		if (childList.length == 0 && !node.isLeaf()) {
-			var msg = "Empty children list";
-			node.addmetadata("error", msg);
-			node.emptyError(scanEvents);
-			return console.log(msg);
 		}
 
 		node.finished(scanEvents, childList);
 	};
+	////////////////////////////////////////////////////////////////////
 	
 	this.toJSON = function() {
 		var obj = {
