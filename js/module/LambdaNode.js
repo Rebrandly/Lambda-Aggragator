@@ -124,6 +124,15 @@ module.exports = function(name, input, generateRawFunc) {
 			node.error(scanEvents);
 			return console.log(err.message);
 		}
+		
+		if (node.hasOwnProperty("leaf")) {
+			delete node["leaf"];
+		} else if (childList.length == 0) {
+			var err = "No children";
+			node.addmetadata("error", err);
+			node.error(scanEvents);
+			return console.log(err);
+		}
 
 		node.finished(scanEvents, childList);
 	};
