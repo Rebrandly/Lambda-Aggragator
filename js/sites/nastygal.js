@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 17:42:42 23/05/2015
+ * Last Modified Date: 18:17:09 23/05/2015
  */
 
 
@@ -123,11 +123,11 @@ var nodes = [
 			
 					// avoid repeats
 					if (!scanEvents.recordID(id)) {
-						//console.log("detected repeat: " + id);
+						console.log("detected repeat: " + id);
 						return;
 					}
 					
-					if (i > 0) return;
+					//if (i > 0) return;
 					
 					// get name
 					var name = item.find("div.product-name").text().trim();

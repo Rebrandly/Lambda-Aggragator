@@ -79,11 +79,11 @@ node.downloadTemplate(input, scanEvents, function(body) {
 
 		// avoid repeats
 		if (!scanEvents.recordID(id)) {
-			//console.log("detected repeat: " + id);
+			console.log("detected repeat: " + id);
 			return;
 		}
 		
-		if (i > 0) return;
+		//if (i > 0) return;
 		
 		// get name
 		var name = item.find("div.product-name").text().trim();

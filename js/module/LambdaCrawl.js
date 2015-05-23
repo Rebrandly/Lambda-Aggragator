@@ -62,13 +62,13 @@ module.exports = function(site) {
 	};
 	
 	var saveSite = function() {
-		console.log("Saving site...");
+		console.log("Saving site: " + site.getName());
 		var str = JSON.stringify(crawler);
 		fs.writeFile("out/" + site.getName() + ".json", str, function(err) {
 			if (err) {
 				return console.log(err);
 			}
-			console.log("The file was saved!");
+			console.log(site.getName() + " was saved!");
 		}); 
 	};
 	

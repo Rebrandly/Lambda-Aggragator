@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 17:42:42 23/05/2015
+ * Last Modified Date: 18:17:09 23/05/2015
  */
 
 
@@ -171,6 +171,7 @@ var nodes = [
 				var desc = desclist.join("<br/>");
 			
 				// register item
+				node.leaf = true;
 				scanEvents.setItem();
 				
 				// add data to node metadata
@@ -180,7 +181,7 @@ var nodes = [
 				node.addmetadata("original_price", input.original_price);
 				node.addmetadata("long_desc", desc);
 				node.addmetadata("variations", [
-					{ 
+					{
 						image_links: imageList,
 						sizes : sizes
 					}
