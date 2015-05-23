@@ -9,6 +9,8 @@
  * Date: 2015
  */
 
+var fs = require('fs');
+ 
 module.exports = function(site) {
 
 	var root = site.getRootNode();                             // the root node of the site
@@ -22,6 +24,8 @@ module.exports = function(site) {
 	var visitedIDList = {};                                    // record all id's
 	var badNodes = [];                                         // record all bad nodes
 	var active = false;                                        // is this crawl active
+	var finished = false;                                      // if this crawl finished
+	var crawler = this;                                        // this instance
 	
 	this.scan = function() {
 		active = true;
@@ -32,6 +36,10 @@ module.exports = function(site) {
 	
 	this.readyToCrawl = function() {
 		return didhitLimit() || !active;
+	};
+	
+	this.isFinished = function() {
+		return finished;
 	};
 	
 	var didhitLimit = function() {
@@ -46,6 +54,22 @@ module.exports = function(site) {
 		}
 		node.setParent(null);
 		console.log("FOUND BAD NODE!");
+	};
+	
+	var registerComplete = function() {
+		finished = true;
+		saveSite();
+	};
+	
+	var saveSite = function() {
+		console.log("Saving site...");
+		var str = JSON.stringify(crawler);
+		fs.writeFile("out/" + site.getName() + ".json", str, function(err) {
+			if (err) {
+				return console.log(err);
+			}
+			console.log("The file was saved!");
+		}); 
 	};
 	
 	var DFSScan = function() {
@@ -110,14 +134,18 @@ module.exports = function(site) {
 				// check if still valid
 				if (targetIndex < children.length) {
 					v.setloopChild(targetIndex);
+					DFSScan();
 				} else {
 					// no more children, so remove from stack
 					stack.splice(i, 1);
+					
+					// if complete
+					if (stack.length == 0) {
+						registerComplete();
+					} else {
+						DFSScan();
+					}
 				}
-				
-				// continue crawling
-				DFSScan();
-
 			// if failed
 			} else if (v.failed()) {
 				
@@ -127,8 +155,13 @@ module.exports = function(site) {
 				// node failed, so remove from stack
 				stack.splice(i, 1);
 				
-				// continue crawling
-				DFSScan();
+				// if complete
+				if (stack.length == 0) {
+					registerComplete();
+				} else {
+					// continue crawling
+					DFSScan();
+				}
 			}
 		}
 	};

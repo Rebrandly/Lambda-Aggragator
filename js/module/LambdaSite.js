@@ -15,6 +15,10 @@ module.exports = function(name, url, maxvisitAJAX, concurrentAjaxCalls, nodes) {
 		return url;
 	};
 	
+	this.getName = function() {
+		return name;
+	};
+	
 	this.getmaxvisitAJAX = function() {
 		return maxvisitAJAX;
 	};

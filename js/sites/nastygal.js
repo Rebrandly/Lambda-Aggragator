@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 16:40:02 23/05/2015
+ * Last Modified Date: 17:42:42 23/05/2015
  */
 
 
@@ -115,12 +115,7 @@ var nodes = [
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
 				
-				var lst = parsedHTML("div.product-list-item");
-				if (lst.length == 0) {
-					return [];
-				}
-				
-				var childList =  lst.map(function(i, x) { 
+				return parsedHTML("div.product-list-item").map(function(i, x) { 
 					var item = $(x);
 					
 					// get id
@@ -128,16 +123,15 @@ var nodes = [
 			
 					// avoid repeats
 					if (!scanEvents.recordID(id)) {
-						console.log("detected repeat: " + id);
+						//console.log("detected repeat: " + id);
 						return;
 					}
 					
-					//if (i > 0) return;
+					if (i > 0) return;
 					
 					// get name
 					var name = item.find("div.product-name").text().trim();
 			
-					
 					// get price
 					var pricetag = item.find("div.product-price");
 					var newpricetag = pricetag.find("span.current-price");
@@ -156,14 +150,6 @@ var nodes = [
 						original_price : original_price
 					}); 
 				});	
-				
-				if (childList.length == 0) {
-					throw {
-						message : "Empty due to all children being duplicates"
-					};
-				}
-				
-				return childList;
 			});
 
 		});

@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 16:40:02 23/05/2015
+ * Last Modified Date: 17:42:42 23/05/2015
  */
 
 
@@ -95,12 +95,7 @@ var nodes = [
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $.load(body);
 				
-				var lst = parsedHTML("div.category-products > ul.products-grid > li.item");
-				if (lst.length == 0) {
-					return [];
-				}
-				
-				var childList =  lst.map(function(i, x) { 
+				return parsedHTML("div.category-products > ul.products-grid > li.item").map(function(i, x) { 
 					var item = $(x);
 					
 					// get name
@@ -137,14 +132,6 @@ var nodes = [
 						original_price : original_price
 					}); 
 				});	
-				
-				if (childList.length == 0) {
-					throw {
-						message : "Empty due to all children being duplicates"
-					};
-				}
-				
-				return childList;
 			});
 
 		});
