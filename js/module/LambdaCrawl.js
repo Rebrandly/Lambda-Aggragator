@@ -19,10 +19,9 @@ module.exports = function(site) {
 	var maxvisitAJAX = site.getmaxvisitAJAX();                 // the max ajax request in a row	
 	var totalAjaxCount = 0;                                    // the total current ajax count
 	var concurrentAjaxCalls = site.getconcurrentAjaxCalls();   // number of ajax calls at same time
-	var numberofitems = 0;                                     // number of items
-	var repeats = 0;                                           // number of repeats
-	var visitedIDList = {};                                    // record all id's
+	var goodNodes = [];                                        // records all good nodes
 	var badNodes = [];                                         // record all bad nodes
+	var visitedIDs = [];                                       // record all visited id's                    
 	var active = false;                                        // is this crawl active
 	var finished = false;                                      // if this crawl finished
 	var crawler = this;                                        // this instance
@@ -48,11 +47,7 @@ module.exports = function(site) {
 	
 	var registerBadNode = function(node) {
 		badNodes.push(node);
-		var parent = node.getParent();
-		if (parent != null) {
-			parent.removeChild(node);
-		}
-		node.setParent(null);
+		node.disconnectFromParent();
 		console.log("FOUND BAD NODE!");
 	};
 	
@@ -104,19 +99,30 @@ module.exports = function(site) {
 					error : function() {
 						DFSScan();
 					},
-					setItem : function() {
-						numberofitems += 1;
-					},
-					recordID : function(id) {
+					checkItem: function(node, id) {
+						// convert to string
 						if (!(typeof id == 'string' || id instanceof String)) {
 							id = String(id);
 						}
-						if (visitedIDList.hasOwnProperty(id)) {
-							repeats += 1;
+						
+						// record as visited
+						if (visitedIDs.indexOf(id) == -1) {
+							visitedIDs.push(id);
 							return false;
 						}
-						visitedIDList[id] = true;
+						
+						// create list if not exist
+						var metadata = node.getmetadata();
+						if (!metadata.hasOwnProperty("items")) {
+							metadata["items"] = [];
+						}
+						// set in metadata
+						metadata["items"].push(id);
+						
 						return true;
+					},
+					setItem : function(node) {
+						goodNodes.push(node);
 					}
 				});
 			// if finished downloading, start looping through children
@@ -173,10 +179,10 @@ module.exports = function(site) {
 			maxvisitAJAX : maxvisitAJAX,
 			totalAjaxCount : totalAjaxCount,
 			concurrentAjaxCalls : concurrentAjaxCalls,
-			numberofitems : numberofitems,
-			repeats : repeats,
+			numberofitems : goodNodes.length,
 			numberoferrors : badNodes.length,
-			root : root
+			root : root,
+			goodNodes : goodNodes
 		};
 	};
 };

@@ -55,20 +55,21 @@ node.directTemplate(input, scanEvents, function(input) {
 
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
-	
+
 	return parsedHTML("div.category-products > ul.products-grid > li.item").map(function(i, x) { 
 		var item = $(x);
 		
 		// get name
 		var name = item.find("p.thumb-caption-title").text().trim();
 
-		// avoid repeats
-		if (!scanEvents.recordID(name)) {
-			console.log("detected repeat: " + name);
+		if (name.charAt(0) != "A") {
 			return;
 		}
-		
-		//if (i > 0) return;
+
+		// handle repeats
+		if (scanEvents.checkItem(node, name)) {
+			return;
+		}
 		
 		// get price
 		var pricetag = item.find("div.price-box");
@@ -98,6 +99,9 @@ node.downloadTemplate(input, scanEvents, function(body) {
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $.load(body);
 
+	// get id
+	var id = parsedHTML("span.sku").text().trim();
+
 	// get image list
 	var imagehtml = parsedHTML("#more-views > ul > li > a");
 	var i, l=imagehtml.length, imageList=[];
@@ -115,9 +119,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		});
 	}
 
-	// get id
-	var id = parsedHTML("span.sku").text().trim();
-	
 	// get description
 	var deschtml = parsedHTML("#tabs-1 > p");
 	var i, l=deschtml.length, desclist=[];
@@ -126,10 +127,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	}
 	var desc = desclist.join("<br/>");
 
-	// register item
-	node.leaf = true;
-	scanEvents.setItem();
-	
 	// add data to node metadata
 	node.addmetadata("url", input.data);
 	node.addmetadata("id", id);
@@ -142,6 +139,10 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			sizes : sizes
 		}
 	]);
+	
+	// register item
+	node.leaf = true;
+	scanEvents.setItem(node);
 	
 	return [];
 });

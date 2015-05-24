@@ -29,11 +29,9 @@ module.exports = function(name, input, generateRawFunc) {
 	this.hasStartedLooping = function() {
 		return loopChild >= 0;
 	};
-	
 	this.getloopChild = function() {
 		return loopChild;
 	};
-	
 	this.setloopChild = function(index) {
 		loopChild = index;
 	};
@@ -41,7 +39,6 @@ module.exports = function(name, input, generateRawFunc) {
 	this.doneDownload = function() {
 		return finished;
 	};
-	
 	this.failed = function() {
 		return failed;
 	};
@@ -49,25 +46,33 @@ module.exports = function(name, input, generateRawFunc) {
 	this.getParent = function() {
 		return parent;
 	};
-	
 	this.setParent = function(p) {
 		parent = p;
 	};
+	this.disconnectFromParent = function() {
+		var parent = node.getParent();
+		if (parent != null) {
+			parent.removeChild(node);
+		}
+		node.setParent(null);
+	}
 	
 	this.getChildren = function() {
 		return children;
 	};
-	
 	this.removeChild = function(child) {
 		var ind = children.indexOf(child);
 		if (ind != -1) {
 			children.splice(ind, 1);
-		}		
+		}
 	};
 	
+	this.getmetadata = function() {
+		return metadata;
+	};
 	this.addmetadata = function(key, val) {
 		metadata[key] = val;
-	}
+	};
 
 	this.downloadData = function(scanEvents) {
 		generateRawFunc(input, scanEvents, node);
@@ -126,12 +131,15 @@ module.exports = function(name, input, generateRawFunc) {
 		}
 		
 		if (node.hasOwnProperty("leaf")) {
-			delete node["leaf"];
+			var p = node.getParent();
+			console.log("old length: " + p.getChildren().length);
+			node.disconnectFromParent();
+			console.log("new length: " + p.getChildren().length);
 		} else if (childList.length == 0) {
-			var err = "No children";
-			node.addmetadata("error", err);
-			node.error(scanEvents);
-			return console.log(err);
+			//var err = "No children";
+			//node.addmetadata("error", err);
+			//node.error(scanEvents);
+			//return console.log(err);
 		}
 
 		node.finished(scanEvents, childList);
@@ -140,10 +148,12 @@ module.exports = function(name, input, generateRawFunc) {
 	
 	this.toJSON = function() {
 		var obj = {
-			name : name,
-			children : children
+			name : name
 		};
 		
+		if (!node.hasOwnProperty("leaf") && children.length > 0) {
+			obj.children = children;
+		}
 		if (Object.keys(metadata).length > 0) {
 			obj.metadata = metadata;
 		}

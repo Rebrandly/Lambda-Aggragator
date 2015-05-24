@@ -4,7 +4,7 @@ Los Angeles
 California
 60
 4
-1
+0
 
 node.directTemplate(input, scanEvents, function(input) {
 	node.addmetadata("site_info", {
@@ -77,13 +77,10 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		// get id
 		var id = item.attr("data-product-id");
 
-		// avoid repeats
-		if (!scanEvents.recordID(id)) {
-			console.log("detected repeat: " + id);
+		// handle repeats
+		if (scanEvents.checkItem(node, id)) {
 			return;
 		}
-		
-		//if (i > 0) return;
 		
 		// get name
 		var name = item.find("div.product-name").text().trim();
@@ -155,10 +152,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	}
 	var desc = desclist.join("<br/>");
 
-	// register item
-	node.leaf = true;
-	scanEvents.setItem();
-	
 	// add data to node metadata
 	node.addmetadata("url", input.data);
 	node.addmetadata("id", input.id);
@@ -171,6 +164,9 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			sizes : sizes
 		}
 	]);
+	
+	// register item
+	scanEvents.setItem(node);
 	
 	return [];
 });

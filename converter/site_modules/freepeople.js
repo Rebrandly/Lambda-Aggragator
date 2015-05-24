@@ -86,13 +86,10 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		// find id
 		var id = item.find("div[data-stylenumber]").attr("data-stylenumber");
 		
-		// avoid repeats
-		if (!scanEvents.recordID(id)) {
-			//console.log("detected repeat: " + id);
+		// handle repeats
+		if (scanEvents.checkItem(node, id)) {
 			return;
 		}
-		
-		//if (i > 0) return;
 		
 		// name
 		var name = item.find("h3.name").text().trim();
@@ -326,10 +323,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		}
 	}
 
-	// register item
-	node.leaf = true;
-	scanEvents.setItem();
-	
 	// add data to node metadata
 	node.addmetadata("url", input.url);
 	node.addmetadata("id", input.id);
@@ -337,6 +330,9 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	node.addmetadata("original_price", input.original_price);
 	node.addmetadata("long_desc", input.long_desc);
 	node.addmetadata("variations", input.variations);
-
+	
+	// register item
+	scanEvents.setItem(node);
+	
 	return [];
 });

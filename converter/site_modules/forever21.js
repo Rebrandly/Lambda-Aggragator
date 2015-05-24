@@ -117,6 +117,12 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		
 		// get product id
 		var id = $(item).attr("id").match(/\d+/)[0];
+		
+		// handle repeats
+		if (scanEvents.checkItem(node, id)) {
+			continue;
+		}
+		
 		// get product name
 		var name = $(item).parent().find("> div.product_name").text().trim();
 		// get product page link
@@ -218,8 +224,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	// add data to node metadata
 	node.addmetadata("details", obj.catalogEntry);
 	// register item
-	node.leaf = true;
-	scanEvents.setItem();
+	scanEvents.setItem(node);
 	
 	return [];
 });

@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 18:17:09 23/05/2015
+ * Last Modified Date: 02:58:41 24/05/2015
  */
 
 
@@ -98,14 +98,6 @@ var nodes = [
 					
 					// get name
 					var name = item.find("p.thumb-caption-title").text().trim();
-			
-					// avoid repeats
-					if (!scanEvents.recordID(name)) {
-						console.log("detected repeat: " + name);
-						return;
-					}
-					
-					//if (i > 0) return;
 					
 					// get price
 					var pricetag = item.find("div.price-box");
@@ -160,6 +152,11 @@ var nodes = [
 				// get id
 				var id = parsedHTML("span.sku").text().trim();
 				
+				// handle repeats
+				if (scanEvents.checkItem(node, id)) {
+					return;
+				}
+				
 				// get description
 				var deschtml = parsedHTML("#tabs-1 > p");
 				var i, l=deschtml.length, desclist=[];
@@ -168,9 +165,6 @@ var nodes = [
 				}
 				var desc = desclist.join("<br/>");
 			
-				// register item
-				scanEvents.setItem();
-				
 				// add data to node metadata
 				node.addmetadata("url", input.data);
 				node.addmetadata("id", id);
@@ -183,6 +177,9 @@ var nodes = [
 						sizes : sizes
 					}
 				]);
+				
+				// register item
+				scanEvents.setItem(node);
 				
 				return [];
 			});

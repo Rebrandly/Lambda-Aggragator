@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 18:17:09 23/05/2015
+ * Last Modified Date: 02:58:41 24/05/2015
  */
 
 
@@ -161,6 +161,12 @@ var nodes = [
 					
 					// get product id
 					var id = $(item).attr("id").match(/\d+/)[0];
+					
+					// handle repeats
+					if (scanEvents.checkItem(node, id)) {
+						continue;
+					}
+					
 					// get product name
 					var name = $(item).parent().find("> div.product_name").text().trim();
 					// get product page link
@@ -277,7 +283,7 @@ var nodes = [
 				// add data to node metadata
 				node.addmetadata("details", obj.catalogEntry);
 				// register item
-				scanEvents.setItem();
+				scanEvents.setItem(node);
 				
 				return [];
 			});

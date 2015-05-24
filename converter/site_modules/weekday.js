@@ -64,14 +64,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 		
 		// get name
 		var name = item.find("p.thumb-caption-title").text().trim();
-
-		// avoid repeats
-		if (!scanEvents.recordID(name)) {
-			console.log("detected repeat: " + name);
-			return;
-		}
-		
-		//if (i > 0) return;
 		
 		// get price
 		var pricetag = item.find("div.price-box");
@@ -121,6 +113,11 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	// get id
 	var id = parsedHTML("span.sku").text().trim();
 	
+	// handle repeats
+	if (scanEvents.checkItem(node, id)) {
+		return;
+	}
+	
 	// get description
 	var deschtml = parsedHTML("#tabs-1 > p");
 	var i, l=deschtml.length, desclist=[];
@@ -129,10 +126,6 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	}
 	var desc = desclist.join("<br/>");
 
-	// register item
-	node.leaf = true;
-	scanEvents.setItem();
-	
 	// add data to node metadata
 	node.addmetadata("url", input.data);
 	node.addmetadata("id", id);
@@ -145,6 +138,9 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			sizes : sizes
 		}
 	]);
+	
+	// register item
+	scanEvents.setItem(node);
 	
 	return [];
 });

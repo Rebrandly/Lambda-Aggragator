@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 18:17:09 23/05/2015
+ * Last Modified Date: 02:58:41 24/05/2015
  */
 
 
@@ -130,13 +130,10 @@ var nodes = [
 					// find id
 					var id = item.find("div[data-stylenumber]").attr("data-stylenumber");
 					
-					// avoid repeats
-					if (!scanEvents.recordID(id)) {
-						//console.log("detected repeat: " + id);
+					// handle repeats
+					if (scanEvents.checkItem(node, id)) {
 						return;
 					}
-					
-					//if (i > 0) return;
 					
 					// name
 					var name = item.find("h3.name").text().trim();
@@ -380,9 +377,6 @@ var nodes = [
 					}
 				}
 			
-				// register item
-				scanEvents.setItem();
-				
 				// add data to node metadata
 				node.addmetadata("url", input.url);
 				node.addmetadata("id", input.id);
@@ -390,7 +384,10 @@ var nodes = [
 				node.addmetadata("original_price", input.original_price);
 				node.addmetadata("long_desc", input.long_desc);
 				node.addmetadata("variations", input.variations);
-			
+				
+				// register item
+				scanEvents.setItem(node);
+				
 				return [];
 			});
 		});
