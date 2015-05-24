@@ -58,7 +58,7 @@ var LambdaCrawl = function(site) {
 	var saveSite = function() {
 		console.log("Saving site: " + site.getName());
 		var str = JSON.stringify(crawler, null, '\t');
-		$("pre").append(str);
+		$("body").append("<pre>" + str + "</pre>");
 	};
 	
 	var DFSScan = function() {
@@ -99,12 +99,6 @@ var LambdaCrawl = function(site) {
 							id = String(id);
 						}
 						
-						// record as visited
-						if (visitedIDs.indexOf(id) == -1) {
-							visitedIDs.push(id);
-							return false;
-						}
-						
 						// create list if not exist
 						var metadata = node.getmetadata();
 						if (!metadata.hasOwnProperty("items")) {
@@ -112,6 +106,12 @@ var LambdaCrawl = function(site) {
 						}
 						// set in metadata
 						metadata["items"].push(id);
+						
+						// record as visited
+						if (visitedIDs.indexOf(id) == -1) {
+							visitedIDs.push(id);
+							return false;
+						}
 						
 						return true;
 					},
@@ -121,6 +121,10 @@ var LambdaCrawl = function(site) {
 				});
 			// if finished downloading, start looping through children
 			} else if (v.doneDownload()) {
+			
+				if (v.getName() == "Party Dresses") {
+					var a = 1;
+				}
 			
 				var children = v.getChildren();
 				var targetIndex = v.getloopChild();

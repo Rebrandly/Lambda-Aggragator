@@ -60,7 +60,10 @@ var LambdaNode= function(name, input, generateRawFunc) {
 	this.removeChild = function(child) {
 		var ind = children.indexOf(child);
 		if (ind != -1) {
-			children.splice(ind, 1);
+			var targetingNode = children[node.getloopChild()];  // get node being targetted next
+			children.splice(ind, 1);                            // remove the requested node
+			var newLoopValue = children.indexOf(targetingNode); // get new index of the targetted node
+			node.setloopChild(newLoopValue);                    // set it as that
 		}
 	};
 	
@@ -127,9 +130,13 @@ var LambdaNode= function(name, input, generateRawFunc) {
 			return console.log(err.message);
 		}
 		
+		//console.log(input.name);
+		//console.log(childList.length);
+		
 		if (node.hasOwnProperty("leaf")) {
 			var p = node.getParent();
 			//console.log("old length: " + p.getChildren().length);
+			console.log("remove a node!");
 			node.disconnectFromParent();
 			//console.log("new length: " + p.getChildren().length);
 		} else if (childList.length == 0) {

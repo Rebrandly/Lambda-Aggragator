@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 04:08:57 24/05/2015
+ * Last Modified Date: 10:24:25 24/05/2015
  */
 
 
@@ -69,9 +69,15 @@ var nodes = [
 				var dataList = input.subheaders, i, l = dataList.length, childList=[];
 				for(i=0; i<l; i+=1) {
 					var anchor = $(dataList[i]);
+					var name = anchor.text().trim();
+					
+					if (name != "Party Dresses") {
+						continue;
+					}
+					
 					childList.push((nodes[3])({
 						data : anchor.attr("href") + "?limit=all",
-						name : anchor.text().trim()
+						name : name
 					})); 
 				}
 				return childList;
@@ -85,18 +91,20 @@ var nodes = [
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $($.parseHTML(body));
 			
-				return parsedHTML.find("div.category-products > ul.products-grid > li.item").map(function(i, x) { 
+				var r = parsedHTML.find("div.category-products > ul.products-grid > li.item").map(function(i, x) { 
 					var item = $(x);
 					
 					// get name
 					var name = item.find("p.thumb-caption-title").text().trim();
 			
-					if (name.charAt(0) != "A") {
+					if (name.charAt(0) != "B") {
 						return;
 					}
 			
 					// handle repeats
+					//console.log("seen: " + name);
 					if (scanEvents.checkItem(node, name)) {
+						//console.log("skipped: " + name);
 						return;
 					}
 					
@@ -123,6 +131,8 @@ var nodes = [
 						original_price : original_price
 					}); 
 				});	
+			
+				return r;
 			});
 
 		});
@@ -133,6 +143,13 @@ var nodes = [
 			node.downloadTemplate(input, scanEvents, function(body) {
 				var parsedHTML = $($.parseHTML(body));
 			
+				
+				var g = input.name;
+				console.log(g);
+				//if (g === "Blue Lina Dress") {
+				//	var a = 1;
+				//}
+				
 				// get id
 				var id = parsedHTML.find("span.sku").text().trim();
 			
