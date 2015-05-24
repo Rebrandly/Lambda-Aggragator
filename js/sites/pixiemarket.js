@@ -6,7 +6,7 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 11:21:59 24/05/2015
+ * Last Modified Date: 11:37:12 24/05/2015
  */
 
 
@@ -179,6 +179,7 @@ var nodes = [
 				// register item
 				node.leaf = true;
 				scanEvents.setItem(node);
+				node.disconnectFromParent();
 				
 				return [];
 			});

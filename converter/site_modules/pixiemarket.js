@@ -145,6 +145,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	// register item
 	node.leaf = true;
 	scanEvents.setItem(node);
+	node.disconnectFromParent();
 	
 	return [];
 });

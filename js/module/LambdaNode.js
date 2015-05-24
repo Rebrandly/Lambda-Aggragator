@@ -131,7 +131,6 @@ var LambdaNode= function(name, input, generateRawFunc) {
 		}
 		
 		if (node.hasOwnProperty("leaf")) {
-			node.disconnectFromParent();
 			delete node["leaf"];
 		} else if (childList.length == 0) {
 			var err = "No children";
