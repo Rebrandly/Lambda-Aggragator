@@ -122,10 +122,6 @@ var LambdaCrawl = function(site) {
 			// if finished downloading, start looping through children
 			} else if (v.doneDownload()) {
 			
-				if (v.getName() == "Party Dresses") {
-					var a = 1;
-				}
-			
 				var children = v.getChildren();
 				var targetIndex = v.getloopChild();
 				
@@ -180,7 +176,8 @@ var LambdaCrawl = function(site) {
 			numberofitems : goodNodes.length,
 			numberoferrors : badNodes.length,
 			root : root,
-			goodNodes : goodNodes
+			goodNodes : goodNodes,
+			badNodes : badNodes
 		};
 	};
 };

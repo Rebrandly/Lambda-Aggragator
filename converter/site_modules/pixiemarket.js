@@ -47,10 +47,6 @@ node.directTemplate(input, scanEvents, function(input) {
 		var anchor = $(dataList[i]);
 		var name = anchor.text().trim();
 		
-		if (name != "Party Dresses") {
-			continue;
-		}
-		
 		childList.push((nodes[3])({
 			data : anchor.attr("href") + "?limit=all",
 			name : name
@@ -62,20 +58,14 @@ node.directTemplate(input, scanEvents, function(input) {
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $($.parseHTML(body));
 
-	var r = parsedHTML.find("div.category-products > ul.products-grid > li.item").map(function(i, x) { 
+	return parsedHTML.find("div.category-products > ul.products-grid > li.item").map(function(i, x) { 
 		var item = $(x);
 		
 		// get name
 		var name = item.find("p.thumb-caption-title").text().trim();
 
-		if (name.charAt(0) != "B") {
-			return;
-		}
-
 		// handle repeats
-		//console.log("seen: " + name);
 		if (scanEvents.checkItem(node, name)) {
-			//console.log("skipped: " + name);
 			return;
 		}
 		
@@ -102,19 +92,10 @@ node.downloadTemplate(input, scanEvents, function(body) {
 			original_price : original_price
 		}); 
 	});	
-
-	return r;
 });
 
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $($.parseHTML(body));
-
-	
-	var g = input.name;
-	console.log(g);
-	//if (g === "Blue Lina Dress") {
-	//	var a = 1;
-	//}
 	
 	// get id
 	var id = parsedHTML.find("span.sku").text().trim();

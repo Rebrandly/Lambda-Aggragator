@@ -130,20 +130,14 @@ var LambdaNode= function(name, input, generateRawFunc) {
 			return console.log(err.message);
 		}
 		
-		//console.log(input.name);
-		//console.log(childList.length);
-		
 		if (node.hasOwnProperty("leaf")) {
-			var p = node.getParent();
-			//console.log("old length: " + p.getChildren().length);
-			console.log("remove a node!");
 			node.disconnectFromParent();
-			//console.log("new length: " + p.getChildren().length);
+			delete node["leaf"];
 		} else if (childList.length == 0) {
-			//var err = "No children";
-			//node.addmetadata("error", err);
-			//node.error(scanEvents);
-			//return console.log(err);
+			var err = "No children";
+			node.addmetadata("error", err);
+			node.error(scanEvents);
+			return console.log(err);
 		}
 
 		node.finished(scanEvents, childList);
@@ -154,14 +148,12 @@ var LambdaNode= function(name, input, generateRawFunc) {
 		var obj = {
 			name : name
 		};
-		
-		if (!node.hasOwnProperty("leaf") && children.length > 0) {
+		if (children.length > 0) {
 			obj.children = children;
 		}
 		if (Object.keys(metadata).length > 0) {
 			obj.metadata = metadata;
 		}
-		
 		return obj;
 	};
 };
