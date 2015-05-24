@@ -218,6 +218,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	// add data to node metadata
 	node.addmetadata("details", obj.catalogEntry);
 	// register item
+	node.leaf = true;
 	scanEvents.setItem();
 	
 	return [];

@@ -130,6 +130,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	var desc = desclist.join("<br/>");
 
 	// register item
+	node.leaf = true;
 	scanEvents.setItem();
 	
 	// add data to node metadata

@@ -327,6 +327,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	}
 
 	// register item
+	node.leaf = true;
 	scanEvents.setItem();
 	
 	// add data to node metadata
