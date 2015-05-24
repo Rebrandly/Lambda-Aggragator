@@ -9,7 +9,7 @@
  * Date: 2015
  */
 
-module.exports = function(name, url, maxvisitAJAX, concurrentAjaxCalls, nodes) {
+var LambdaSite = function(name, url, maxvisitAJAX, concurrentAjaxCalls, nodes) {
 	
 	this.getURL = function() {
 		return url;

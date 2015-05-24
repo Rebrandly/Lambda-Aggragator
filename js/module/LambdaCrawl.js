@@ -9,9 +9,8 @@
  * Date: 2015
  */
 
-var fs = require('fs');
  
-module.exports = function(site) {
+var LambdaCrawl = function(site) {
 
 	var root = site.getRootNode();                             // the root node of the site
 	var stack = [root];                                        // stack used for dfs search
@@ -58,13 +57,8 @@ module.exports = function(site) {
 	
 	var saveSite = function() {
 		console.log("Saving site: " + site.getName());
-		var str = JSON.stringify(crawler);
-		fs.writeFile("out/" + site.getName() + ".json", str, function(err) {
-			if (err) {
-				return console.log(err);
-			}
-			console.log(site.getName() + " was saved!");
-		}); 
+		var str = JSON.stringify(crawler, null, '\t');
+		$("pre").append(str);
 	};
 	
 	var DFSScan = function() {

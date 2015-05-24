@@ -6,18 +6,8 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 02:58:41 24/05/2015
+ * Last Modified Date: 04:07:52 24/05/2015
  */
-
-
-// Load the cheerio module to parse html responses.
-var $ = require('cheerio');
-// Load my custom node object
-var LambdaNode = require('../module/LambdaNode.js');
-// Load my custom site object
-var LambdaSite = require('../module/LambdaSite.js');
-// Load my custom node object
-var common = require('../common/common.js');
 
 
 var name = "PixieMarket";
@@ -49,9 +39,9 @@ var nodes = [
 		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 			
 			node.downloadTemplate(input, scanEvents, function(body) {
-				var parsedHTML = $.load(body);
+				var parsedHTML = $($.parseHTML(body));
 			
-				return parsedHTML("ul.menu-catalog > li").map(function(i, x) { 
+				return parsedHTML.find("ul.menu-catalog > li").map(function(i, x) { 
 					var header = $(x);
 					var tabName = header.find("a").eq(0).text().trim();
 			
@@ -93,9 +83,9 @@ var nodes = [
 		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 			
 			node.downloadTemplate(input, scanEvents, function(body) {
-				var parsedHTML = $.load(body);
+				var parsedHTML = $($.parseHTML(body));
 			
-				return parsedHTML("div.category-products > ul.products-grid > li.item").map(function(i, x) { 
+				return parsedHTML.find("div.category-products > ul.products-grid > li.item").map(function(i, x) { 
 					var item = $(x);
 					
 					// get name
@@ -141,13 +131,13 @@ var nodes = [
 		return new LambdaNode(input.name, input, function(input, scanEvents, node) {
 			
 			node.downloadTemplate(input, scanEvents, function(body) {
-				var parsedHTML = $.load(body);
+				var parsedHTML = $($.parseHTML(body));
 			
 				// get id
-				var id = parsedHTML("span.sku").text().trim();
+				var id = parsedHTML.find("span.sku").text().trim();
 			
 				// get image list
-				var imagehtml = parsedHTML("#more-views > ul > li > a");
+				var imagehtml = parsedHTML.find("#more-views > ul > li > a");
 				var i, l=imagehtml.length, imageList=[];
 				for(i=0; i<l; i+=1) {
 					var item = $(imagehtml[i]);
@@ -155,7 +145,7 @@ var nodes = [
 				}
 			
 				// get size list
-				var sizeshtml = parsedHTML("ul.size-list-wrapper > li > a");
+				var sizeshtml = parsedHTML.find("ul.size-list-wrapper > li > a");
 				var i, l=sizeshtml.length, sizes=[];
 				for(i=0; i<l; i+=1) {
 					sizes.push({
@@ -164,7 +154,7 @@ var nodes = [
 				}
 			
 				// get description
-				var deschtml = parsedHTML("#tabs-1 > p");
+				var deschtml = parsedHTML.find("#tabs-1 > p");
 				var i, l=deschtml.length, desclist=[];
 				for(i=0; i<l; i+=1) {
 					desclist.push($(deschtml[i]).text().trim());
@@ -195,4 +185,4 @@ var nodes = [
 ];
 
 
-module.exports = new LambdaSite(name, url, 60, 4, nodes);
+crawlLooper.push(new LambdaCrawl(new LambdaSite(name, url, 60, 4, nodes)));

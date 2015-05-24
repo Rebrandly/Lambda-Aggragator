@@ -9,10 +9,7 @@
  * Date: 2015
  */
 
-// Load the request module to make requests.
-var request = require("request");
-
-module.exports = function(name, input, generateRawFunc) {
+var LambdaNode= function(name, input, generateRawFunc) {
 
 	var loopChild = -1;         // the index of the child node that needs to be searched
 	var parent = null;          // parent of the node
@@ -104,16 +101,16 @@ module.exports = function(name, input, generateRawFunc) {
 	// this part downloads the data
 	////////////////////////////////////////////////////////////////////
 	this.downloadTemplate = function(input, scanEvents, func) {
-		request({
-			uri: input.data
-		}, function(error, response, body) {
-			if (error) {
-				node.addmetadata("error", error);
+		$.ajax({
+			url: input.data,
+			type: 'GET',
+			error: function(xhr, textStatus, errorThrown) {
+				node.addmetadata("error", textStatus);
 				node.error(scanEvents);
-				return console.log(error);
+			},
+			success: function(data, textStatus, xhr) {
+				templaceFinisher(data, scanEvents, func);
 			}
-			
-			templaceFinisher(body, scanEvents, func);
 		});
 	};
 
@@ -132,9 +129,9 @@ module.exports = function(name, input, generateRawFunc) {
 		
 		if (node.hasOwnProperty("leaf")) {
 			var p = node.getParent();
-			console.log("old length: " + p.getChildren().length);
+			//console.log("old length: " + p.getChildren().length);
 			node.disconnectFromParent();
-			console.log("new length: " + p.getChildren().length);
+			//console.log("new length: " + p.getChildren().length);
 		} else if (childList.length == 0) {
 			//var err = "No children";
 			//node.addmetadata("error", err);

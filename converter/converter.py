@@ -15,9 +15,6 @@ def processSiteModule(fd, filename):
     active = lines[6].strip() == "1"
     codelist = lines[7:]
     
-    if not active:
-        filename = "_" + filename
-    
     nodes = []
     start = 0
     for i in range(len(codelist)):
@@ -37,17 +34,10 @@ def processSiteModule(fd, filename):
     string += " * Last Modified Date: " + time.strftime("%H:%M:%S") + " " + time.strftime("%d/%m/%Y") + "\n"
     string += " */\n"
     string += "\n\n"
-
-    string += "// Load the cheerio module to parse html responses.\n"
-    string += "var $ = require('cheerio');\n"
-    string += "// Load my custom node object\n"
-    string += "var LambdaNode = require('../module/LambdaNode.js');\n"
-    string += "// Load my custom site object\n"
-    string += "var LambdaSite = require('../module/LambdaSite.js');\n"
-    string += "// Load my custom node object\n"
-    string += "var common = require('../common/common.js');\n" 
-    string += "\n\n"
     
+    if not active:
+        string += "/*\n\n"
+	
     string += "var name = \"" + name + "\";\n"
     string += "var city = \"" + city + "\";\n"
     string += "var country = \"" + country + "\";\n"
@@ -69,8 +59,11 @@ def processSiteModule(fd, filename):
     string += "];\n"
     string += "\n\n"
     
-    string += "module.exports = new LambdaSite(name, url, " + maxrequests + ", " + concurrentrequests + ", nodes);"  
+    string += "crawlLooper.push(new LambdaCrawl(new LambdaSite(name, url, " + maxrequests + ", " + concurrentrequests + ", nodes)));"  
     
+    if not active:
+        string += "\n\n*/"
+	
     return string, filename
         
 

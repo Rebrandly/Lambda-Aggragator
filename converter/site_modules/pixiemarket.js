@@ -20,9 +20,9 @@ node.directTemplate(input, scanEvents, function(input) {
 });
 
 node.downloadTemplate(input, scanEvents, function(body) {
-	var parsedHTML = $.load(body);
+	var parsedHTML = $($.parseHTML(body));
 
-	return parsedHTML("ul.menu-catalog > li").map(function(i, x) { 
+	return parsedHTML.find("ul.menu-catalog > li").map(function(i, x) { 
 		var header = $(x);
 		var tabName = header.find("a").eq(0).text().trim();
 
@@ -54,9 +54,9 @@ node.directTemplate(input, scanEvents, function(input) {
 });
 
 node.downloadTemplate(input, scanEvents, function(body) {
-	var parsedHTML = $.load(body);
+	var parsedHTML = $($.parseHTML(body));
 
-	return parsedHTML("div.category-products > ul.products-grid > li.item").map(function(i, x) { 
+	return parsedHTML.find("div.category-products > ul.products-grid > li.item").map(function(i, x) { 
 		var item = $(x);
 		
 		// get name
@@ -97,13 +97,13 @@ node.downloadTemplate(input, scanEvents, function(body) {
 });
 
 node.downloadTemplate(input, scanEvents, function(body) {
-	var parsedHTML = $.load(body);
+	var parsedHTML = $($.parseHTML(body));
 
 	// get id
-	var id = parsedHTML("span.sku").text().trim();
+	var id = parsedHTML.find("span.sku").text().trim();
 
 	// get image list
-	var imagehtml = parsedHTML("#more-views > ul > li > a");
+	var imagehtml = parsedHTML.find("#more-views > ul > li > a");
 	var i, l=imagehtml.length, imageList=[];
 	for(i=0; i<l; i+=1) {
 		var item = $(imagehtml[i]);
@@ -111,7 +111,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	}
 
 	// get size list
-	var sizeshtml = parsedHTML("ul.size-list-wrapper > li > a");
+	var sizeshtml = parsedHTML.find("ul.size-list-wrapper > li > a");
 	var i, l=sizeshtml.length, sizes=[];
 	for(i=0; i<l; i+=1) {
 		sizes.push({
@@ -120,7 +120,7 @@ node.downloadTemplate(input, scanEvents, function(body) {
 	}
 
 	// get description
-	var deschtml = parsedHTML("#tabs-1 > p");
+	var deschtml = parsedHTML.find("#tabs-1 > p");
 	var i, l=deschtml.length, desclist=[];
 	for(i=0; i<l; i+=1) {
 		desclist.push($(deschtml[i]).text().trim());

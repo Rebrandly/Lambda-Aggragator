@@ -10,10 +10,7 @@
  * Date: 2015
  */
 
-// Load file writer
-var fs = require('fs');
-
-module.exports = new function() {
+var common = new function() {
 	
 	this.writeData = function(filename, str) {
 		fs.writeFile(filename + getTime() + ".html", str, function(err) {
@@ -32,3 +29,7 @@ module.exports = new function() {
 		d.getMilliseconds(); // => 51
 	};
 };
+
+// main variables
+var ROTATION_FREQUENCY = 10; 
+var crawlLooper = [];

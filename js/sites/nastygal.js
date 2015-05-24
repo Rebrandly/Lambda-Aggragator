@@ -6,19 +6,11 @@
  *
  * Copyright 2015
  *
- * Last Modified Date: 02:58:41 24/05/2015
+ * Last Modified Date: 04:07:52 24/05/2015
  */
 
 
-// Load the cheerio module to parse html responses.
-var $ = require('cheerio');
-// Load my custom node object
-var LambdaNode = require('../module/LambdaNode.js');
-// Load my custom site object
-var LambdaSite = require('../module/LambdaSite.js');
-// Load my custom node object
-var common = require('../common/common.js');
-
+/*
 
 var name = "NastyGal";
 var city = "Los Angeles";
@@ -224,4 +216,6 @@ var nodes = [
 ];
 
 
-module.exports = new LambdaSite(name, url, 60, 4, nodes);
+crawlLooper.push(new LambdaCrawl(new LambdaSite(name, url, 60, 4, nodes)));
+
+*/
