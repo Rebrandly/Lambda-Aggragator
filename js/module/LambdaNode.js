@@ -134,7 +134,7 @@ var LambdaNode= function(name, input, generateRawFunc) {
 			node.disconnectFromParent();
 			delete node["leaf"];
 		} else if (childList.length == 0) {
-			var err = "No children, could be because all children were repeats";
+			var err = "No children";
 			node.addmetadata("error", err);
 			node.error(scanEvents);
 			return console.log(err);

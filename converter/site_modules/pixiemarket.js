@@ -58,7 +58,11 @@ node.directTemplate(input, scanEvents, function(input) {
 node.downloadTemplate(input, scanEvents, function(body) {
 	var parsedHTML = $($.parseHTML(body));
 
-	return parsedHTML.find("div.category-products > ul.products-grid > li.item").map(function(i, x) { 
+	var items = parsedHTML.find("div.category-products > ul.products-grid > li.item");
+	if (items.length == 0) return [];
+	node.leaf = true;
+	
+	return items.map(function(i, x) { 
 		var item = $(x);
 		
 		// get name
